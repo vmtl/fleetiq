@@ -1,1 +1,90 @@
-
+vehicle,model_year,complaint_count,component_records
+Chevrolet City Express,2015,12,15
+Chevrolet City Express,2018,1,3
+Chevrolet Express,2015,8,12
+Chevrolet Express,2016,17,22
+Chevrolet Express,2017,22,32
+Chevrolet Express,2018,12,18
+Chevrolet Express,2019,10,12
+Chevrolet Express,2020,17,23
+Chevrolet Express,2021,15,20
+Chevrolet Express,2022,3,9
+Chevrolet Express,2023,4,8
+Chevrolet Express,2024,3,7
+Chevrolet Express,2026,1,2
+Ford Transit,2015,194,275
+Ford Transit,2016,156,216
+Ford Transit,2017,99,134
+Ford Transit,2018,59,83
+Ford Transit,2019,38,48
+Ford Transit,2020,87,110
+Ford Transit,2021,24,35
+Ford Transit,2022,40,57
+Ford Transit,2023,61,88
+Ford Transit,2024,29,42
+Ford Transit,2025,4,5
+Ford Transit,2026,6,10
+Ford Transit Connect,2015,66,79
+Ford Transit Connect,2016,105,147
+Ford Transit Connect,2017,28,33
+Ford Transit Connect,2018,22,32
+Ford Transit Connect,2019,52,73
+Ford Transit Connect,2020,32,41
+Ford Transit Connect,2021,12,21
+Ford Transit Connect,2022,6,10
+Ford Transit Connect,2023,1,1
+GMC Savana,2015,6,8
+GMC Savana,2016,6,12
+GMC Savana,2017,8,12
+GMC Savana,2018,3,5
+GMC Savana,2019,6,8
+GMC Savana,2021,2,3
+GMC Savana,2022,3,4
+Mercedes Metris,2015,1,1
+Mercedes Metris,2016,126,154
+Mercedes Metris,2017,28,34
+Mercedes Metris,2018,28,38
+Mercedes Metris,2019,8,10
+Mercedes Metris,2020,7,8
+Mercedes Metris,2021,1,2
+Mercedes Metris,2022,9,9
+Mercedes Metris,2023,2,4
+Mercedes Sprinter,2015,68,109
+Mercedes Sprinter,2016,105,159
+Mercedes Sprinter,2017,49,66
+Mercedes Sprinter,2018,27,50
+Mercedes Sprinter,2019,121,186
+Mercedes Sprinter,2020,111,185
+Mercedes Sprinter,2021,63,107
+Mercedes Sprinter,2022,51,82
+Mercedes Sprinter,2023,40,65
+Mercedes Sprinter,2024,16,22
+Mercedes Sprinter,2025,4,7
+Nissan NV,2017,21,34
+Nissan NV200,2015,3,6
+Nissan NV200,2016,7,9
+Nissan NV200,2017,5,8
+Nissan NV200,2018,3,3
+Nissan NV200,2019,4,6
+Nissan NV200,2020,2,2
+Nissan NV200,2021,4,6
+Ram ProMaster,2015,84,122
+Ram ProMaster,2016,46,75
+Ram ProMaster,2017,57,93
+Ram ProMaster,2018,38,55
+Ram ProMaster,2019,61,79
+Ram ProMaster,2020,46,69
+Ram ProMaster,2021,119,165
+Ram ProMaster,2022,70,106
+Ram ProMaster,2023,102,141
+Ram ProMaster,2024,14,21
+Ram ProMaster,2025,7,10
+Ram ProMaster,2026,2,2
+Ram ProMaster City,2015,27,43
+Ram ProMaster City,2016,25,36
+Ram ProMaster City,2017,19,25
+Ram ProMaster City,2018,16,19
+Ram ProMaster City,2019,5,5
+Ram ProMaster City,2020,1,1
+Ram ProMaster City,2021,5,6
+Ram ProMaster City,2022,2,4
