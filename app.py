@@ -154,8 +154,8 @@ st.info(
     "Missing model-year rows are left blank, not treated as zero."
 )
 
-overview_tab, components_tab, detail_tab, severity_tab, records_tab = st.tabs(
-    ["Compare vehicles", "Problem categories", "Vehicle details", "Reported incidents", "Complaint records"]
+overview_tab, components_tab, detail_tab, severity_tab, records_tab, sales_tab = st.tabs(
+    ["Compare vehicles", "Problem categories", "Component deep dive", "Reported incidents", "Complaint records", "Sales data"]
 )
 
 with overview_tab:
@@ -243,88 +243,137 @@ with components_tab:
         )
         st.caption("A complaint can mention multiple components; component totals cannot be added to obtain unique complaints.")
 
+# Normalize to a broad system while retaining the original NHTSA subcomponent.
+# A complaint can mention multiple system categories; never sum category counts
+# as if they were distinct complaints.
+def component_system(component):
+    term = str(component).upper().strip()
+    rules = [
+        ("Powertrain / transmission", ("POWER TRAIN", "TRANSMISSION")),
+        ("Engine / cooling", ("ENGINE", "COOLING")),
+        ("Fuel system", ("FUEL", "PROPULSION")),
+        ("Electrical / electronics", ("ELECTRICAL", "ELECTRONIC", "SOFTWARE")),
+        ("Brakes", ("BRAKE",)),
+        ("Steering", ("STEERING",)),
+        ("Suspension", ("SUSPENSION",)),
+        ("Wheels / tires", ("WHEEL", "TIRE")),
+        ("Body / structure", ("STRUCTURE", "BODY", "DOOR", "LATCH")),
+        ("Safety / driver assistance", (
+            "AIR BAG", "SEAT BELT", "FORWARD COLLISION", "BACK OVER",
+            "LANE DEPARTURE", "BLIND SPOT", "CRUISE CONTROL", "VEHICLE SPEED CONTROL",
+        )),
+        ("Visibility / lighting", ("VISIBILITY", "WIPER", "EXTERIOR LIGHTING")),
+        ("Interior / comfort", ("SEAT", "EQUIPMENT", "HVAC")),
+    ]
+    for label, terms in rules:
+        if any(keyword in term for keyword in terms):
+            return label
+    return "Other / unspecified"
+
+
 with detail_tab:
-    st.markdown("#### Investigate one vehicle platform")
-    detail_vehicle = st.selectbox(
-        "Vehicle platform",
-        options=selected_vehicles,
-        key="detail_vehicle",
-    )
+    st.markdown("#### Component-level complaint investigation")
+    st.caption("Identify recurring systems, affected model years, available odometer readings, and original NHTSA narratives.")
+    detail_vehicle = st.selectbox("Vehicle platform", selected_vehicles, key="detail_vehicle")
     detail_rows = complaints_filtered.loc[
         complaints_filtered["vehicle"].eq(detail_vehicle)
     ].copy()
-    detail_unique = detail_rows.drop_duplicates("odi_number")
-    detail_mileage = (
-        detail_rows.assign(
-            usable_mileage=detail_rows["mileage"].where(detail_rows["mileage"] > 0)
-        )
-        .groupby("odi_number")["usable_mileage"]
-        .median()
+    detail_rows["system"] = detail_rows["component"].map(component_system)
+
+    # One ODI ID per vehicle-model-year-system, regardless of component rows.
+    per_system = detail_rows.drop_duplicates(
+        ["odi_number", "model_year", "system"]
+    ).copy()
+    totals_by_system = (
+        per_system.groupby("system")["odi_number"]
+        .nunique().sort_values(ascending=False)
     )
-    samples = int(detail_mileage.notna().sum())
-    detail_count = int(detail_unique["odi_number"].nunique())
-    d1, d2, d3 = st.columns(3)
-    d1.metric("Reported complaints", f"{detail_count:,}")
-    d2.metric("Mileage samples", f"{samples:,} / {detail_count:,}")
-    d3.metric(
-        "Median reported miles",
-        f"{detail_mileage.median():,.0f}" if samples else "Unavailable",
+    selected_system = st.selectbox(
+        "Problem system", totals_by_system.index.tolist(), key="detail_system"
     )
+    system_rows = detail_rows.loc[detail_rows["system"].eq(selected_system)].copy()
+    system_odi = system_rows.drop_duplicates("odi_number")
+    system_complaints = int(system_odi["odi_number"].nunique())
+
+    # Consolidate mileage by ODI to prevent duplicate components overweighting
+    # the same incident; only positive numeric readings are considered usable.
+    odometer = (
+        system_rows.assign(valid_miles=system_rows["mileage"].where(system_rows["mileage"] > 0))
+        .groupby("odi_number")["valid_miles"].median()
+    )
+    available = int(odometer.notna().sum())
+    coverage_pct = 100 * available / system_complaints if system_complaints else 0
+    all_odi = int(detail_rows["odi_number"].nunique())
+    x1, x2, x3, x4 = st.columns(4)
+    x1.metric("System complaints", f"{system_complaints:,}")
+    x2.metric("Of vehicle complaints", f"{system_complaints / all_odi:.1%}" if all_odi else "—")
+    x3.metric("Mileage coverage", f"{available:,}/{system_complaints:,} ({coverage_pct:.0f}%)")
+    x4.metric("Median reported miles", f"{odometer.median():,.0f}" if available else "—")
     st.caption(
-        "Mileage is supplied voluntarily by complainants. This median is based only "
-        "on complaints with valid mileage, not all vehicles on the road."
+        "A complaint may involve multiple systems. Reported mileage is voluntary and "
+        "does not estimate the mileage at which a vehicle will fail."
     )
 
-    detail_components = (
-        detail_rows[["component", "odi_number"]]
-        .drop_duplicates()
-        .groupby("component")["odi_number"]
-        .nunique()
+    st.markdown("##### Compare problem systems")
+    # Horizontal Streamlit bar charts render labels more clearly than a very
+    # long list of raw NHTSA component strings.
+    overview_systems = totals_by_system.head(15)
+    st.bar_chart(
+        overview_systems,
+        horizontal=True,
+        x_label="Unique complaints mentioning system",
+        y_label="Problem system",
+    )
+
+    st.markdown(f"##### {selected_system}: complaints by model year")
+    year_counts = (
+        system_rows.drop_duplicates(["model_year", "odi_number"])
+        .groupby("model_year")["odi_number"].nunique()
+        .sort_index()
+    )
+    year_frame = year_counts.rename("Unique complaints").to_frame()
+    year_frame.index = year_frame.index.astype(int).astype(str)
+    year_frame.index.name = "Model year"
+    st.bar_chart(year_frame, x_label="Model year", y_label="Unique complaints")
+    st.caption("Only model years with matched complaint records appear. Missing years are not verified zeros.")
+
+    st.markdown("##### Specific NHTSA components in this system")
+    subcomponent = (
+        system_rows.drop_duplicates(["component", "odi_number"])
+        .groupby("component")["odi_number"].nunique()
         .sort_values(ascending=False)
     )
-    st.markdown("##### Most reported components")
-    st.bar_chart(
-        detail_components.head(12),
-        horizontal=True,
-        x_label="Unique complaints mentioning component",
-        y_label="NHTSA component",
+    subtable = subcomponent.rename("Unique complaints").reset_index().rename(
+        columns={"component": "NHTSA component"}
     )
-    st.dataframe(
-        detail_components.rename("Unique complaints").reset_index().rename(
-            columns={"component": "NHTSA component"}
-        ),
-        hide_index=True,
-        use_container_width=True,
+    st.dataframe(subtable, hide_index=True, use_container_width=True)
+
+    st.markdown("##### Review original complaint descriptions")
+    selected_subcomponent = st.selectbox(
+        "Filter to a specific NHTSA component (optional)",
+        ["All components in selected system"] + subcomponent.index.tolist(),
+        key="detail_subcomponent",
     )
-
-    if len(detail_components):
-        chosen_detail_component = st.selectbox(
-            "Read complaints for a component",
-            options=detail_components.index.tolist(),
-            key="detail_component",
-        )
-        detail_evidence = detail_rows.loc[
-            detail_rows["component"].eq(chosen_detail_component)
-        ].drop_duplicates("odi_number").copy()
-        evidence_cols = [
-            "odi_number", "model_year", "date_received", "mileage", "description"
-        ]
-        st.caption(
-            f"{len(detail_evidence):,} unique complaints mention "
-            f"{chosen_detail_component}."
-        )
-        st.dataframe(
-            detail_evidence[evidence_cols],
-            hide_index=True,
-            use_container_width=True,
-        )
-
-    st.markdown("##### Repair-cost availability")
-    st.info(
-        "NHTSA complaint records do not include a standardized, verified repair "
-        "cost per incident. Some narratives mention prices or repair quotes, but "
-        "those are not interchangeable with amounts actually paid. FleetIQ "
-        "does not currently assign a dollar cost to individual complaints."
+    evidence = system_rows
+    if selected_subcomponent != "All components in selected system":
+        evidence = evidence.loc[evidence["component"].eq(selected_subcomponent)]
+    evidence = evidence.drop_duplicates("odi_number").sort_values("received_date", ascending=False)
+    evidence_cols = [
+        "odi_number", "model_year", "received_date", "mileage",
+        "component", "description",
+    ]
+    st.caption(f"Showing {len(evidence):,} distinct complaint IDs. Expand or scroll rows to read descriptions.")
+    st.dataframe(evidence[evidence_cols], hide_index=True, use_container_width=True)
+    st.download_button(
+        "Download selected complaint evidence (CSV)",
+        data=evidence[evidence_cols].to_csv(index=False).encode("utf-8"),
+        file_name="fleetiq_component_evidence.csv",
+        mime="text/csv",
+        key="component_evidence_download",
+    )
+    st.caption(
+        "NHTSA does not supply standardized repair cost per complaint. A dollar amount "
+        "in narrative text may be an estimate, purchase price, or unrelated expense."
     )
 
 with severity_tab:
@@ -399,6 +448,52 @@ with records_tab:
         file_name="fleetiq_filtered_complaints.csv",
         mime="text/csv",
     )
+
+with sales_tab:
+    st.markdown("#### U.S. vehicle sales reference data")
+    st.caption(
+        "This is a separately maintained source table. Published U.S. sales are usually "
+        "calendar-year totals, whereas NHTSA complaints use vehicle model years. "
+        "These are different cohorts and must not be divided to claim a reliability rate."
+    )
+    sales_path = DATA_DIR / "sales.csv"
+    required_sales = {
+        "vehicle", "calendar_year", "us_sales", "source_name", "source_url", "notes"
+    }
+    if not sales_path.exists():
+        st.info("Optional sales dataset not installed. Add data/sales.csv to your repository when you have verified annual sales figures.")
+        st.code(
+            "vehicle,calendar_year,us_sales,source_name,source_url,notes\n"
+            "Ford Transit,2025,161797,Ford Motor Company,"
+            "https://www.fromtheroad.ford.com/us/en/articles/2026/ford-2025-full-year-us-sales-results,"
+            "US calendar-year sales; includes Transit configurations; not model-year cohort sales",
+            language="text",
+        )
+    else:
+        try:
+            sales = pd.read_csv(sales_path)
+            if missing := required_sales - set(sales.columns):
+                st.error("data/sales.csv is missing: " + ", ".join(sorted(missing)))
+            else:
+                sales["calendar_year"] = pd.to_numeric(sales["calendar_year"], errors="coerce")
+                sales["us_sales"] = pd.to_numeric(sales["us_sales"], errors="coerce")
+                sales = sales.loc[sales["us_sales"].gt(0) & sales["calendar_year"].notna()].copy()
+                subset = sales.loc[sales["vehicle"].isin(selected_vehicles)].copy()
+                if subset.empty:
+                    st.info("No verified sales records yet for the selected vehicle platforms.")
+                else:
+                    st.dataframe(
+                        subset.sort_values(["vehicle", "calendar_year"]),
+                        hide_index=True, use_container_width=True,
+                        column_config={"source_url": st.column_config.LinkColumn("Source")},
+                    )
+                st.caption(
+                    "Sales figures may combine cargo, passenger, electric, chassis, or other variants; "
+                    "verify manufacturer definitions before comparing. No complaint-rate calculation "
+                    "is performed using calendar-year sales."
+                )
+        except (OSError, ValueError, pd.errors.ParserError) as exc:
+            st.error(f"Unable to load optional sales dataset: {exc}")
 
 st.divider()
 st.caption(
