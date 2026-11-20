@@ -1,4 +1,7 @@
 vehicle,vehicle_class,model_year,complaint_count,component_records
+Chevrolet Express Cutaway,Box-truck capable chassis,2018,1,1
+Chevrolet Express Cutaway,Box-truck capable chassis,2022,3,9
+Chevrolet Express Cutaway,Box-truck capable chassis,2023,1,1
 Chevrolet G4500,Box-truck capable chassis,2018,1,1
 Chevrolet Low Cab Forward,Box-truck capable chassis,2024,1,1
 Chevrolet Medium Duty,Box-truck capable chassis,2019,11,14
@@ -49,6 +52,19 @@ Ford F-600,Box-truck capable chassis,2023,1,2
 Ford F-600,Box-truck capable chassis,2024,1,1
 Ford F-600,Box-truck capable chassis,2025,1,3
 Ford F-600,Box-truck capable chassis,2026,1,3
+Ford F-650,Box-truck capable chassis,2015,1,1
+Ford F-650,Box-truck capable chassis,2016,4,10
+Ford F-650,Box-truck capable chassis,2017,3,12
+Ford F-650,Box-truck capable chassis,2019,4,8
+Ford F-650,Box-truck capable chassis,2021,5,9
+Ford F-650,Box-truck capable chassis,2022,2,2
+Ford F-650,Box-truck capable chassis,2023,2,4
+Ford F-650,Box-truck capable chassis,2025,4,4
+Ford F-650,Box-truck capable chassis,2026,1,3
+Ford F-750,Box-truck capable chassis,2017,4,7
+Ford F-750,Box-truck capable chassis,2019,1,1
+Ford F-750,Box-truck capable chassis,2021,2,4
+Ford F-750,Box-truck capable chassis,2022,1,1
 Freightliner M2,Box-truck capable chassis,2015,5,5
 Freightliner M2,Box-truck capable chassis,2016,3,4
 Freightliner M2,Box-truck capable chassis,2017,2,2
@@ -61,11 +77,15 @@ Freightliner M2,Box-truck capable chassis,2023,1,1
 Freightliner M2,Box-truck capable chassis,2025,1,1
 Freightliner M2,Box-truck capable chassis,2026,1,1
 Fuso Canter,Box-truck capable chassis,2019,1,2
+GMC Savana Cutaway,Box-truck capable chassis,2019,1,1
 Hino Commercial Truck,Box-truck capable chassis,2018,1,3
 Hino Commercial Truck,Box-truck capable chassis,2019,2,2
 Hino Commercial Truck,Box-truck capable chassis,2020,3,5
 International 4300,Box-truck capable chassis,2017,1,1
 International 4300,Box-truck capable chassis,2018,1,3
+International CV,Box-truck capable chassis,2019,1,1
+International CV,Box-truck capable chassis,2020,2,4
+International CV,Box-truck capable chassis,2022,2,2
 International MV,Box-truck capable chassis,2017,1,1
 International MV,Box-truck capable chassis,2019,1,1
 International MV,Box-truck capable chassis,2020,1,1
@@ -83,6 +103,17 @@ Isuzu NPR,Box-truck capable chassis,2017,1,2
 Isuzu NPR,Box-truck capable chassis,2019,1,1
 Isuzu NPR,Box-truck capable chassis,2020,1,1
 Isuzu NRR,Box-truck capable chassis,2017,1,1
+Kenworth T170,Box-truck capable chassis,2020,1,3
+Kenworth T270,Box-truck capable chassis,2015,1,3
+Kenworth T280,Box-truck capable chassis,2023,1,1
+Kenworth T370,Box-truck capable chassis,2018,1,1
+Kenworth T370,Box-truck capable chassis,2019,1,1
+Kenworth T380,Box-truck capable chassis,2025,2,2
+Peterbilt 330,Box-truck capable chassis,2020,1,1
+Peterbilt 337,Box-truck capable chassis,2016,2,4
+Peterbilt 537,Box-truck capable chassis,2025,1,1
+Peterbilt 548,Box-truck capable chassis,2024,1,1
+Peterbilt 548,Box-truck capable chassis,2025,1,1
 Ram 3500 Cab Chassis,Box-truck capable chassis,2018,2,4
 Ram 4500,Box-truck capable chassis,2015,7,11
 Ram 4500,Box-truck capable chassis,2016,1,1
@@ -136,16 +167,17 @@ Ram ProMaster City,Compact cargo van,2019,5,5
 Ram ProMaster City,Compact cargo van,2020,1,1
 Ram ProMaster City,Compact cargo van,2021,5,6
 Ram ProMaster City,Compact cargo van,2022,2,4
+Freightliner MT45,Delivery/step-van chassis,2024,1,2
+Freightliner MT55,Delivery/step-van chassis,2016,1,1
 Mercedes eSprinter,Electric cargo van,2024,2,3
 Chevrolet Express,Full-size cargo van,2015,8,12
 Chevrolet Express,Full-size cargo van,2016,17,22
 Chevrolet Express,Full-size cargo van,2017,22,32
-Chevrolet Express,Full-size cargo van,2018,12,18
+Chevrolet Express,Full-size cargo van,2018,11,17
 Chevrolet Express,Full-size cargo van,2019,10,12
 Chevrolet Express,Full-size cargo van,2020,17,23
 Chevrolet Express,Full-size cargo van,2021,15,20
-Chevrolet Express,Full-size cargo van,2022,3,9
-Chevrolet Express,Full-size cargo van,2023,4,8
+Chevrolet Express,Full-size cargo van,2023,3,7
 Chevrolet Express,Full-size cargo van,2024,3,7
 Chevrolet Express,Full-size cargo van,2026,1,2
 Ford Transit,Full-size cargo van,2015,194,275
@@ -164,7 +196,7 @@ GMC Savana,Full-size cargo van,2015,6,8
 GMC Savana,Full-size cargo van,2016,6,12
 GMC Savana,Full-size cargo van,2017,8,12
 GMC Savana,Full-size cargo van,2018,3,5
-GMC Savana,Full-size cargo van,2019,6,8
+GMC Savana,Full-size cargo van,2019,5,7
 GMC Savana,Full-size cargo van,2021,2,3
 GMC Savana,Full-size cargo van,2022,3,4
 Mercedes Sprinter,Full-size cargo van,2015,62,96
