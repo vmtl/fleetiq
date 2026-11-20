@@ -15,34 +15,67 @@ concurrency:
 
 jobs:
   refresh:
+    name: Refresh NHTSA Datasets
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
     steps:
+      # 1. Download repository
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
+      # 2. Configure Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: requirements.txt
 
+      # 3. Install required libraries
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pandas requests
 
+      # 4. Download and process NHTSA complaints
       - name: Download and process NHTSA data
-        run: python refresh_data.py
-
-      - name: Check generated files
         run: |
-          ls -lh data/
+          python refresh_data.py
+
+      # 5. Verify all expected datasets exist
+      - name: Validate generated files
+        run: |
+          echo "Checking FleetIQ datasets..."
+
           test -s data/complaints.csv
           test -s data/summary.csv
           test -s data/refresh_status.json
+          test -s data/model_inventory.csv
+          test -s data/unmatched_models.csv
+          test -s data/data_quality.json
 
+          echo "All expected datasets exist."
+
+          ls -lh data/
+
+      # 6. Display pipeline results
+      - name: Display refresh statistics
+        run: |
+          echo "===== REFRESH STATUS ====="
+          cat data/refresh_status.json
+
+          echo ""
+          echo "===== DATA QUALITY ====="
+          cat data/data_quality.json
+
+          echo ""
+          echo "===== UNMATCHED MODEL PREVIEW ====="
+          head -n 25 data/unmatched_models.csv
+
+      # 7. Commit updated datasets to GitHub
       - name: Commit updated datasets
         run: |
           git config user.name "github-actions[bot]"
@@ -51,10 +84,18 @@ jobs:
           git add data/complaints.csv
           git add data/summary.csv
           git add data/refresh_status.json
+          git add data/model_inventory.csv
+          git add data/unmatched_models.csv
+          git add data/data_quality.json
 
           if ! git diff --cached --quiet; then
-            git commit -m "Automated FleetIQ NHTSA refresh"
+            git commit -m "Automated FleetIQ NHTSA data refresh"
             git push
           else
-            echo "No dataset changes to commit."
+            echo "No dataset changes detected."
           fi
+
+      # 8. Confirm completion
+      - name: Refresh complete
+        run: |
+          echo "FleetIQ data refresh completed successfully."
