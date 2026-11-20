@@ -1,9 +1,9 @@
 {
-  "unique_odi_numbers": 3521,
+  "unique_odi_numbers": 3712,
   "missing_odi_numbers": 0,
   "missing_descriptions": 0,
-  "missing_mileage": 2867,
-  "matched_raw_models": 65,
-  "review_candidates": 81,
+  "missing_mileage": 2991,
+  "matched_raw_models": 74,
+  "review_candidates": 79,
   "inventory_combinations": 8294
 }

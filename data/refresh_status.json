@@ -1,11 +1,11 @@
 {
-  "last_updated": "2026-11-20T03:26:49.188898+00:00",
+  "last_updated": "2026-11-20T03:37:28.627019+00:00",
   "source": "https://static.nhtsa.gov/odi/ffdd/cmpl/FLAT_CMPL.zip",
   "first_model_year": 2015,
   "last_model_year": 2026,
   "rows_scanned": 2267200,
-  "matched_rows": 5048,
-  "unique_complaints": 3521,
-  "vehicle_platforms": 23,
-  "review_candidates": 81
+  "matched_rows": 5312,
+  "unique_complaints": 3712,
+  "vehicle_platforms": 31,
+  "review_candidates": 79
 }

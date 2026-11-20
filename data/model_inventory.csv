@@ -1322,7 +1322,7 @@ CHEVROLET,EXPRESS 4500,2016,2,matched,Chevrolet Express,Full-size cargo van
 CHEVROLET,EXPRESS CUTAWAY VAN,2018,1,matched,Chevrolet Express,Full-size cargo van
 CHEVROLET,EXPRESS CUTAWAY VAN,2022,9,matched,Chevrolet Express,Full-size cargo van
 CHEVROLET,EXPRESS CUTAWAY VAN,2023,1,matched,Chevrolet Express,Full-size cargo van
-CHEVROLET,G4500,2018,1,unclassified,,
+CHEVROLET,G4500,2018,1,matched,Chevrolet G4500,Box-truck capable chassis
 CHEVROLET,IMPALA,2015,436,unclassified,,
 CHEVROLET,IMPALA,2016,175,unclassified,,
 CHEVROLET,IMPALA,2017,139,unclassified,,
@@ -1330,7 +1330,7 @@ CHEVROLET,IMPALA,2018,88,unclassified,,
 CHEVROLET,IMPALA,2019,41,unclassified,,
 CHEVROLET,IMPALA,2020,26,unclassified,,
 CHEVROLET,LOW CAB FORWARD 3500,2016,4,unclassified,,
-CHEVROLET,LOW CAB FORWARD 4500,2024,1,unclassified,,
+CHEVROLET,LOW CAB FORWARD 4500,2024,1,matched,Chevrolet Low Cab Forward,Box-truck capable chassis
 CHEVROLET,MALIBU,2015,402,unclassified,,
 CHEVROLET,MALIBU,2016,1454,unclassified,,
 CHEVROLET,MALIBU,2017,1183,unclassified,,
@@ -2383,7 +2383,7 @@ FORD,TRANSIT CONNECT,2020,41,matched,Ford Transit Connect,Compact cargo van
 FORD,TRANSIT CONNECT,2021,21,matched,Ford Transit Connect,Compact cargo van
 FORD,TRANSIT CONNECT,2022,10,matched,Ford Transit Connect,Compact cargo van
 FORD,TRANSIT CONNECT,2023,1,matched,Ford Transit Connect,Compact cargo van
-FORD,TRANSIT T-350 HD,2016,1,review,,
+FORD,TRANSIT T-350 HD,2016,1,matched,Ford Transit,Full-size cargo van
 FOREST RIVER,AMERA-LITE,2016,5,unclassified,,
 FOREST RIVER,AMERA-LITE,2017,2,unclassified,,
 FOREST RIVER,ARCTIC WOLF,2018,3,unclassified,,
@@ -4048,8 +4048,8 @@ INTECH,CUSTOM TRAILER,2020,2,unclassified,,
 INTECH,CUSTOM TRAILER,2021,2,unclassified,,
 INTECH,FLYER EXPLORER,2022,3,unclassified,,
 INTECH,SOL HORIZON,2025,1,unclassified,,
-INTERNATIONAL,4000 SERIES 4300,2017,1,unclassified,,
-INTERNATIONAL,4000 SERIES 4300,2018,3,unclassified,,
+INTERNATIONAL,4000 SERIES 4300,2017,1,matched,International 4300,Box-truck capable chassis
+INTERNATIONAL,4000 SERIES 4300,2018,3,matched,International 4300,Box-truck capable chassis
 INTERNATIONAL,CE,2015,1,unclassified,,
 INTERNATIONAL,CV,2019,1,unclassified,,
 INTERNATIONAL,CV,2020,4,unclassified,,
@@ -4088,10 +4088,10 @@ INTERSTATE WEST,INTERSTATE WEST,2024,1,unclassified,,
 INTERSTATE WEST,LOADRUNNER,2026,1,unclassified,,
 IRONBULL,DDG22,2018,1,unclassified,,
 IRONBULL,NORSTAR TRAILER,2018,3,unclassified,,
-ISUZU,FTR,2020,1,unclassified,,
-ISUZU,FTR,2024,3,unclassified,,
-ISUZU,N-SERIES,2022,1,unclassified,,
-ISUZU,N-SERIES,2024,1,unclassified,,
+ISUZU,FTR,2020,1,matched,Isuzu FTR,Box-truck capable chassis
+ISUZU,FTR,2024,3,matched,Isuzu FTR,Box-truck capable chassis
+ISUZU,N-SERIES,2022,1,matched,Isuzu N-Series,Box-truck capable chassis
+ISUZU,N-SERIES,2024,1,matched,Isuzu N-Series,Box-truck capable chassis
 ISUZU,NPR,2015,3,matched,Isuzu NPR,Box-truck capable chassis
 ISUZU,NPR,2016,1,matched,Isuzu NPR,Box-truck capable chassis
 ISUZU,NPR,2017,2,matched,Isuzu NPR,Box-truck capable chassis
@@ -6735,24 +6735,24 @@ RAM,3500,2023,23,unclassified,,
 RAM,3500,2024,74,unclassified,,
 RAM,3500,2025,96,unclassified,,
 RAM,3500,2026,62,unclassified,,
-RAM,3500 CAB CHASSIS,2018,4,review,,
-RAM,4500,2015,11,unclassified,,
-RAM,4500,2016,1,unclassified,,
-RAM,4500,2017,8,unclassified,,
-RAM,4500,2018,14,unclassified,,
-RAM,4500,2019,8,unclassified,,
-RAM,4500,2020,5,unclassified,,
-RAM,4500,2022,3,unclassified,,
-RAM,4500,2024,2,unclassified,,
-RAM,5500,2015,19,unclassified,,
-RAM,5500,2016,24,unclassified,,
-RAM,5500,2017,30,unclassified,,
-RAM,5500,2018,54,unclassified,,
-RAM,5500,2019,13,unclassified,,
-RAM,5500,2020,11,unclassified,,
-RAM,5500,2021,6,unclassified,,
-RAM,5500,2022,35,unclassified,,
-RAM,5500,2025,3,unclassified,,
+RAM,3500 CAB CHASSIS,2018,4,matched,Ram 3500 Cab Chassis,Box-truck capable chassis
+RAM,4500,2015,11,matched,Ram 4500,Box-truck capable chassis
+RAM,4500,2016,1,matched,Ram 4500,Box-truck capable chassis
+RAM,4500,2017,8,matched,Ram 4500,Box-truck capable chassis
+RAM,4500,2018,14,matched,Ram 4500,Box-truck capable chassis
+RAM,4500,2019,8,matched,Ram 4500,Box-truck capable chassis
+RAM,4500,2020,5,matched,Ram 4500,Box-truck capable chassis
+RAM,4500,2022,3,matched,Ram 4500,Box-truck capable chassis
+RAM,4500,2024,2,matched,Ram 4500,Box-truck capable chassis
+RAM,5500,2015,19,matched,Ram 5500,Box-truck capable chassis
+RAM,5500,2016,24,matched,Ram 5500,Box-truck capable chassis
+RAM,5500,2017,30,matched,Ram 5500,Box-truck capable chassis
+RAM,5500,2018,54,matched,Ram 5500,Box-truck capable chassis
+RAM,5500,2019,13,matched,Ram 5500,Box-truck capable chassis
+RAM,5500,2020,11,matched,Ram 5500,Box-truck capable chassis
+RAM,5500,2021,6,matched,Ram 5500,Box-truck capable chassis
+RAM,5500,2022,35,matched,Ram 5500,Box-truck capable chassis
+RAM,5500,2025,3,matched,Ram 5500,Box-truck capable chassis
 RAM,C/V TRADESMAN,2015,2,unclassified,,
 RAM,PROMASTER,2015,81,matched,Ram ProMaster,Full-size cargo van
 RAM,PROMASTER,2016,50,matched,Ram ProMaster,Full-size cargo van
