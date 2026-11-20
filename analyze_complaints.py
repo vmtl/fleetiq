@@ -51,7 +51,96 @@ ISSUE_PATTERNS = {
     "Exhaust leak / failure": r"\b(?:exhaust\s+(?:leak|pipe\s+break|manifold\s+crack)|catalytic\s+converter\s+(?:fail|clog))\b",
     "Battery / high voltage system": r"\b(?:high[- ]voltage\s+battery|traction\s+battery|battery\s+pack\s+(?:fail|fault)|inverter\s+fail)\b",
 }
+# Additional *reported symptoms*. These terms are not mechanical diagnoses.
+ISSUE_PATTERNS.update({
+    "No start / engine will not start": r"\b(?:engine\s+(?:will\s+not|won'?t|would\s+not)\s+start|vehicle\s+(?:will\s+not|won'?t|would\s+not)\s+start|no[- ]start\s+condition|failed\s+to\s+start)\b",
+    "Unexpected acceleration / throttle": r"\b(?:sudden\s+unintended\s+acceleration|unintended\s+acceleration|accelerat(?:ed|ion|es|ing)\s+(?:on\s+its\s+own|without\s+(?:driver\s+)?input)|throttle\s+(?:stuck|sticking)|accelerator\s+pedal\s+(?:stuck|sticks))\b",
+    "Loss of propulsion / reduced power": r"\b(?:limp\s+(?:home\s+)?mode|reduced\s+engine\s+power|reduced\s+power\s+(?:mode|warning)|unable\s+to\s+accelerate|won'?t\s+accelerate|would\s+not\s+accelerate|lack\s+of\s+power\s+when\s+accelerating)\b",
+    "Transmission fluid leak": r"\b(?:transmission\s+fluid\s+leak(?:ing|s|ed)?|leak(?:ing|s|ed)?\s+transmission\s+fluid)\b",
+    "Transmission shudder / vibration": r"\b(?:transmission\s+shudder(?:ing|s)?|torque\s+converter\s+shudder|vibrat(?:ion|es|ing)\s+(?:when|while)\s+shift(?:ing)?|shudder(?:ing|s)?\s+(?:when|while)\s+shift(?:ing)?)\b",
+    "Unintended vehicle movement / rollaway": r"\b(?:roll(?:ed|ing)?\s+away|vehicle\s+(?:moved|rolled)\s+(?:while\s+)?in\s+park|shifts?\s+out\s+of\s+park\s+unexpectedly)\b",
+    "ABS / stability control malfunction": r"\b(?:abs\s+(?:light|warning|fail|malfunction)|anti[- ]lock\s+brak(?:e|ing)\s+(?:fail|malfunction|warning)|stability\s+control\s+(?:fail|malfunction)|traction\s+control\s+(?:fail|malfunction))\b",
+    "Brake pedal / booster problem": r"\b(?:brake\s+booster\s+(?:fail|leak)|brake\s+pedal\s+(?:hard|soft|spongy)|excessive\s+brake\s+pedal\s+travel)\b",
+    "Parking brake malfunction": r"\b(?:parking\s+brake\s+(?:fail|stuck|inoperative|not\s+(?:working|holding))|emergency\s+brake\s+(?:fail|stuck|inoperative))\b",
+    "Steering vibration / looseness": r"\b(?:steering\s+wheel\s+(?:shakes?|vibrat|wobbl)|loose\s+steering|excessive\s+steering\s+play|death\s+wobble)\b",
+    "Suspension noise / ride problem": r"\b(?:suspension\s+(?:noise|clunk|rattle)|clunk(?:ing)?\s+(?:from|in)\s+(?:front|rear)\s+suspension|vehicle\s+(?:sags?|lean(?:s|ing)?))\b",
+    "Headlights / exterior lights malfunction": r"\b(?:(?:head|tail|brake)\s*lights?\s+(?:fail|stop|inoperat|not\s+work|go(?:es)?\s+out)|exterior\s+light(?:ing|s)?\s+(?:fail|malfunction))\b",
+    "Windshield / glass defect": r"\b(?:windshield\s+(?:crack|shatter|fractur|delaminat)|glass\s+(?:shatter|crack|fractur)|windshield\s+separat)\b",
+    "Backup camera / display problem": r"\b(?:backup\s+camera\s+(?:fail|not\s+work|black)|rearview\s+camera\s+(?:fail|not\s+work|black)|reverse\s+camera\s+(?:fail|not\s+work)|display\s+screen\s+(?:go(?:es)?\s+black|black\s+out))\b",
+    "Safety-assist / collision-warning malfunction": r"\b(?:automatic\s+emergency\s+brak(?:e|ing)\s+(?:fail|activat)|false\s+(?:collision|braking)\s+(?:alert|warning|activation)|lane\s+keep(?:ing)?\s+assist\s+(?:fail|malfunction)|forward\s+collision\s+(?:warning|system)\s+(?:fail|malfunction))\b",
+    "Seatbelt buckle / retractor problem": r"\b(?:seat\s*belt\s+(?:buckle|retractor)\s+(?:fail|jam|stuck|broken)|seatbelt\s+(?:won'?t|will\s+not)\s+(?:latch|retract))\b",
+    "Sliding door stuck / detaches": r"\b(?:sliding\s+door\s+(?:stuck|detach|fell\s+off|won'?t\s+(?:open|close)|will\s+not\s+(?:open|close)))\b",
+    "DEF / emissions derate": r"\b(?:def\s+(?:system\s+)?(?:fault|failure|warning)|dpf\s+(?:clog|block|fail)|diesel\s+exhaust\s+fluid\s+(?:fault|fail)|emissions\s+(?:derate|limp)|scr\s+(?:fault|failure))\b",
+    "Fuel odor / possible leak": r"\b(?:smell\s+of\s+(?:gas|fuel|diesel)|fuel\s+(?:odor|smell)|gasoline\s+(?:odor|smell))\b",
+    "Engine coolant loss": r"\b(?:los(?:es|ing|t)\s+coolant|coolant\s+(?:level\s+)?(?:low|disappear|loss)|constantly\s+(?:add|adding)\s+coolant)\b",
+    "Wheel / tire vibration": r"\b(?:wheel\s+(?:wobbl|vibrat)|tire\s+(?:wobbl|vibrat)|steering\s+wheel\s+vibrat(?:es|ion|ing))\b",
+    "Water intrusion / electrical damage": r"\b(?:water\s+(?:leak|intrusion|enter(?:s|ed|ing))\s+(?:into|inside|through)|rainwater\s+enter(?:s|ed|ing)|electrical\s+(?:module|system)\s+(?:wet|water\s+damage))\b",
+    "Vehicle fire / smoke": r"\b(?:vehicle\s+(?:caught|catches)\s+fire|engine\s+(?:caught|catches)\s+fire|flames?\s+(?:from|under)\s+(?:the\s+)?(?:vehicle|hood|engine)|smoke\s+(?:coming|came)\s+from\s+(?:the\s+)?(?:engine|dash|wiring))\b",
+    "Seat / seat track malfunction": r"\b(?:seat\s+(?:track|frame|mount|recliner)\s+(?:break|broke|fail|loose)|seat\s+(?:slides?|moves?)\s+unexpectedly)\b",
+    "Air conditioning not cooling": r"\b(?:air\s+condition(?:er|ing)\s+(?:not\s+cool|blow(?:s|ing)?\s+warm)|a/c\s+(?:not\s+cool|blow(?:s|ing)?\s+warm)|compressor\s+(?:fail|seiz))\b",
+})
+
+# Broad mentions like generic warning lights are not sufficient to identify
+# the failed component. Count these separately from specific issue matches.
+GENERIC_ISSUES = {"Sensor / warning / diagnostic"}
 COMPILED_ISSUES = [(label, re.compile(pattern, re.I)) for label, pattern in ISSUE_PATTERNS.items()]
+
+# Narrative assertions are not verified repair invoices. Distinguish an
+# alleged completed repair from a recommended repair or an unresolved symptom.
+REPAIR_COMPONENTS = {
+    "Transmission": r"transmission|torque\s+converter|gearbox",
+    "Engine": r"engine|cylinder\s+head|timing\s+chain",
+    "Turbocharger": r"turbo(?:charger)?",
+    "Fuel pump / injector": r"fuel\s+pump|fuel\s+injector|injectors?",
+    "Cooling system": r"radiator|water\s+pump|thermostat|coolant\s+hose",
+    "Alternator / battery": r"alternator|battery",
+    "Brake system": r"brake\s+(?:pads?|rotors?|booster|caliper|master\s+cylinder)",
+    "Steering system": r"steering\s+(?:rack|pump|column|gear)",
+    "Electrical module / sensor": r"(?:control\s+)?module|(?:position|oxygen|speed|temperature)\s+sensor",
+    "Suspension": r"strut|shock\s+absorber|leaf\s+spring|ball\s+joint",
+    "DPF / emissions": r"dpf|egr\s+valve|scr\s+system|particulate\s+filter",
+}
+REPAIR_ACTION = re.compile(r"\b(replaced|repaired|fixed|installed|changed|recommended|quoted|needs|requires|diagnosed|scheduled)\b", re.I)
+REPAIR_TERM = re.compile("|".join(f"(?P<c{i}>{p})" for i, p in enumerate(REPAIR_COMPONENTS.values())), re.I)
+
+
+def classify_issues(description):
+    found = [label for label, pattern in COMPILED_ISSUES if pattern.search(str(description or ""))]
+    specific = [label for label in found if label not in GENERIC_ISSUES]
+    ordered = specific + [label for label in found if label in GENERIC_ISSUES]
+    if specific:
+        status = "Specific symptom keyword match (unverified)"
+    elif found:
+        status = "Generic warning/diagnostic only"
+    else:
+        status = "Unspecified / manual review"
+    return ordered, status, bool(specific)
+
+
+def repair_evidence(description):
+    """Extract an alleged repair from nearby text, never assert verification."""
+    text = str(description or "")
+    for match in REPAIR_TERM.finditer(text):
+        window = text[max(0, match.start() - 90): min(len(text), match.end() + 90)]
+        # Require the action to be close to the component mention.
+        nearby = [m for m in REPAIR_ACTION.finditer(window)
+                  if abs((max(0, match.start() - 90) + m.start()) - match.start()) <= 40]
+        if not nearby:
+            continue
+        action_match = min(nearby, key=lambda m: abs(
+            (max(0, match.start() - 90) + m.start()) - match.start()))
+        action = action_match.group(1).lower()
+        if action in {"recommended", "quoted", "needs", "requires", "scheduled"}:
+            status = "Recommended / quoted, not confirmed performed"
+        elif action == "diagnosed":
+            status = "Narrative reports diagnosis, not repair"
+        else:
+            status = "Narrative claims repair action; unverified"
+        component = next((name for name, expression in REPAIR_COMPONENTS.items()
+                          if re.search(expression, match.group(0), re.I)), "Unspecified component")
+        return status, action, component, window.strip()[:180]
+    return "No explicit repair/diagnosis evidence detected", "", "", ""
+
 
 # Only explicit odometer / mileage expressions, NOT speed, distance driven, or
 # maintenance intervals. Typical examples: "odometer read 83000 miles",
@@ -91,7 +180,7 @@ def extract_explicit_mileage(description):
 
 
 def extract_issues(description):
-    return [label for label, pattern in COMPILED_ISSUES if pattern.search(str(description or ""))]
+    return classify_issues(description)[0]
 
 
 def first_present(series):
@@ -126,7 +215,8 @@ def main():
         extracted = None if reported is not None else extract_explicit_mileage(description)
         selected = reported if reported is not None else extracted
         method = "NHTSA field" if reported is not None else "Narrative (explicit)" if extracted is not None else "Missing"
-        issues = extract_issues(description)
+        issues, classification_status, specific_detected = classify_issues(description)
+        repair_status, repair_action, repair_component, repair_excerpt = repair_evidence(description)
         # NHTSA date_received is YYYYMMDD and is not the date the incident occurred.
         received_raw = first_present(group["date_received"])
         received_date = pd.to_datetime(str(received_raw), format="%Y%m%d", errors="coerce")
@@ -159,6 +249,13 @@ def main():
             "primary_reported_issue": issues[0] if issues else "Unspecified / manual review",
             "reported_issues": " | ".join(issues) if issues else "Unspecified / manual review",
             "issue_detection": "Keyword match (review required)" if issues else "No keyword match",
+            "specific_issue_detected": specific_detected,
+            "classification_status": classification_status,
+            "issue_count": len(issues),
+            "repair_evidence_status": repair_status,
+            "repair_action": repair_action,
+            "repair_component": repair_component,
+            "repair_evidence_excerpt": repair_excerpt,
             "mileage_nhtsa": reported,
             "mileage_extracted": extracted,
             "mileage_best_available": selected,
@@ -177,6 +274,7 @@ def main():
         exploded.groupby(["vehicle", "vehicle_class", "model_year", "issue"], dropna=False)
         .agg(
             unique_complaints=("odi_number", "nunique"),
+            complaints_with_specific_issue=("specific_issue_detected", "sum"),
             mileage_samples=("mileage_best_available", "count"),
             complaints_with_age=("approx_vehicle_age_years", "count"),
             median_approx_age_years=("approx_vehicle_age_years", "median"),
@@ -186,6 +284,9 @@ def main():
         .reset_index()
         .sort_values(["vehicle", "model_year", "unique_complaints"], ascending=[True, True, False])
     )
+    summary["specific_issue_coverage_pct"] = (
+        100 * summary["complaints_with_specific_issue"] / summary["unique_complaints"]
+    ).round(1)
     summary["mileage_coverage_pct"] = (
         100 * summary["mileage_samples"] / summary["unique_complaints"]
     ).round(1)
@@ -205,6 +306,9 @@ def main():
     print(f"Complaints with approximate age: {analysis['approx_vehicle_age_years'].notna().sum():,}")
     print(f"Narrative mileage recovered: {(analysis['mileage_source'] == 'Narrative (explicit)').sum():,}")
     print(f"Missing mileage after extraction: {(analysis['mileage_source'] == 'Missing').sum():,}")
+    print(f"Complaints with specific issue matches: {analysis['specific_issue_detected'].sum():,}")
+    print(f"Generic-only matches: {(analysis['classification_status'] == 'Generic warning/diagnostic only').sum():,}")
+    print(f"Manual review needed: {(analysis['classification_status'] == 'Unspecified / manual review').sum():,}")
     print(f"Issue summary rows: {len(summary):,}")
     print("Created data/problem_analysis.csv and data/problem_summary.csv")
 
