@@ -455,21 +455,71 @@ with intelligence_tab:
                     ].copy()
                 complaint_total = int(vehicle_data["odi_number"].nunique())
                 age_count = int(vehicle_data["approx_vehicle_age_years"].notna().sum())
-                classified = int(
-                    vehicle_data["issue_detection"].fillna("")
-                    .str.contains("Keyword match", case=False, regex=False).sum()
-                )
-                m1, m2, m3 = st.columns(3)
-                m1.metric("Complaints analyzed", f"{complaint_total:,}")
-                m2.metric("Age coverage", f"{age_count:,}/{complaint_total:,}")
-                m3.metric(
-                    "Issues detected", f"{classified:,}/{complaint_total:,}",
-                    help="Keyword-detected complaints; all other complaints remain unclassified."
-                )
+                # Count only specifically identified symptoms as classified.
+                # Generic dashboard warnings are not mechanical diagnoses.
+                if "specific_issue_detected" in vehicle_data.columns:
+                    specific_mask = (
+                        vehicle_data["specific_issue_detected"]
+                        .astype("string").str.lower().eq("true").fillna(False)
+                    )
+                else:
+                    specific_mask = (
+                        vehicle_data["classification_status"]
+                        .fillna("").eq("Specific symptom keyword match (unverified)")
+                        if "classification_status" in vehicle_data.columns
+                        else vehicle_data["issue_detection"].fillna("")
+                        .str.contains("Keyword match", case=False, regex=False)
+                    )
+                specific_count = int(specific_mask.sum())
+                generic_count = int((
+                    vehicle_data.get(
+                        "classification_status",
+                        pd.Series("", index=vehicle_data.index),
+                    ) == "Generic warning/diagnostic only"
+                ).sum())
+                unclassified_count = complaint_total - specific_count - generic_count
+                coverage_pct = 100 * specific_count / complaint_total if complaint_total else 0
+
+                m1, m2, m3, m4 = st.columns(4)
+                m1.metric("Complaints", f"{complaint_total:,}")
+                m2.metric("Age available", f"{age_count:,}/{complaint_total:,}")
+                m3.metric("Specific issues", f"{specific_count:,} ({coverage_pct:.1f}%)")
+                m4.metric("Needs review", f"{unclassified_count:,}")
                 st.caption(
-                    "Counts are unique NHTSA complaint IDs. Multiple issues can appear "
-                    "in one complaint, so issue counts must not be summed as unique complaints."
+                    f"Generic warning/diagnostic only: {generic_count:,}. "
+                    "These are not counted as specific mechanical issues. "
+                    "Issue labels are unverified narrative matches; some complaints mention multiple issues."
                 )
+
+                st.markdown("##### Classification coverage")
+                breakdown = pd.DataFrame({
+                    "Classification": [
+                        "Specific symptom identified (unverified)",
+                        "Generic warning/diagnostic only",
+                        "Unspecified / manual review",
+                    ],
+                    "Complaints": [specific_count, generic_count, unclassified_count],
+                })
+                breakdown["Share (%)"] = (
+                    (100 * breakdown["Complaints"] / complaint_total).round(1)
+                    if complaint_total else 0.0
+                )
+                st.dataframe(breakdown, hide_index=True, use_container_width=True)
+
+                if "repair_evidence_status" in vehicle_data.columns:
+                    st.markdown("##### Repair evidence mentioned in narratives")
+                    repair_counts = (
+                        vehicle_data["repair_evidence_status"]
+                        .fillna("Not classified")
+                        .value_counts()
+                        .rename_axis("Narrative evidence")
+                        .reset_index(name="Complaints")
+                    )
+                    st.dataframe(repair_counts, hide_index=True, use_container_width=True)
+                    st.caption(
+                        "Repair mentions are automated text indicators, not verified invoices, "
+                        "completed services, or confirmed failed parts."
+                    )
 
                 # Split multi-issue text into complaint-issue links, deduplicated by ODI.
                 issue_links = vehicle_data[[
@@ -482,7 +532,9 @@ with intelligence_tab:
                 issue_links = issue_links.drop_duplicates(["odi_number", "issue"])
 
                 issue_counts = (
-                    issue_links.loc[issue_links["issue"].ne("Unspecified / manual review")]
+                    issue_links.loc[~issue_links["issue"].isin([
+                        "Unspecified / manual review", "Sensor / warning / diagnostic"
+                    ])]
                     .groupby("issue")["odi_number"].nunique()
                     .sort_values(ascending=False)
                 )
@@ -517,8 +569,9 @@ with intelligence_tab:
 
                 st.markdown("##### Investigate an issue")
                 issue_options = issue_counts.index.tolist()
-                if "Unspecified / manual review" in issue_links["issue"].values:
-                    issue_options += ["Unspecified / manual review"]
+                for additional in ["Sensor / warning / diagnostic", "Unspecified / manual review"]:
+                    if additional in issue_links["issue"].values:
+                        issue_options.append(additional)
                 if issue_options:
                     selected_issue = st.selectbox(
                         "Reported issue", issue_options, key="intelligence_issue"
@@ -545,7 +598,9 @@ with intelligence_tab:
                     evidence_cols = [
                         "odi_number", "model_year", "date_received",
                         "approx_vehicle_age_years", "age_band", "primary_reported_issue",
-                        "reported_issues", "issue_detection", "nhtsa_components", "description",
+                        "reported_issues", "classification_status", "specific_issue_detected",
+                        "repair_evidence_status", "repair_action", "repair_component",
+                        "repair_evidence_excerpt", "nhtsa_components", "description",
                     ]
                     evidence_cols = [c for c in evidence_cols if c in evidence.columns]
                     if "date_received" in evidence:
