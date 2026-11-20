@@ -1,10 +1,11 @@
-"""FleetIQ: derive auditable complaint problem labels and explicitly stated mileage.
+"""FleetIQ: derive complaint problem labels, approximate age, and optional mileage.
 
 Run from the repository root: python analyze_complaints.py
 Inputs: data/complaints.csv
 Outputs: data/problem_analysis.csv, data/problem_summary.csv
 
 Labels are keyword-based descriptions of *reported symptoms*, not confirmed repairs.
+Complaint age is based on receipt year minus model year, not actual failure date.
 Missing mileage is never statistically filled or replaced with zero.
 """
 from __future__ import annotations
@@ -38,6 +39,17 @@ ISSUE_PATTERNS = {
     "Airbag / restraint malfunction": r"\b(?:air\s?bag\s+(?:fail(?:ed|ure|s)?|deploy(?:ed|ment)?|warning)|seat\s?belt\s+(?:fail(?:ed|ure|s)?|won'?t\s+latch|will\s+not\s+latch))\b",
     "Tire failure / separation": r"\b(?:tire\s+(?:blowout|blow\s?out|separation|separat(?:ed|ion)|burst)|tread\s+separat(?:ed|ion))\b",
     "Visibility / wiper malfunction": r"\b(?:windshield\s+wiper(?:s)?\s+(?:fail(?:ed|ure|s)?|stop(?:ped)?|inoperative)|wiper\s+motor\s+fail(?:ed|ure|s)?|defrost(?:er)?\s+(?:fail(?:ed|ure|s)?|inoperative))\b",
+    "Turbocharger / boost system": r"\b(?:turbocharger|turbo\s+fail(?:ed|ure|s)?|boost\s+(?:pressure|leak|loss)|intercooler\s+leak)\b",
+    "Fuel injector / injection system": r"\b(?:fuel\s+injector|injector\s+fail(?:ed|ure|s)?|injection\s+system\s+fail)\b",
+    "Emissions / DEF / DPF": r"\b(?:diesel\s+exhaust\s+fluid|\bDEF\b|DPF|particulate\s+filter|EGR\s+(?:valve|cooler)|emissions\s+system|SCR\s+system)\b",
+    "Suspension / axle / springs": r"\b(?:leaf\s+spring|coil\s+spring|suspension\s+(?:fail|collapse|break)|shock\s+absorber|strut\s+fail|axle\s+(?:break|fail|snap))\b",
+    "Driveline / differential / driveshaft": r"\b(?:drive\s*shaft|propeller\s+shaft|differential\s+(?:fail|leak|noise)|universal\s+joint|\bU[- ]joint\b)\b",
+    "Starter / no crank": r"\b(?:starter\s+(?:motor\s+)?fail|won'?t\s+crank|will\s+not\s+crank|no[- ]crank)\b",
+    "Sensor / warning / diagnostic": r"\b(?:check\s+engine\s+light|warning\s+light|sensor\s+(?:fail|fault|malfunction)|fault\s+code|diagnostic\s+trouble\s+code)\b",
+    "HVAC / air conditioning": r"\b(?:air\s+conditioning\s+(?:fail|stop)|\bA/C\b\s+(?:fail|stop)|blower\s+motor\s+fail|heater\s+core\s+leak|HVAC\s+fail)\b",
+    "Wheel bearing / hub": r"\b(?:wheel\s+bearing|hub\s+assembly|hub\s+bearing)\b",
+    "Exhaust leak / failure": r"\b(?:exhaust\s+(?:leak|pipe\s+break|manifold\s+crack)|catalytic\s+converter\s+(?:fail|clog))\b",
+    "Battery / high voltage system": r"\b(?:high[- ]voltage\s+battery|traction\s+battery|battery\s+pack\s+(?:fail|fault)|inverter\s+fail)\b",
 }
 COMPILED_ISSUES = [(label, re.compile(pattern, re.I)) for label, pattern in ISSUE_PATTERNS.items()]
 
@@ -94,7 +106,7 @@ def main():
         raise FileNotFoundError(f"Missing {INPUT_FILE}; run refresh_data.py first.")
 
     raw = pd.read_csv(INPUT_FILE, dtype={"odi_number": "string"}, low_memory=False)
-    required = {"odi_number", "vehicle", "model_year", "component", "description", "mileage"}
+    required = {"odi_number", "vehicle", "model_year", "component", "description", "mileage", "date_received"}
     if missing := required - set(raw.columns):
         raise ValueError(f"Missing required columns: {sorted(missing)}")
     if raw.empty or raw["odi_number"].isna().any():
@@ -115,11 +127,34 @@ def main():
         selected = reported if reported is not None else extracted
         method = "NHTSA field" if reported is not None else "Narrative (explicit)" if extracted is not None else "Missing"
         issues = extract_issues(description)
+        # NHTSA date_received is YYYYMMDD and is not the date the incident occurred.
+        received_raw = first_present(group["date_received"])
+        received_date = pd.to_datetime(str(received_raw), format="%Y%m%d", errors="coerce")
+        model_year = int(first_present(group["model_year"]))
+        receipt_year = int(received_date.year) if pd.notna(received_date) else None
+        age = receipt_year - model_year if receipt_year is not None else None
+        if age is not None and age < 0:
+            age_status = "Pre-model-year receipt"
+            age = None
+        elif age is None:
+            age_status = "Missing/invalid receipt date"
+        else:
+            age_status = "Approximate: receipt year minus model year"
+        age_band = ("Unknown" if age is None else
+                    "0–1 years" if age <= 1 else
+                    "2–3 years" if age <= 3 else
+                    "4–5 years" if age <= 5 else
+                    "6–8 years" if age <= 8 else "9+ years")
         rows.append({
             "odi_number": str(odi),
             "vehicle": str(first_present(group["vehicle"])),
             "vehicle_class": str(first_present(group["vehicle_class"])) if "vehicle_class" in group else "",
-            "model_year": int(first_present(group["model_year"])),
+            "model_year": model_year,
+            "date_received": received_date.strftime("%Y-%m-%d") if pd.notna(received_date) else "",
+            "complaint_received_year": receipt_year,
+            "approx_vehicle_age_years": age,
+            "age_band": age_band,
+            "age_method": age_status,
             "nhtsa_components": " | ".join(components),
             "primary_reported_issue": issues[0] if issues else "Unspecified / manual review",
             "reported_issues": " | ".join(issues) if issues else "Unspecified / manual review",
@@ -143,6 +178,8 @@ def main():
         .agg(
             unique_complaints=("odi_number", "nunique"),
             mileage_samples=("mileage_best_available", "count"),
+            complaints_with_age=("approx_vehicle_age_years", "count"),
+            median_approx_age_years=("approx_vehicle_age_years", "median"),
             median_reported_miles=("mileage_best_available", "median"),
             narrative_mileage_samples=("mileage_source", lambda s: int((s == "Narrative (explicit)").sum())),
         )
@@ -153,6 +190,10 @@ def main():
         100 * summary["mileage_samples"] / summary["unique_complaints"]
     ).round(1)
     summary["median_reported_miles"] = summary["median_reported_miles"].round().astype("Int64")
+    summary["age_coverage_pct"] = (
+        100 * summary["complaints_with_age"] / summary["unique_complaints"]
+    ).round(1)
+    summary["median_approx_age_years"] = summary["median_approx_age_years"].round(1)
 
     for destination, dataframe in [(ANALYSIS_FILE, analysis), (SUMMARY_FILE, summary)]:
         temporary = destination.with_suffix(destination.suffix + ".tmp")
@@ -161,6 +202,7 @@ def main():
 
     print(f"Source complaint-component rows: {len(raw):,}")
     print(f"Unique complaints analyzed: {len(analysis):,}")
+    print(f"Complaints with approximate age: {analysis['approx_vehicle_age_years'].notna().sum():,}")
     print(f"Narrative mileage recovered: {(analysis['mileage_source'] == 'Narrative (explicit)').sum():,}")
     print(f"Missing mileage after extraction: {(analysis['mileage_source'] == 'Missing').sum():,}")
     print(f"Issue summary rows: {len(summary):,}")
