@@ -154,8 +154,8 @@ st.info(
     "Missing model-year rows are left blank, not treated as zero."
 )
 
-overview_tab, components_tab, detail_tab, severity_tab, records_tab, sales_tab = st.tabs(
-    ["Compare vehicles", "Problem categories", "Component deep dive", "Reported incidents", "Complaint records", "Sales data"]
+overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab = st.tabs(
+    ["Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data"]
 )
 
 with overview_tab:
@@ -375,6 +375,190 @@ with detail_tab:
         "NHTSA does not supply standardized repair cost per complaint. A dollar amount "
         "in narrative text may be an estimate, purchase price, or unrelated expense."
     )
+
+# The enriched dataset is produced by analyze_complaints.py, not by app.py.
+# Keep the original NHTSA complaint archive unchanged.
+@st.cache_data(show_spinner=False)
+def load_problem_analysis(file_mtime):
+    analysis = pd.read_csv(
+        DATA_DIR / "problem_analysis.csv",
+        dtype={"odi_number": "string"},
+        low_memory=False,
+    )
+    mandatory = {
+        "odi_number", "vehicle", "model_year", "primary_reported_issue",
+        "reported_issues", "issue_detection", "approx_vehicle_age_years",
+        "age_band", "description",
+    }
+    missing = mandatory - set(analysis.columns)
+    if missing:
+        raise ValueError("problem_analysis.csv missing: " + ", ".join(sorted(missing)))
+    analysis["model_year"] = pd.to_numeric(analysis["model_year"], errors="coerce")
+    analysis["approx_vehicle_age_years"] = pd.to_numeric(
+        analysis["approx_vehicle_age_years"], errors="coerce"
+    )
+    analysis["odi_number"] = analysis["odi_number"].astype("string")
+    analysis["age_band"] = analysis["age_band"].fillna("Unknown")
+    analysis["primary_reported_issue"] = analysis["primary_reported_issue"].fillna(
+        "Unspecified / manual review"
+    )
+    analysis["reported_issues"] = analysis["reported_issues"].fillna(
+        "Unspecified / manual review"
+    )
+    if "date_received" in analysis.columns:
+        analysis["date_received"] = pd.to_datetime(analysis["date_received"], errors="coerce")
+    return analysis
+
+
+with intelligence_tab:
+    st.markdown("#### Problem Intelligence — reported issues by vehicle age")
+    st.caption(
+        "Issue labels are preliminary keyword-based interpretations of owner narratives, "
+        "not verified repairs or mechanical diagnoses. Vehicle age is approximated "
+        "as complaint receipt year minus model year."
+    )
+    analysis_path = DATA_DIR / "problem_analysis.csv"
+    if not analysis_path.is_file():
+        st.warning(
+            "Problem Intelligence requires data/problem_analysis.csv. "
+            "Run Refresh FleetIQ Data in GitHub Actions to generate it."
+        )
+    else:
+        try:
+            analysis = load_problem_analysis(analysis_path.stat().st_mtime_ns)
+        except (OSError, ValueError, pd.errors.ParserError) as exc:
+            st.error(f"Unable to load problem analysis: {exc}")
+        else:
+            # Honor the sidebar vehicle and model-year filters.
+            analysis = analysis.loc[
+                analysis["vehicle"].isin(selected_vehicles)
+                & analysis["model_year"].between(start_year, end_year)
+            ].drop_duplicates(subset=["odi_number"]).copy()
+            if analysis.empty:
+                st.info("No analyzed complaints match the selected vehicles and model years.")
+            else:
+                chosen_vehicle = st.selectbox(
+                    "Investigate vehicle", sorted(analysis["vehicle"].unique()),
+                    key="intelligence_vehicle"
+                )
+                vehicle_data = analysis.loc[
+                    analysis["vehicle"].eq(chosen_vehicle)
+                ].copy()
+                selected_years = sorted(vehicle_data["model_year"].dropna().astype(int).unique().tolist())
+                chosen_years = st.multiselect(
+                    "Model years to investigate (leave empty for all selected years)",
+                    selected_years, default=[], key="intelligence_years"
+                )
+                if chosen_years:
+                    vehicle_data = vehicle_data.loc[
+                        vehicle_data["model_year"].isin(chosen_years)
+                    ].copy()
+                complaint_total = int(vehicle_data["odi_number"].nunique())
+                age_count = int(vehicle_data["approx_vehicle_age_years"].notna().sum())
+                classified = int(
+                    vehicle_data["issue_detection"].fillna("")
+                    .str.contains("Keyword match", case=False, regex=False).sum()
+                )
+                m1, m2, m3 = st.columns(3)
+                m1.metric("Complaints analyzed", f"{complaint_total:,}")
+                m2.metric("Age coverage", f"{age_count:,}/{complaint_total:,}")
+                m3.metric(
+                    "Issues detected", f"{classified:,}/{complaint_total:,}",
+                    help="Keyword-detected complaints; all other complaints remain unclassified."
+                )
+                st.caption(
+                    "Counts are unique NHTSA complaint IDs. Multiple issues can appear "
+                    "in one complaint, so issue counts must not be summed as unique complaints."
+                )
+
+                # Split multi-issue text into complaint-issue links, deduplicated by ODI.
+                issue_links = vehicle_data[[
+                    "odi_number", "model_year", "approx_vehicle_age_years", "age_band", "reported_issues"
+                ]].copy()
+                issue_links["issue"] = issue_links["reported_issues"].str.split(" | ", regex=False)
+                issue_links = issue_links.explode("issue")
+                issue_links["issue"] = issue_links["issue"].astype(str).str.strip()
+                issue_links = issue_links.loc[issue_links["issue"].ne("")]
+                issue_links = issue_links.drop_duplicates(["odi_number", "issue"])
+
+                issue_counts = (
+                    issue_links.loc[issue_links["issue"].ne("Unspecified / manual review")]
+                    .groupby("issue")["odi_number"].nunique()
+                    .sort_values(ascending=False)
+                )
+                st.markdown("##### Most frequently reported specific issues")
+                if issue_counts.empty:
+                    st.info("No specific issues were detected in these records.")
+                else:
+                    st.bar_chart(
+                        issue_counts.head(15), horizontal=True,
+                        x_label="Unique complaints mentioning issue",
+                        y_label="Reported issue"
+                    )
+                    st.dataframe(
+                        issue_counts.rename("Complaint IDs").reset_index().rename(
+                            columns={"issue": "Reported issue"}
+                        ), hide_index=True, use_container_width=True
+                    )
+
+                st.markdown("##### Complaints by approximate vehicle age")
+                age_order = ["0–1 years", "2–3 years", "4–5 years", "6–8 years", "9+ years", "Unknown"]
+                age_counts = (
+                    vehicle_data.groupby("age_band")["odi_number"].nunique()
+                    .reindex(age_order, fill_value=0)
+                    .rename("Unique complaints")
+                )
+                st.bar_chart(age_counts, x_label="Approximate age at complaint receipt", y_label="Unique complaints")
+                st.caption(
+                    "These counts describe when NHTSA received reports, not the exact age "
+                    "when a fault began. They are not age-specific failure rates: different "
+                    "vehicle cohorts have had different amounts of time to accumulate complaints."
+                )
+
+                st.markdown("##### Investigate an issue")
+                issue_options = issue_counts.index.tolist()
+                if "Unspecified / manual review" in issue_links["issue"].values:
+                    issue_options += ["Unspecified / manual review"]
+                if issue_options:
+                    selected_issue = st.selectbox(
+                        "Reported issue", issue_options, key="intelligence_issue"
+                    )
+                    relevant_ids = issue_links.loc[
+                        issue_links["issue"].eq(selected_issue), "odi_number"
+                    ].dropna().unique()
+                    evidence = vehicle_data.loc[
+                        vehicle_data["odi_number"].isin(relevant_ids)
+                    ].copy()
+                    issue_by_age = (
+                        evidence.groupby("age_band")["odi_number"].nunique()
+                        .reindex(age_order, fill_value=0)
+                        .rename("Unique complaints")
+                    )
+                    st.bar_chart(
+                        issue_by_age, x_label="Approximate age at report receipt",
+                        y_label="Complaints mentioning issue"
+                    )
+                    st.caption(
+                        f"{evidence['odi_number'].nunique():,} distinct complaints mention "
+                        f"{selected_issue}. These are reported symptoms, not confirmed repair diagnoses."
+                    )
+                    evidence_cols = [
+                        "odi_number", "model_year", "date_received",
+                        "approx_vehicle_age_years", "age_band", "primary_reported_issue",
+                        "reported_issues", "issue_detection", "nhtsa_components", "description",
+                    ]
+                    evidence_cols = [c for c in evidence_cols if c in evidence.columns]
+                    if "date_received" in evidence:
+                        evidence = evidence.sort_values("date_received", ascending=False)
+                    st.dataframe(
+                        evidence[evidence_cols], hide_index=True, use_container_width=True,
+                    )
+                    st.download_button(
+                        "Download issue evidence (CSV)",
+                        data=evidence[evidence_cols].to_csv(index=False).encode("utf-8"),
+                        file_name="fleetiq_problem_intelligence_evidence.csv",
+                        mime="text/csv", key="intelligence_download"
+                    )
 
 with severity_tab:
     st.markdown("#### Reported crash, fire, and mileage indicators")
