@@ -44,7 +44,8 @@ jobs:
       - name: Download and process NHTSA data
         run: |
           python refresh_data.py
-
+          python analyze_complaints.py
+          
       # 5. Verify all expected datasets exist
       - name: Validate generated files
         run: |
@@ -56,6 +57,8 @@ jobs:
           test -s data/model_inventory.csv
           test -s data/unmatched_models.csv
           test -s data/data_quality.json
+          test -s data/problem_analysis.csv
+          test -s data/problem_summary.csv
 
           echo "All expected datasets exist."
 
@@ -87,6 +90,8 @@ jobs:
           git add data/model_inventory.csv
           git add data/unmatched_models.csv
           git add data/data_quality.json
+          git add data/problem_analysis.csv
+          git add data/problem_summary.csv
 
           if ! git diff --cached --quiet; then
             git commit -m "Automated FleetIQ NHTSA data refresh"
