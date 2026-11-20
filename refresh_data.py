@@ -41,7 +41,58 @@ FIRST_YEAR = CURRENT_YEAR - 11
 # ============================================================
 
 VEHICLE_PATTERNS = [
+    
     # FULL-SIZE CARGO VANS
+    
+    # ADDITIONAL MODELS CONFIRMED IN NHTSA INVENTORY
+
+    (
+        "Ford", "Ford Transit", "Full-size cargo van",
+        r"^TRANSIT T[- ]?350 HD$"
+    ),
+    (
+        "Ram", "Ram 4500", "Box-truck capable chassis",
+        r"^4500(?: CAB CHASSIS)?$"
+    ),
+    (
+        "Ram", "Ram 5500", "Box-truck capable chassis",
+        r"^5500(?: CAB CHASSIS)?$"
+    ),
+    (
+        "Ram", "Ram 3500 Cab Chassis",
+        "Box-truck capable chassis",
+        r"^3500 CAB CHASSIS$"
+    ),
+    (
+        "Isuzu", "Isuzu FTR", "Box-truck capable chassis",
+        r"^FTR$"
+    ),
+    (
+        "Isuzu", "Isuzu N-Series",
+        "Box-truck capable chassis",
+        r"^N[- ]?SERIES$"
+    ),
+    (
+        "International", "International 4300",
+        "Box-truck capable chassis",
+        r"^4000 SERIES 4300$"
+    ),
+    (
+        "Chevrolet", "Chevrolet G4500",
+        "Box-truck capable chassis",
+        r"^G4500$"
+    ),
+    (
+        "Chevrolet", "Chevrolet Low Cab Forward",
+        "Box-truck capable chassis",
+        r"^LOW CAB FORWARD 4500$"
+    ),
+    (
+        "Freightliner", "Freightliner M2",
+        "Box-truck capable chassis",
+        r"^M2 BUSINESS CLASS$"
+    ),
+
     (
         "Ford", "Ford Transit", "Full-size cargo van",
         r"^TRANSIT(?:[- ]?(?:150|250|350|350HD|350 HD))?$"
