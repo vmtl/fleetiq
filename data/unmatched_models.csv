@@ -1,1 +1,82 @@
-
+make,model,model_year,complaint_rows,reason
+AIRSTREAM,MERCEDES-BENZ SPRINTER,2020,1,Potential commercial vehicle; review
+AM GENERAL,MV-1,2016,3,Potential commercial vehicle; review
+BMW,M2,2016,5,Potential commercial vehicle; review
+BMW,M2,2017,18,Potential commercial vehicle; review
+BMW,M2,2018,5,Potential commercial vehicle; review
+BMW,M2,2020,2,Potential commercial vehicle; review
+BMW,M2,2021,1,Potential commercial vehicle; review
+BMW,M2,2023,1,Potential commercial vehicle; review
+BMW,M2,2024,3,Potential commercial vehicle; review
+BMW,M235I,2015,6,Potential commercial vehicle; review
+BMW,M235I,2016,10,Potential commercial vehicle; review
+BMW,M235I,2022,1,Potential commercial vehicle; review
+BMW,M240I,2017,3,Potential commercial vehicle; review
+BMW,M240I,2018,3,Potential commercial vehicle; review
+BMW,M240I,2022,4,Potential commercial vehicle; review
+BMW,M240I,2023,1,Potential commercial vehicle; review
+BMW,M240I,2024,1,Potential commercial vehicle; review
+BMW,M240I,2025,4,Potential commercial vehicle; review
+BRAUN,RAM PROMASTER,2023,4,Potential commercial vehicle; review
+BRAUN,RAM PROMASTER,2024,2,Potential commercial vehicle; review
+COACHMEN,FREEDOM EXPRESS,2015,5,Potential commercial vehicle; review
+COACHMEN,FREEDOM EXPRESS,2016,4,Potential commercial vehicle; review
+COACHMEN,FREEDOM EXPRESS,2017,4,Potential commercial vehicle; review
+COACHMEN,FREEDOM EXPRESS,2018,2,Potential commercial vehicle; review
+COACHMEN,FREEDOM EXPRESS,2019,5,Potential commercial vehicle; review
+COACHMEN,FREEDOM EXPRESS,2020,2,Potential commercial vehicle; review
+COACHMEN,FREEDOM EXPRESS,2021,3,Potential commercial vehicle; review
+DETROIT CHASSIS,FORD MOTORHOME CHASSIS,2019,5,Potential commercial vehicle; review
+FCCC,XC CHASSIS,2020,2,Potential commercial vehicle; review
+FIELD VAN,SPRINTER,2022,3,Potential commercial vehicle; review
+FORD,STRIPPED CHASSIS,2015,3,Potential commercial vehicle; review
+FORD,STRIPPED CHASSIS,2016,1,Potential commercial vehicle; review
+FORD,TRANSIT T-350 HD,2016,1,Potential commercial vehicle; review
+FOREST RIVER,FREEDOM EXPRESS,2018,3,Potential commercial vehicle; review
+FOREST RIVER,FREEDOM EXPRESS,2019,4,Potential commercial vehicle; review
+FOREST RIVER,FREEDOM EXPRESS,2021,1,Potential commercial vehicle; review
+FRAZER,RAM 5500 CHASSIS,2020,2,Potential commercial vehicle; review
+HYUNDAI TRANSLEAD,CHASSIS,2016,1,Potential commercial vehicle; review
+KENTUCKY TRAILER,MV,2017,1,Potential commercial vehicle; review
+KEYSTONE,SPRINTER,2015,1,Potential commercial vehicle; review
+KEYSTONE,SPRINTER,2017,1,Potential commercial vehicle; review
+KEYSTONE,SPRINTER,2019,3,Potential commercial vehicle; review
+KEYSTONE,SPRINTER,2020,1,Potential commercial vehicle; review
+MERCEDES ROYALE,SPRINTER COACH,2015,13,Potential commercial vehicle; review
+MERCEDES ROYALE,SPRINTER COACH,2016,11,Potential commercial vehicle; review
+MERCEDES ROYALE,SPRINTER COACH,2017,7,Potential commercial vehicle; review
+MERCEDES-BENZ,E 350,2020,12,Potential commercial vehicle; review
+MERCEDES-BENZ,E 350,2021,20,Potential commercial vehicle; review
+MERCEDES-BENZ,E 350,2022,12,Potential commercial vehicle; review
+MERCEDES-BENZ,E 350,2023,6,Potential commercial vehicle; review
+MERCEDES-BENZ,E 350,2024,10,Potential commercial vehicle; review
+MERCEDES-BENZ,E 350,2025,5,Potential commercial vehicle; review
+MERCEDES-BENZ,E 350,2026,3,Potential commercial vehicle; review
+MERCEDES-BENZ,E 350 4MATIC,2024,7,Potential commercial vehicle; review
+MERCEDES-BENZ,E 350 4MATIC,2025,5,Potential commercial vehicle; review
+MERCEDES-BENZ,E 350 4MATIC,2026,8,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450,2019,33,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450,2020,11,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450,2021,8,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450,2022,18,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450,2023,25,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450,2024,3,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450 4MATIC,2019,6,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450 4MATIC,2020,4,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450 4MATIC,2024,2,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450 4MATIC,2025,2,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450 4MATIC,2026,3,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450 4MATIC ALL-TERRAIN,2026,1,Potential commercial vehicle; review
+MERCEDES-BENZ,E 450 4MATIC COUPE,2019,1,Potential commercial vehicle; review
+MERCEDES-BENZ,E350,2015,40,Potential commercial vehicle; review
+MERCEDES-BENZ,E350,2016,74,Potential commercial vehicle; review
+MERCEDES-BENZ,E350,2017,11,Potential commercial vehicle; review
+MOBILITY VENTURES,MV-1,2015,3,Potential commercial vehicle; review
+MOBILITY VENTURES,MV-1,2016,1,Potential commercial vehicle; review
+MOBILITY WORKS,CHEVY EXPRESS 2500,2015,1,Potential commercial vehicle; review
+NISSAN,NV200 TAXI,2015,1,Potential commercial vehicle; review
+NISSAN,REDUNDANT NV200,2015,18,Potential commercial vehicle; review
+NISSAN,REDUNDANT NV200,2016,1,Potential commercial vehicle; review
+NISSAN,REDUNDANT NV200,2017,2,Potential commercial vehicle; review
+QUALITY VAN,FORD TRANSIT 350,2023,5,Potential commercial vehicle; review
+RAM,3500 CAB CHASSIS,2018,4,Potential commercial vehicle; review
