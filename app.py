@@ -10,6 +10,8 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
+import streamlit.components.v1 as components
+from van_cutaway import render_cutaway, SYSTEMS
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
@@ -1132,228 +1134,12 @@ def hotspot_level(pct, count):
     return "Lower share", "#00F5D4"
 
 
-def draw_hotspot_van(lookup, total, detailed=False):
-    """Vector cutaway schematic. Color = complaint share, not failure probability.
-
-    All brands use the same illustrative front-engine arrangement for visual
-    comparability. Powertrains, component placement, and axle layout vary in
-    actual vehicles; these outlines do not depict verified model anatomy.
-    """
-    fig = go.Figure()
-    metal = "rgba(132,197,232,.75)"
-    glass = "rgba(72,181,226,.14)"
-    chassis = "rgba(136,184,215,.42)"
-
-    def color_for(system):
-        entry = lookup.get(system, {})
-        return hotspot_level(
-            float(entry.get("share_pct", 0)), int(entry.get("complaints", 0))
-        )[1]
-
-    def shape(path, fill, line=None, width=1.8):
-        fig.add_shape(
-            type="path", path=path, fillcolor=fill,
-            line=dict(color=line or fill, width=width),
-        )
-
-    def rect(x0, y0, x1, y1, fill, line=None, width=1.7):
-        fig.add_shape(
-            type="rect", x0=x0, y0=y0, x1=x1, y1=y1,
-            fillcolor=fill,
-            line=dict(color=line or fill, width=width),
-        )
-
-    def circle(x, y, radius, fill, line=None, width=2):
-        fig.add_shape(
-            type="circle", x0=x-radius, y0=y-radius,
-            x1=x+radius, y1=y+radius, fillcolor=fill,
-            line=dict(color=line or fill, width=width),
-        )
-
-    def pipe(points, color, width=3, dash="solid"):
-        xs, ys = zip(*points)
-        fig.add_trace(go.Scatter(
-            x=xs, y=ys, mode="lines",
-            line=dict(color=color, width=width, dash=dash),
-            showlegend=False, hoverinfo="skip",
-        ))
-
-    def label(x, y, text, size=10, anchor="center", color="#DDECFB"):
-        fig.add_annotation(
-            x=x, y=y, text=text, showarrow=False,
-            xanchor=anchor,
-            font=dict(size=size, color=color, family="Arial"),
-            bgcolor="rgba(8,17,33,.74)",
-            bordercolor="rgba(148,205,237,.24)",
-            borderwidth=0.6, borderpad=3,
-        )
-
-    # Structural body shell, chassis rails, translucent side panel, windows.
-    shape(
-        "M .55,1.55 L .55,3.65 Q .55,3.90 .80,3.90 "
-        "L 5.90,3.90 L 6.48,4.66 L 8.42,4.66 "
-        "Q 8.70,4.66 8.90,4.35 L 9.60,3.38 "
-        "L 9.60,1.55 Z",
-        "rgba(51,85,125,.12)", metal, 2.8,
-    )
-    shape(
-        "M 6.40,3.90 L 6.81,4.52 L 8.30,4.52 "
-        "L 8.86,3.86 Z", glass, "rgba(118,224,253,.60)", 1.5,
-    )
-    pipe([(.85,1.80),(9.35,1.80)], chassis, 5)
-    pipe([(.85,1.95),(9.1,1.95)], "rgba(84,158,201,.28)", 2)
-    # Passenger and sliding-door divisions.
-    pipe([(5.73,2.13),(5.73,3.88)], "rgba(120,187,225,.32)", 1.6)
-    pipe([(3.85,2.13),(3.85,3.88)], "rgba(120,187,225,.24)", 1.3)
-    rect(4.12,2.92,4.31,3.00,"rgba(200,229,245,.42)")
-    # Highlight the body without concealing the component cutaway.
-    rect(.80,3.68,5.55,3.81,color_for("Body / structure"),width=0)
-
-    # Rear wheels and front wheels; translucent disc and caliper geometry.
-    for axle in (2.15, 8.20):
-        circle(axle,1.47,.72,"rgba(6,16,33,.98)",
-               color_for("Wheels / tires"),4.5)
-        circle(axle,1.47,.51,"rgba(35,57,76,.88)",
-               "rgba(166,209,231,.55)",2)
-        circle(axle,1.47,.35,"rgba(87,122,144,.18)",
-               "rgba(143,197,220,.66)",2)
-        circle(axle,1.47,.12,"rgba(217,230,239,.44)",
-               "rgba(206,227,238,.75)",1)
-        # Brake calipers wrap the wheel rotor at the upper right.
-        shape(
-            f"M {axle+.20:.2f},1.70 L {axle+.49:.2f},1.79 "
-            f"L {axle+.54:.2f},1.56 L {axle+.29:.2f},1.50 Z",
-            color_for("Brakes"), "rgba(255,255,255,.38)",1,
-        )
-        # Spring helix on dampers just over axle, joined to top mount.
-        pipe([(axle,2.04),(axle,2.70)],
-             "rgba(173,209,231,.47)",5)
-        spring_x = [axle-.17, axle+.17] * 4
-        spring_y = [2.15+i*.073 for i in range(8)]
-        pipe(list(zip(spring_x,spring_y)),
-             color_for("Suspension"),3.4)
-        pipe([(axle-.24,2.77),(axle+.24,2.77)],
-             color_for("Suspension"),3)
-
-    # Engine bay is on the right (front) in this conceptual platform.
-    pipe([(6.38,2.14),(7.02,2.14),(7.30,2.38)],
-         color_for("Powertrain / transmission"),5)
-    # Transmission housing, tapered bell-housing and output shaft.
-    shape(
-        "M 5.86,2.17 L 6.18,2.46 L 6.63,2.51 "
-        "L 7.03,2.34 L 7.03,2.02 L 6.55,1.91 Z",
-        color_for("Powertrain / transmission"),
-        "rgba(255,255,255,.40)",1.7,
-    )
-    for x in (6.22,6.42,6.61):
-        pipe([(x,2.05),(x,2.39)],
-             "rgba(5,21,37,.42)",1.5)
-    # Engine block, cylinder-head ribs, sump and intake line.
-    shape(
-        "M 7.13,2.22 L 7.17,3.30 L 8.23,3.30 "
-        "L 8.50,2.98 L 8.42,2.20 Z",
-        color_for("Engine / cooling"),
-        "rgba(255,255,255,.48)",2,
-    )
-    rect(7.27,3.21,8.18,3.38,
-         color_for("Engine / cooling"),"rgba(255,255,255,.44)")
-    rect(7.48,2.02,8.18,2.22,
-         color_for("Engine / cooling"),"rgba(255,255,255,.29)")
-    for x in (7.42,7.66,7.90,8.12):
-        pipe([(x,2.53),(x,3.12)],
-             "rgba(5,21,35,.45)",2)
-    pipe([(8.25,3.22),(8.65,3.25),(8.78,3.03)],
-         "rgba(149,222,250,.57)",3)
-    # Radiator: in front of engine, shown separately for anatomical clarity;
-    # complaint data combines engine and cooling into one system.
-    rect(8.84,2.25,9.13,3.41,
-         color_for("Engine / cooling"),"rgba(250,252,255,.55)",2)
-    for y in (2.37,2.56,2.75,2.94,3.13,3.30):
-        pipe([(8.88,y),(9.08,y)],"rgba(6,25,42,.48)",1.6)
-    pipe([(9.12,2.53),(9.33,2.55)],
-         "rgba(148,230,255,.58)",2)
-
-    # Steering wheel, rack and tie rod close to front axle.
-    circle(6.76,3.52,.24,"rgba(14,32,50,.68)",
-           color_for("Steering"),3)
-    pipe([(6.79,3.28),(7.11,2.51),(7.56,2.32)],
-         color_for("Steering"),2.6)
-    pipe([(7.31,2.04),(8.62,2.04)],
-         color_for("Steering"),2.6)
-
-    # Fuel tank and visible filler connection at mid/rear underbody.
-    rect(3.06,2.06,4.33,2.39,color_for("Fuel system"),
-         "rgba(255,255,255,.37)",1.5)
-    pipe([(3.14,2.40),(3.04,2.75)],color_for("Fuel system"),2.5)
-
-    # Electronics: battery/fuse box, wiring lead to engine.
-    rect(5.22,3.11,5.68,3.55,color_for("Electrical / electronics"),
-         "rgba(255,255,255,.40)",1.6)
-    pipe([(5.68,3.36),(6.35,3.30),(7.20,3.25)],
-         color_for("Electrical / electronics"),2,dash="dot")
-
-    # Seating / safety-system schematic in cabin.
-    rect(4.35,2.33,4.84,2.75,color_for("Interior / comfort"),
-         "rgba(255,255,255,.27)",1)
-    pipe([(4.60,2.34),(4.60,2.11)],
-         color_for("Interior / comfort"),2)
-    circle(6.25,3.19,.16,color_for("Safety / driver assistance"),
-           "rgba(255,255,255,.46)",1)
-    # Lights at both ends of the vehicle.
-    rect(9.48,2.93,9.63,3.27,color_for("Visibility / lighting"))
-    rect(.49,2.94,.65,3.27,color_for("Visibility / lighting"))
-
-    # Interactive component hit targets: hover over actual parts for evidence.
-    # They are transparent markers, not the colored visual regions themselves.
-    for system, (hx,hy) in HOTSPOT_LOCATIONS.items():
-        item = lookup.get(system, {})
-        count = int(item.get("complaints", 0))
-        pct = float(item.get("share_pct", 0))
-        level, _ = hotspot_level(pct,count)
-        fig.add_trace(go.Scatter(
-            x=[hx], y=[hy], mode="markers",
-            marker=dict(size=32 if detailed else 22, opacity=0.005,
-                        color="#FFFFFF"),
-            customdata=[[system,count,pct,level]],
-            hovertemplate="<b>%{customdata[0]}</b><br>"
-                          "%{customdata[1]} distinct complaint(s)<br>"
-                          "%{customdata[2]:.1f}% of this van's complaints<br>"
-                          "%{customdata[3]}<extra></extra>",
-            showlegend=False,
-        ))
-    if detailed:
-        label(8.97,3.73,"RADIATOR",11)
-        label(7.67,2.73,"ENGINE",11,color="#071223")
-        label(6.37,2.83,"TRANSMISSION",10)
-        label(3.67,2.66,"FUEL TANK",10)
-        label(5.38,3.77,"ELECTRICAL",10)
-        label(2.17,3.05,"REAR SPRING + CALIPER",9)
-        label(8.16,.42,"FRONT WHEEL + BRAKE",9)
-        label(6.80,4.20,"CABIN + STEERING",9)
-    neon_style(fig)
-    fig.update_layout(
-        height=530 if detailed else 355,
-        margin=dict(l=0,r=0,t=8,b=3),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(9,28,51,.14)",
-        xaxis=dict(range=[.05,10.0],visible=False,fixedrange=True),
-        yaxis=dict(range=[.30,5.05],visible=False,fixedrange=True,
-                   scaleanchor="x",scaleratio=1),
-        annotations=list(fig.layout.annotations or []) + [
-            dict(x=.6,y=4.88,xref="x",yref="y",showarrow=False,
-                 text=f"{total:,} distinct complaints · front →",
-                 xanchor="left",font=dict(size=12,color="#D0E6FA"))
-        ],
-    )
-    return fig
-
-
 with hotspots_tab:
     st.markdown("#### Failure Hotspots — Reported Vehicle Systems")
     st.caption(
         "Compare up to three vehicles. Colors show the share of distinct NHTSA "
         "complaints mentioning a system, NOT the likelihood that a part will fail. "
-        "The illustrated van and part positions are schematic."
+        "The illustrated vehicle is a generic mechanical cutaway; actual layouts vary."
     )
     hotspot_options = sorted(complaints["vehicle"].dropna().unique().tolist())
     favorite_hotspots = [
@@ -1410,9 +1196,9 @@ with hotspots_tab:
                 lookup = sub.set_index("system")[
                     ["complaints", "share_pct"]
                 ].to_dict("index")
-                st.plotly_chart(
-                    draw_hotspot_van(lookup, total),
-                    use_container_width=True, key=f"hotspot_map_{van}",
+                components.html(
+                    render_cutaway(lookup, total, van, detailed=False),
+                    height=350, scrolling=False,
                 )
                 table = pd.DataFrame([
                     {
@@ -1422,7 +1208,7 @@ with hotspots_tab:
                             float(lookup.get(system, {}).get("share_pct", 0)), 1
                         ),
                     }
-                    for i, system in enumerate(HOTSPOT_LOCATIONS, 1)
+                    for i, system in enumerate(SYSTEMS, 1)
                 ])
                 table["Level"] = table.apply(
                     lambda row: hotspot_level(
@@ -1443,23 +1229,42 @@ with hotspots_tab:
                 ["complaints", "share_pct"]
             ].to_dict("index")
             st.markdown(f"##### Expanded mechanical cutaway — {focused_van}")
-            st.plotly_chart(
-                draw_hotspot_van(focus_lookup, focused_total, detailed=True),
-                use_container_width=True, key="hotspot_expanded_anatomy",
+            # Selectable SVG component groups reveal source excerpts directly.
+            focus_evidence = hs.loc[hs["vehicle"].eq(focused_van)].copy()
+            focus_evidence = focus_evidence.drop_duplicates(
+                ["system", "odi_number"]
+            )
+            excerpts = {}
+            for source_system, section in focus_evidence.groupby("system"):
+                excerpts[source_system] = [
+                    {
+                        "model_year": row.model_year,
+                        "component": row.component,
+                        "description": row.description
+                        if pd.notna(row.description) else "",
+                    }
+                    for row in section.head(3).itertuples(index=False)
+                ]
+            components.html(
+                render_cutaway(
+                    focus_lookup, focused_total, focused_van,
+                    detailed=True, evidence_rows=excerpts
+                ),
+                height=900, scrolling=True,
             )
             st.caption(
-                "Illustrative front-engine, front-of-vehicle-at-right mechanical layout. "
-                "Actual engine orientation, drivetrain configuration, and component positions "
-                "vary by manufacturer, model year, and powertrain. Radiator and engine "
-                "share the Engine / cooling complaint category. Front/rear brakes "
-                "and springs share system colors because available source data "
-                "does not establish which axle was affected."
+                "Click a highlighted component in the cutaway to see its complaint "
+                "share and short NHTSA excerpts inside the viewer. The detailed "
+                "table and downloadable source evidence remain below. "
+                "This is a generic schematic, not a vehicle-specific service diagram. "
+                "Engine/radiator and front/rear wheel-end parts share broad NHTSA "
+                "system categories when complaint records lack part-level precision."
             )
         if not counts.empty:
             st.markdown("##### Compare complaint shares across vehicles")
             shares = counts.pivot(
                 index="system", columns="vehicle", values="share_pct"
-            ).reindex(list(HOTSPOT_LOCATIONS)).fillna(0)
+            ).reindex(SYSTEMS).fillna(0)
             neon_bar(
                 shares, horizontal=True,
                 x_label="Share of each vehicle's distinct complaints (%)",
@@ -1475,7 +1280,7 @@ with hotspots_tab:
             "Vehicle for evidence", hotspot_vans, key="hotspot_evidence_van"
         )
         evidence_system = st.selectbox(
-            "Reported system", list(HOTSPOT_LOCATIONS),
+            "Reported system", SYSTEMS,
             key="hotspot_evidence_system",
         )
         evidence = hs.loc[
