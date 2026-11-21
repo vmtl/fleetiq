@@ -2,6 +2,11 @@ name: Validate FleetIQ Release Features
 on:
   push:
     paths:
+      - vehicle_report.py
+      - fleet_workspace.py
+      - business_economics.py
+      - maintenance_coverage.py
+      - tests/test_business_foundations.py
       - app.py
       - recall_intelligence.py
       - ownership_intelligence.py
@@ -9,6 +14,11 @@ on:
       - .github/workflows/validate_release.yml
   pull_request:
     paths:
+      - vehicle_report.py
+      - fleet_workspace.py
+      - business_economics.py
+      - maintenance_coverage.py
+      - tests/test_business_foundations.py
       - app.py
       - recall_intelligence.py
       - ownership_intelligence.py
@@ -32,10 +42,10 @@ jobs:
         run: pip install -r requirements.txt pytest
       - name: Compile all application modules
         run: |
-          python -m py_compile app.py recall_intelligence.py ownership_intelligence.py maintenance_forecast.py maintenance_intelligence.py repair_intelligence.py
+          python -m py_compile app.py recall_intelligence.py ownership_intelligence.py maintenance_forecast.py maintenance_intelligence.py maintenance_coverage.py fleet_workspace.py vehicle_report.py business_economics.py repair_intelligence.py
       - name: Test recall API parsing, ownership math and existing intelligence
         run: |
-          python -m pytest -q tests/test_release_intelligence.py tests/test_maintenance_forecast.py tests/test_maintenance_intelligence.py tests/test_repair_intelligence.py
+          python -m pytest -q tests/test_release_intelligence.py tests/test_maintenance_forecast.py tests/test_maintenance_intelligence.py tests/test_business_foundations.py tests/test_repair_intelligence.py
       - name: Validate complete Streamlit application startup
         run: |
           python - <<'PY'
@@ -45,7 +55,7 @@ jobs:
               raise AssertionError(str(app.exception))
           labels = [t.label for t in app.tabs]
           print("FleetIQ tabs:", labels)
-          assert len(labels) == 12, labels
-          for title in ("Maintenance timing", "Repair costs", "Safety recalls", "Ownership economics", "Failure Hotspots"):
+          assert len(labels) == 14, labels
+          for title in ("Maintenance timing", "Repair costs", "Safety recalls", "Ownership economics", "Failure Hotspots", "Vehicle report", "Fleet workspace"):
               assert title in labels, title
           PY
