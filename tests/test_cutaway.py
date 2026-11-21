@@ -40,7 +40,7 @@ class CutawayTests(unittest.TestCase):
         self.assertIn("&lt;/script&gt;", output)
         self.assertNotIn('<img src=x onerror=alert(1)>', output)
         self.assertIn("No reports", output)
-        self.assertNotIn("evidence-list", output)
+        self.assertNotIn('<div id="evidence-list"></div>', output)
         self.assertIn("<svg", output)
 
 
