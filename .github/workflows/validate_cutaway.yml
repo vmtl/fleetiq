@@ -1,0 +1,30 @@
+name: Validate FleetIQ Cutaway
+
+on:
+  push:
+    paths:
+      - app.py
+      - van_cutaway.py
+      - tests/test_cutaway.py
+      - .github/workflows/validate_cutaway.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  svg-validation:
+    name: Check Python and SVG renderer
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out FleetIQ
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate Python syntax
+        run: python -m py_compile app.py van_cutaway.py tests/test_cutaway.py
+      - name: Test SVG structure and interactive content
+        run: python -m unittest discover -s tests -p "test_cutaway.py" -v
