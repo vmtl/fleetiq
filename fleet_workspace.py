@@ -8,6 +8,8 @@ from __future__ import annotations
 import io
 import zipfile
 from datetime import date
+from pathlib import Path
+from service_alerts import mileage_alerts
 
 import pandas as pd
 import streamlit as st
@@ -138,6 +140,20 @@ def fleet_metrics(assets: pd.DataFrame, services: pd.DataFrame) -> dict:
     }
 
 
+def update_odometer(assets: pd.DataFrame, asset_id: str, new_miles: int) -> pd.DataFrame:
+    """Reject mileage rollback and unknown fleet units."""
+    current = clean_assets(assets)
+    if asset_id not in current.asset_id.values:
+        raise ValueError("Unknown fleet unit")
+    if not isinstance(new_miles, int) or new_miles < 0:
+        raise ValueError("Mileage must be a nonnegative integer")
+    previous = int(current.set_index("asset_id").loc[asset_id, "odometer"])
+    if new_miles < previous:
+        raise ValueError("Mileage rollback rejected")
+    current.loc[current.asset_id.eq(asset_id), "odometer"] = int(new_miles)
+    return clean_assets(current)
+
+
 def render_fleet_workspace() -> None:
     st.markdown("#### Fleet Workspace — session-only pilot")
     st.warning(
@@ -186,7 +202,25 @@ def render_fleet_workspace() -> None:
     assets = st.session_state.fleetiq_assets
     if not assets.empty:
         st.dataframe(assets, hide_index=True, use_container_width=True)
-        st.caption("To update a vehicle's mileage, export the workspace, edit the vehicle CSV and re-import.")
+        with st.form("fleet_update_odometer"):
+            st.markdown("**Update vehicle mileage**")
+            a, b = st.columns(2)
+            chosen = a.selectbox("Vehicle unit", assets.asset_id.tolist(), key="fleet_update_unit")
+            current = int(assets.set_index("asset_id").loc[chosen, "odometer"])
+            new_miles = b.number_input(
+                "Current odometer", min_value=current, max_value=1000000,
+                value=current, step=100, key="fleet_new_odometer",
+            )
+            saved = st.form_submit_button("Save mileage update")
+        if saved:
+            try:
+                st.session_state.fleetiq_assets = update_odometer(
+                    assets, chosen, int(new_miles)
+                )
+                st.success("Odometer updated for this session.")
+            except ValueError as exc:
+                st.error(str(exc))
+            assets = st.session_state.fleetiq_assets
     st.markdown("##### Completed service / repair records")
     if not assets.empty:
         with st.form("fleet_add_service"):
@@ -228,6 +262,42 @@ def render_fleet_workspace() -> None:
     b.metric("Service records", metrics["maintenance_records"])
     c.metric("Recorded spending", f"${metrics['recorded_spending']:,.2f}")
     d.metric("Recorded downtime (days)", f"{metrics['recorded_downtime_days']:,.1f}")
+    if not assets.empty and not services.empty:
+        with st.expander("OEM mileage reminders — completed services", expanded=False):
+            st.caption(
+                "Requires last recorded service with an exact manufacturer "
+                "task name match; without that history, no due date is inferred. "
+                "Oil-life monitors and elapsed-time limits may require earlier service."
+            )
+            threshold = st.number_input(
+                "Reminder window (miles)", min_value=0, max_value=20000,
+                value=2000, step=500, key="fleet_alert_threshold",
+            )
+            severe = st.checkbox(
+                "Include severe-duty task limits where applicable",
+                value=False, key="fleet_alert_severe",
+            )
+            try:
+                catalog = pd.read_csv(
+                    Path(__file__).resolve().parent / "data" / "maintenance_schedules.csv"
+                )
+                alerts = mileage_alerts(assets, services, catalog, int(threshold), severe)
+                if alerts.empty:
+                    st.info("No exact-matched service-history milestones yet.")
+                else:
+                    due = alerts.loc[alerts.status.ne("Not yet in reminder window")]
+                    st.metric("Upcoming or past mileage limits", len(due))
+                    st.dataframe(
+                        alerts.sort_values("miles_remaining"),
+                        hide_index=True, use_container_width=True,
+                    )
+                    st.download_button(
+                        "Export sourced reminder list", alerts.to_csv(index=False).encode("utf-8"),
+                        "fleetiq_service_alerts.csv", mime="text/csv",
+                        key="fleet_alert_export",
+                    )
+            except (OSError, pd.errors.ParserError, ValueError) as exc:
+                st.warning(f"Reminders unavailable: {exc}")
     st.download_button(
         "Export complete local workspace ZIP",
         export_workspace(assets, services),
