@@ -50,7 +50,7 @@ jobs:
               raise AssertionError(str(app.exception))
           tabs = [t.label for t in app.tabs]
           print("Live Streamlit tabs:", tabs)
-          assert len(tabs) == 10, tabs
+          assert len(tabs) == 12, tabs
           assert "Maintenance timing" in tabs
           assert not app.exception
           assert "Repair costs" in tabs
