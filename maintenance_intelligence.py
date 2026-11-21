@@ -353,6 +353,46 @@ def render_maintenance_tab(data_dir: Path) -> None:
             }),
             hide_index=True, use_container_width=True,
         )
+        # Link only topically corresponding repair references, not suggested
+        # fixes or vehicle-year-specific repair quotes.
+        repair_catalog_path = data_dir / "repair_costs.csv"
+        if repair_catalog_path.exists():
+            try:
+                references = pd.read_csv(repair_catalog_path)
+                needed = {
+                    "vehicle", "related_reported_issue", "repair_operation",
+                    "low_usd", "high_usd", "source_url",
+                }
+                if needed.issubset(references.columns):
+                    linked = references.loc[
+                        references["vehicle"].eq(vehicle)
+                        & references["related_reported_issue"].eq(issue)
+                    ].copy()
+                    if not linked.empty:
+                        st.markdown("##### Related repair cost references")
+                        st.caption(
+                            "These are reference prices for possible repair "
+                            "operations in this symptom category, NOT proof "
+                            "that this repair was performed or is needed."
+                        )
+                        st.dataframe(
+                            linked[[
+                                "repair_operation", "low_usd",
+                                "high_usd", "source_url"
+                            ]].rename(columns={
+                                "repair_operation": "Possible operation",
+                                "low_usd": "Reference low (USD)",
+                                "high_usd": "Reference high (USD)",
+                                "source_url": "Source",
+                            }),
+                            hide_index=True, use_container_width=True,
+                            column_config={
+                                "Source": st.column_config.LinkColumn()
+                            },
+                        )
+            except (OSError, pd.errors.ParserError) as exc:
+                st.caption(f"Repair reference data is unavailable: {exc}")
+
         st.download_button(
             "Download historical complaint timing evidence (CSV)",
             data=timing.to_csv(index=False).encode("utf-8"),
