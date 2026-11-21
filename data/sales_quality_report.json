@@ -13,9 +13,21 @@
   "populated_values_needing_source_revalidation": 52,
   "populated_current_or_future_year_values": 6,
   "ready_for_full_year_comparison": 85,
+  "source_verified_sales_rows": 28,
+  "verified_for_comparison": 28,
+  "verification_status_counts": {
+    "not_audited": 572,
+    "verified_manufacturer": 17,
+    "secondary_only": 14,
+    "corrected_manufacturer": 11,
+    "partial_year": 4,
+    "conflict_unresolved": 3,
+    "scope_mismatch": 2,
+    "corroborated_independent": 1
+  },
   "source_status_counts": {
-    "source_reported_model_family": 87,
     "not_yet_verified": 485,
+    "source_reported_model_family": 87,
     "previously_sourced_needs_revalidation": 52
   },
   "year_coverage": [
@@ -85,17 +97,5 @@
       "populated_sales": 6
     }
   ],
-  "interpretation": "Structural eligibility does not imply independent source validation. Use source_verified and verified_for_comparison for manufacturer-backed annual sales; other sales remain contextual or unresolved.",
-  "source_verified_sales_rows": 28,
-  "verified_for_comparison": 28,
-  "verification_status_counts": {
-    "not_audited": 572,
-    "verified_manufacturer": 17,
-    "corrected_manufacturer": 11,
-    "partial_year": 4,
-    "secondary_only": 14,
-    "conflict_unresolved": 3,
-    "scope_mismatch": 2,
-    "corroborated_independent": 1
-  }
+  "interpretation": "Ready means structurally suitable for full-year comparison based on existing labels. It is not independent verification of source accuracy or comparable vehicle definitions."
 }
