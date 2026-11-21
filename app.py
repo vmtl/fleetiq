@@ -263,8 +263,8 @@ st.info(
     "Missing model-year rows are left blank, not treated as zero."
 )
 
-overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab, hotspots_tab = st.tabs(
-    ["Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data", "Failure Hotspots"]
+hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab = st.tabs(
+    ["Failure Hotspots", "Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data"]
 )
 
 with overview_tab:
