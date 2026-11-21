@@ -7,6 +7,7 @@ from __future__ import annotations
 from pathlib import Path
 import pandas as pd
 import streamlit as st
+from catalog_quality import audit_maintenance_catalog
 
 VANS = ("Ford Transit", "Ram ProMaster", "Mercedes Sprinter", "Chevrolet Express")
 YEARS = tuple(range(2014, 2027))
@@ -70,12 +71,13 @@ def render_coverage_audit(data_dir: Path) -> None:
         catalog = pd.read_csv(data_dir / "maintenance_schedules.csv")
         table = build_coverage_matrix(catalog)
         stats = coverage_stats(table)
+        audited, audit_issues = audit_maintenance_catalog(catalog)
     except (OSError, pd.errors.ParserError, ValueError) as exc:
         st.warning(f"Unable to assess manufacturer coverage: {exc}")
         return
     a, b, c = st.columns(3)
     a.metric("Applicable van-year groups", stats["target_combinations"])
-    b.metric("Groups with verified operations", stats["with_any_verified_operations"])
+    b.metric("Groups with sourced intervals", stats["with_any_verified_operations"])
     c.metric("Fully audited configurations", stats["fully_certified"])
     st.caption(
         "Coverage is incomplete. A manufacturer-backed interval is not "
@@ -106,6 +108,21 @@ def render_coverage_audit(data_dir: Path) -> None:
             data=table.to_csv(index=False).encode("utf-8"),
             file_name="fleetiq_maintenance_coverage.csv", mime="text/csv",
             key="coverage_export",
+        )
+    with st.expander("Source audit and record-level confidence"):
+        st.metric("Documented schedule rows", len(audited))
+        st.metric("Catalog integrity flags", len(audit_issues))
+        st.caption(
+            "HTTPS links and descriptions are evidence references, not proof "
+            "that a complete manual or every powertrain was independently reviewed."
+        )
+        if not audit_issues.empty:
+            st.dataframe(audit_issues, hide_index=True, use_container_width=True)
+        st.download_button(
+            "Export catalog source-audit records",
+            audited.to_csv(index=False).encode("utf-8"),
+            "fleetiq_source_quality.csv", mime="text/csv",
+            key="catalog_quality_export",
         )
     st.warning(
         "Service predictions are limited to supported, year-specific tasks. "

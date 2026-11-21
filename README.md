@@ -21,15 +21,15 @@ The application now contains **14 primary tabs** (including Vehicle report and F
 ## Business-facing pilot features
 
 - **Vehicle report:** Download a consolidated HTML research report for the selected van and model year, with manufacturer references, NHTSA report counts, contextual repair-cost examples and a link to the NHTSA VIN recall verification page.
-- **Fleet workspace:** Manage basic anonymized unit IDs, odometer readings and completed service transactions for *one Streamlit session*. Export a ZIP to keep records; re-import that ZIP later. There is **no authentication, account isolation, server-side database or guaranteed persistence** yet; don't upload sensitive VINs, customer information or identifiable driver records.
+- **Fleet workspace:** Manage basic anonymized unit IDs, odometer readings and completed service transactions for *one Streamlit session*. Export a ZIP to keep records; re-import that ZIP later. There is **no authentication, account isolation, server-side database or guaranteed persistence** yet; don't upload sensitive VINs, customer information or identifiable driver records. The pilot now supports odometer updates and source-based mileage reminders only when matching completed service history exists.
 - **Route economics:** Estimate weekly delivery-route contribution from user-entered revenue, driver pay, fuel, insurance, maintenance allowance and missed routes.
 - **Predictive readiness gate:** Evaluate the shape of an anonymized, consented historical repair-outcome cohort. There is no trained time-to-failure model, and complaint counts must never be used as fleet failure probabilities.
 
 ## OEM maintenance catalog transparency
 
-**The 2014–2026 source inventory is implemented but the full service database is NOT complete.** A coverage audit in Maintenance timing shows every intended van/year, year-matched verified operations and source gaps. We added partial 2021–2023 manufacturer-backed operations for specified Ford Transit configurations and 2021 Chevrolet Express normal/severe-duty schedules. Most model-year and powertrain combinations still require review. See [DATA_CATALOG_AUDIT.md](DATA_CATALOG_AUDIT.md). The 2014 US full-size Ford Transit is not applicable.
+**The 2014–2026 source inventory is implemented but the full service database is NOT complete.** A coverage audit in Maintenance timing shows every intended van/year, year-matched verified operations and source gaps. We added partial 2018–2019 Ram ProMaster manufacturer-guide operations, 2021–2023 Ford Transit tasks, and 2021 Chevrolet Express normal/severe-duty schedules. Most model-year and powertrain combinations still require review. See [DATA_CATALOG_AUDIT.md](DATA_CATALOG_AUDIT.md). The 2014 US full-size Ford Transit is not applicable.
 
-See [COMMERCIAL_READINESS.md](COMMERCIAL_READINESS.md) for work still needed before FleetIQ can be sold as a secured fleet-management service.
+See [COMMERCIAL_READINESS.md](COMMERCIAL_READINESS.md) for work still needed before FleetIQ can be sold as a secured fleet-management service, [DEPLOYMENT_AND_SECURITY.md](DEPLOYMENT_AND_SECURITY.md) for the undeployed PostgreSQL design, and [PORTFOLIO_CASE_STUDY_EVIDENCE.md](PORTFOLIO_CASE_STUDY_EVIDENCE.md) for reproducible case-study evidence.
 
 ## Quick start
 
@@ -43,7 +43,7 @@ The NHTSA recall feature calls the public NHTSA API on request and caches succes
 For validation, install `pytest` then run:
 
 ```bash
-python -m pytest -q tests/test_release_intelligence.py tests/test_maintenance_forecast.py tests/test_maintenance_intelligence.py tests/test_business_foundations.py tests/test_repair_intelligence.py
+python -m pytest -q tests/test_release_intelligence.py tests/test_maintenance_forecast.py tests/test_maintenance_intelligence.py tests/test_business_foundations.py tests/test_commercial_engineering.py tests/test_repair_intelligence.py
 ```
 
 GitHub Actions checks the new release features, verifies cost calculations and data contracts, and runs Streamlit's application startup test.

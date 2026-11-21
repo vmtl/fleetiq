@@ -159,13 +159,33 @@ st.markdown("""
  border:1px solid rgba(111,203,241,.19); border-radius:18px;
  padding:8px; backdrop-filter:blur(14px); box-shadow:0 8px 30px rgba(0,0,0,.12);
 }
+/* Let the complete 14-tab workspace remain navigable on smaller screens. */
+[data-testid="stTabs"] [role="tablist"] {
+  overflow-x:auto;
+  max-width:100%;
+  scrollbar-width:thin;
+  scroll-snap-type:x proximity;
+}
+[data-testid="stTabs"] [role="tab"] {
+  white-space:nowrap;
+  flex-shrink:0;
+  scroll-snap-align:start;
+}
+@media(max-width:760px) {
+  .block-container {padding:0.8rem 0.7rem 3rem;}
+  [data-testid="stMetric"] {padding:9px 10px;}
+  [data-testid="stPlotlyChart"] {padding:2px;}
+  [data-testid="stDataFrame"] {max-width:100%;overflow-x:auto;}
+  h1 {font-size:1.65rem!important;}
+}
 </style>
 """, unsafe_allow_html=True)
 
 st.title("🚐 FleetIQ")
-st.subheader("Cargo Van & Commercial Truck Complaint Intelligence")
+st.subheader("Commercial Vehicle Research & Fleet Planning")
 st.caption(
-    "Source: NHTSA consumer complaints. Counts describe reported complaints, "
+    "Explore documented issues, OEM maintenance, recall campaigns, vehicle reports, " 
+    "and illustrative business costs. NHTSA counts describe reported complaints, "
     "not failure rates or reliability scores. Truck chassis are not necessarily box-bodied vehicles."
 )
 

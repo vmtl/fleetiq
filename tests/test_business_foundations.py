@@ -94,11 +94,14 @@ def test_report_refuses_wrong_year_manufacturer_schedules():
     ])
     repairs = pd.read_csv(ROOT / "data" / "repair_costs.csv")
     result = vehicle_report(
-        complaints, schedules(), repairs, "Ford Transit", 2024, 125000
+        complaints, schedules(), repairs, "Ford Transit", 2025, 125000
     )
     assert result["unique_complaints"] == 0
     assert result["maintenance"].empty
     assert "not a" in report_html(result).lower()
+    scoped = vehicle_report(complaints, schedules(), repairs, "Ford Transit", 2024, 125000)
+    assert len(scoped["maintenance"]) >= 5
+    assert scoped["unique_complaints"] == 0
 
 
 def test_delivery_route_profit_calculations():
