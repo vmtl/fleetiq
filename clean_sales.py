@@ -35,6 +35,30 @@ def clean(input_file: Path, output_file: Path, report_file: Path, as_of: date | 
     # Preserve exact original row count; never discard uncertain data.
     df["source_status"] = df["notes"].str.extract(r"Status:\s*([a-z_]+)", expand=False).fillna("status_missing")
     df["source_status"] = df["source_status"].where(df["source_status"].isin(STATUSES), "status_missing_or_unknown")
+    # Evidence ledger is independent of third-party source labels.
+    ledger_path = input_file.parent / "sales_verification.csv"
+    df["source_verification_status"] = "not_audited"
+    if ledger_path.exists():
+        audit = pd.read_csv(ledger_path, dtype="string", keep_default_na=False)
+        required_audit = {"vehicle", "calendar_year", "validated_sales", "status"}
+        if not required_audit.issubset(audit.columns):
+            raise ValueError("Sales verification ledger is missing mandatory columns")
+        audit["calendar_year"] = pd.to_numeric(audit["calendar_year"], errors="raise").astype("Int64")
+        audit["validated_sales"] = pd.to_numeric(audit["validated_sales"], errors="raise")
+        if audit.duplicated(["vehicle", "calendar_year"]).any():
+            raise ValueError("Duplicate vehicle-year combinations in verification ledger")
+        temp = df[["vehicle", "calendar_year", "us_sales"]].merge(
+            audit[["vehicle", "calendar_year", "validated_sales", "status"]],
+            on=["vehicle", "calendar_year"], how="left", validate="one_to_one"
+        )
+        mismatched = temp["validated_sales"].notna() & temp["us_sales"].ne(temp["validated_sales"]).fillna(True)
+        if mismatched.any():
+            raise ValueError("Verified sales ledger disagrees with source sales.csv; reconcile before cleaning")
+        df["source_verification_status"] = temp["status"].fillna("not_audited").replace("", "not_audited").values
+    df["source_verified"] = df["source_verification_status"].isin(
+        ["verified_manufacturer", "corrected_manufacturer"]
+    )
+
     df["sales_available"] = df["us_sales"].notna()
     df["is_zero_sales"] = df["sales_available"] & df["us_sales"].eq(0)
     df["is_complete_calendar_year"] = df["calendar_year"].lt(as_of.year).fillna(False)
@@ -67,6 +91,9 @@ def clean(input_file: Path, output_file: Path, report_file: Path, as_of: date | 
         & ~df["needs_source_revalidation"] & ~duplicated
         & df["vehicle"].ne("")
     )
+    df["verified_for_comparison"] = (
+        df["ready_for_full_year_comparison"] & df["source_verified"]
+    )
     df = df.sort_values(["vehicle", "calendar_year"], kind="stable", na_position="last")
     output_file.parent.mkdir(parents=True, exist_ok=True)
     report_file.parent.mkdir(parents=True, exist_ok=True)
@@ -86,6 +113,10 @@ def clean(input_file: Path, output_file: Path, report_file: Path, as_of: date | 
         "populated_values_needing_source_revalidation": int((df["sales_available"] & df["needs_source_revalidation"]).sum()),
         "populated_current_or_future_year_values": int((df["sales_available"] & ~df["is_complete_calendar_year"]).sum()),
         "ready_for_full_year_comparison": int(df["ready_for_full_year_comparison"].sum()),
+        "source_verified_sales_rows": int((df["sales_available"] & df["source_verified"]).sum()),
+        "verified_for_comparison": int(df["verified_for_comparison"].sum()),
+        "verification_status_counts": {str(k): int(v) for k, v in df["source_verification_status"].value_counts().items()},
+
         "source_status_counts": {str(k): int(v) for k,v in df["source_status"].value_counts().items()},
         "year_coverage": [
             {"year": int(y), "total_rows": int(len(g)), "populated_sales": int(g["sales_available"].sum())}
