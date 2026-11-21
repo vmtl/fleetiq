@@ -41,8 +41,8 @@ vehicle,calendar_year,original_sales,validated_sales,status,evidence_source,evid
 "Chevrolet Express",2014,79352,79352,"secondary_only","","","Original aggregator value; no manufacturer-level nameplate proof checked",2026-11-21
 "Chevrolet Express",2015,63382,63382,"secondary_only","","","Original aggregator value; no manufacturer-level nameplate proof checked",2026-11-21
 "Chevrolet Express",2016,68007,68007,"secondary_only","","","Original aggregator value; no manufacturer-level nameplate proof checked",2026-11-21
-"Chevrolet Express",2017,69164,69164,"gm_report_reproduced","GM reported via GM Authority","https://gmauthority.com/blog/2019/01/gm-fourth-quarter-2018-sales-figures-numbers-results-united-states-q4/","Exact U.S. calendar-year nameplate figure in cited publication",2026-11-21
-"Chevrolet Express",2018,66963,81239,"gm_report_reproduced","GM reported via GM Authority","https://gmauthority.com/blog/2019/01/gm-fourth-quarter-2018-sales-figures-numbers-results-united-states-q4/","Exact U.S. calendar-year nameplate figure in cited publication",2026-11-21
+"Chevrolet Express",2017,69164,69164,"verified_manufacturer","GM original year-end report","https://investor.gm.com/static-files/6a2addb6-5173-48ec-912f-96b1da03fe79","Exact U.S. calendar-year nameplate figure in cited publication",2026-11-21
+"Chevrolet Express",2018,66963,81239,"corrected_manufacturer","GM original year-end report","https://investor.gm.com/static-files/6a2addb6-5173-48ec-912f-96b1da03fe79","Exact U.S. calendar-year nameplate figure in cited publication",2026-11-21
 "Chevrolet Express",2019,77457,77457,"secondary_only","","","Original aggregator value; no manufacturer-level nameplate proof checked",2026-11-21
 "Chevrolet Express",2020,55040,55040,"secondary_only","","","Original aggregator value; no manufacturer-level nameplate proof checked",2026-11-21
 "Chevrolet Express",2021,44357,44357,"secondary_only","","","Original aggregator value; no manufacturer-level nameplate proof checked",2026-11-21
