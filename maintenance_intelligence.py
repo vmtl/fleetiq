@@ -11,6 +11,7 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 from maintenance_forecast import render_forecast_overview
+from maintenance_coverage import render_coverage_audit
 
 SCHEDULE_REQUIRED = {
     "vehicle", "model_year_start", "model_year_end", "task",
@@ -155,6 +156,9 @@ def render_maintenance_tab(data_dir: Path) -> None:
     except (OSError, ValueError, pd.errors.ParserError) as exc:
         st.error(f"Unable to validate maintenance references: {exc}")
         return
+
+    with st.expander("Catalog coverage: 2014–2026 (verification audit)", expanded=False):
+        render_coverage_audit(data_dir)
 
     a, b, c = st.columns([2, 1, 1])
     with a:
