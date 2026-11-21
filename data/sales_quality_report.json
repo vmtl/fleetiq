@@ -1,0 +1,89 @@
+{
+  "as_of_date": "2026-11-20",
+  "input_file": "data/sales.csv",
+  "output_file": "data/sales_clean.csv",
+  "total_rows": 624,
+  "platforms": 48,
+  "populated_sales": 139,
+  "missing_sales": 485,
+  "reported_zero_sales": 2,
+  "duplicate_vehicle_year_rows": 0,
+  "invalid_year_rows": 0,
+  "invalid_sales_value_rows": 0,
+  "populated_values_needing_source_revalidation": 52,
+  "populated_current_or_future_year_values": 6,
+  "ready_for_full_year_comparison": 85,
+  "source_status_counts": {
+    "source_reported_model_family": 87,
+    "not_yet_verified": 485,
+    "previously_sourced_needs_revalidation": 52
+  },
+  "year_coverage": [
+    {
+      "year": 2014,
+      "total_rows": 48,
+      "populated_sales": 10
+    },
+    {
+      "year": 2015,
+      "total_rows": 48,
+      "populated_sales": 12
+    },
+    {
+      "year": 2016,
+      "total_rows": 48,
+      "populated_sales": 12
+    },
+    {
+      "year": 2017,
+      "total_rows": 48,
+      "populated_sales": 12
+    },
+    {
+      "year": 2018,
+      "total_rows": 48,
+      "populated_sales": 12
+    },
+    {
+      "year": 2019,
+      "total_rows": 48,
+      "populated_sales": 11
+    },
+    {
+      "year": 2020,
+      "total_rows": 48,
+      "populated_sales": 11
+    },
+    {
+      "year": 2021,
+      "total_rows": 48,
+      "populated_sales": 11
+    },
+    {
+      "year": 2022,
+      "total_rows": 48,
+      "populated_sales": 12
+    },
+    {
+      "year": 2023,
+      "total_rows": 48,
+      "populated_sales": 10
+    },
+    {
+      "year": 2024,
+      "total_rows": 48,
+      "populated_sales": 10
+    },
+    {
+      "year": 2025,
+      "total_rows": 48,
+      "populated_sales": 10
+    },
+    {
+      "year": 2026,
+      "total_rows": 48,
+      "populated_sales": 6
+    }
+  ],
+  "interpretation": "Ready means structurally suitable for full-year comparison based on existing labels. It is not independent verification of source accuracy or comparable vehicle definitions."
+}
