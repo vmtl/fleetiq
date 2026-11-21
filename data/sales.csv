@@ -1,0 +1,625 @@
+vehicle,calendar_year,us_sales,source_name,source_url,notes
+Ford Transit Connect,2014,43210.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2015,52221.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2016,43232.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2017,34473.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2018,31923.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2019,41597.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2020,34596.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2021,26112.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2022,25140.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2023,18050.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2024,8781.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2025,0.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-connect-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Ford Transit Connect,2026,,,, | Status: not_yet_verified
+Ram ProMaster City,2014,,,, | Status: not_yet_verified
+Ram ProMaster City,2015,11124.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2016,15617.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2017,15584.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2018,13788.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2019,12920.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2020,10409.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2021,14579.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2022,19883.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2023,9792.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2024,11.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2025,0.0,CarFigures,https://carfigures.com/widget/us_ram_promaster-city,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ram ProMaster City,2026,,,, | Status: not_yet_verified
+Mercedes Metris,2014,,,, | Status: not_yet_verified
+Mercedes Metris,2015,1370.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2016,5984.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2017,7579.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2018,8391.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2019,11718.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2020,12994.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2021,13054.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2022,17656.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2023,23286.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2024,3128.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2025,1540.0,GoodCarBadCar,https://www.goodcarbadcar.net/usa-canada-mercedes-benz-metris-sales-figures-yearly-monthly/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Mercedes Metris,2026,,,, | Status: not_yet_verified
+Chevrolet City Express,2014,530.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-city-express-sales-figures-usa-canada/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Chevrolet City Express,2015,10283.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-city-express-sales-figures-usa-canada/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Chevrolet City Express,2016,7019.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-city-express-sales-figures-usa-canada/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Chevrolet City Express,2017,8348.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-city-express-sales-figures-usa-canada/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Chevrolet City Express,2018,2107.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-city-express-sales-figures-usa-canada/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Chevrolet City Express,2019,,,, | Status: not_yet_verified
+Chevrolet City Express,2020,,,, | Status: not_yet_verified
+Chevrolet City Express,2021,,,, | Status: not_yet_verified
+Chevrolet City Express,2022,,,, | Status: not_yet_verified
+Chevrolet City Express,2023,,,, | Status: not_yet_verified
+Chevrolet City Express,2024,,,, | Status: not_yet_verified
+Chevrolet City Express,2025,,,, | Status: not_yet_verified
+Chevrolet City Express,2026,,,, | Status: not_yet_verified
+Nissan NV200,2014,13385.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv200-sales-figures-usa-canada/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV200,2015,17317.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv200-sales-figures-usa-canada/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV200,2016,18523.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv200-sales-figures-usa-canada/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV200,2017,18602.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv200-sales-figures-usa-canada/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV200,2018,18628.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv200-sales-figures-usa-canada/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV200,2019,18768.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv200-sales-figures-usa-canada/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV200,2020,17126.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv200-sales-figures-usa-canada/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV200,2021,17359.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv200-sales-figures-usa-canada/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV200,2022,134.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv200-sales-figures-usa-canada/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV200,2023,,,, | Status: not_yet_verified
+Nissan NV200,2024,,,, | Status: not_yet_verified
+Nissan NV200,2025,,,, | Status: not_yet_verified
+Nissan NV200,2026,,,, | Status: not_yet_verified
+Ford Transit,2014,20448.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2015,117577.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2016,143244.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2017,127360.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2018,137794.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2019,153867.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2020,131557.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2021,99745.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2022,99382.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2023,129009.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2024,152738.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2025,161797.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ford Transit,2026,133354.0,GoodCarBadCar,https://www.goodcarbadcar.net/ford-transit-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2014,18039.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2015,28345.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2016,39691.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2017,40483.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2018,46600.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2019,56410.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2020,50553.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2021,63362.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2022,60937.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2023,81663.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2024,65868.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2025,57591.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Ram ProMaster,2026,44030.0,GoodCarBadCar,https://www.goodcarbadcar.net/ram-promaster-sales-figures-usa-canada/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2014,25745.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2015,28519.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2016,28320.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2017,27415.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2018,29787.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2019,29757.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2020,37513.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2021,40534.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2022,46533.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2023,46229.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2024,43425.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,Model-name alias corrected; historical value still requires source revalidation. 2024 source has missing November monthly data; annual total may be understated | Status: previously_sourced_needs_revalidation
+Mercedes Sprinter,2025,38460.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Mercedes Sprinter,2026,27500.0,GoodCarBadCar,https://www.goodcarbadcar.net/mercedes-benz-sprinter-sales-figures/,"Model-name alias corrected; historical value still requires source revalidation. Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2014,79352.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2015,63382.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2016,68007.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2017,69164.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2018,66963.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2019,77457.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2020,55040.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2021,44357.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2022,52796.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2023,40659.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2024,44221.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2025,58578.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+Chevrolet Express,2026,39143.0,GoodCarBadCar,https://www.goodcarbadcar.net/chevrolet-express-sales-figures/,"Calendar-year sales, not model-year registrations | Status: previously_sourced_needs_revalidation"
+GMC Savana,2014,26641.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2015,21992.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2016,20607.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2017,29679.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2018,19685.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2019,24227.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2020,15108.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2021,36008.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2022,25569.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2023,21788.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2024,42541.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2025,20679.0,GoodCarBadCar,https://www.goodcarbadcar.net/gmc-savana-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+GMC Savana,2026,,,, | Status: not_yet_verified
+Nissan NV,2014,14890.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV,2015,16958.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV,2016,17873.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV,2017,17858.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV,2018,16902.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV,2019,20022.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV,2020,15248.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV,2021,11374.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV,2022,12.0,GoodCarBadCar,https://www.goodcarbadcar.net/nissan-nv-sales-figures/,Calendar-year model-family sales; not model-year or VIO; source may include passenger/body variants. | Status: source_reported_model_family
+Nissan NV,2023,,,, | Status: not_yet_verified
+Nissan NV,2024,,,, | Status: not_yet_verified
+Nissan NV,2025,,,, | Status: not_yet_verified
+Nissan NV,2026,,,, | Status: not_yet_verified
+Ford E-Transit,2014,,,, | Status: not_yet_verified
+Ford E-Transit,2015,,,, | Status: not_yet_verified
+Ford E-Transit,2016,,,, | Status: not_yet_verified
+Ford E-Transit,2017,,,, | Status: not_yet_verified
+Ford E-Transit,2018,,,, | Status: not_yet_verified
+Ford E-Transit,2019,,,, | Status: not_yet_verified
+Ford E-Transit,2020,,,, | Status: not_yet_verified
+Ford E-Transit,2021,,,, | Status: not_yet_verified
+Ford E-Transit,2022,6500.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-transit-sales-numbers/ford-e-transit-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Transit,2023,7672.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-transit-sales-numbers/ford-e-transit-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Transit,2024,12610.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-transit-sales-numbers/ford-e-transit-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Transit,2025,5186.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-transit-sales-numbers/ford-e-transit-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Transit,2026,793.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-transit-sales-numbers/ford-e-transit-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Mercedes eSprinter,2014,,,, | Status: not_yet_verified
+Mercedes eSprinter,2015,,,, | Status: not_yet_verified
+Mercedes eSprinter,2016,,,, | Status: not_yet_verified
+Mercedes eSprinter,2017,,,, | Status: not_yet_verified
+Mercedes eSprinter,2018,,,, | Status: not_yet_verified
+Mercedes eSprinter,2019,,,, | Status: not_yet_verified
+Mercedes eSprinter,2020,,,, | Status: not_yet_verified
+Mercedes eSprinter,2021,,,, | Status: not_yet_verified
+Mercedes eSprinter,2022,,,, | Status: not_yet_verified
+Mercedes eSprinter,2023,,,, | Status: not_yet_verified
+Mercedes eSprinter,2024,,,, | Status: not_yet_verified
+Mercedes eSprinter,2025,,,, | Status: not_yet_verified
+Mercedes eSprinter,2026,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2014,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2015,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2016,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2017,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2018,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2019,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2020,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2021,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2022,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2023,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2024,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2025,,,, | Status: not_yet_verified
+Chevrolet Express Cutaway,2026,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2014,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2015,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2016,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2017,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2018,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2019,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2020,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2021,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2022,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2023,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2024,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2025,,,, | Status: not_yet_verified
+GMC Savana Cutaway,2026,,,, | Status: not_yet_verified
+Ford E-Series,2014,103263.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2015,50788.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2016,54245.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2017,53304.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2018,47936.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2019,45063.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2020,37001.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2021,37122.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2022,32150.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2023,42957.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2024,40778.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2025,40968.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford E-Series,2026,30195.0,Ford Authority,https://fordauthority.com/fmc/ford-motor-company-sales-numbers/ford-sales-numbers/ford-van-sales-numbers/,U.S. calendar-year model-family deliveries; not vehicles in operation. E-Series is commercial chassis. | Status: source_reported_model_family
+Ford F-450,2014,,,, | Status: not_yet_verified
+Ford F-450,2015,,,, | Status: not_yet_verified
+Ford F-450,2016,,,, | Status: not_yet_verified
+Ford F-450,2017,,,, | Status: not_yet_verified
+Ford F-450,2018,,,, | Status: not_yet_verified
+Ford F-450,2019,,,, | Status: not_yet_verified
+Ford F-450,2020,,,, | Status: not_yet_verified
+Ford F-450,2021,,,, | Status: not_yet_verified
+Ford F-450,2022,,,, | Status: not_yet_verified
+Ford F-450,2023,,,, | Status: not_yet_verified
+Ford F-450,2024,,,, | Status: not_yet_verified
+Ford F-450,2025,,,, | Status: not_yet_verified
+Ford F-450,2026,,,, | Status: not_yet_verified
+Ford F-550,2014,,,, | Status: not_yet_verified
+Ford F-550,2015,,,, | Status: not_yet_verified
+Ford F-550,2016,,,, | Status: not_yet_verified
+Ford F-550,2017,,,, | Status: not_yet_verified
+Ford F-550,2018,,,, | Status: not_yet_verified
+Ford F-550,2019,,,, | Status: not_yet_verified
+Ford F-550,2020,,,, | Status: not_yet_verified
+Ford F-550,2021,,,, | Status: not_yet_verified
+Ford F-550,2022,,,, | Status: not_yet_verified
+Ford F-550,2023,,,, | Status: not_yet_verified
+Ford F-550,2024,,,, | Status: not_yet_verified
+Ford F-550,2025,,,, | Status: not_yet_verified
+Ford F-550,2026,,,, | Status: not_yet_verified
+Ford F-650,2014,,,, | Status: not_yet_verified
+Ford F-650,2015,,,, | Status: not_yet_verified
+Ford F-650,2016,,,, | Status: not_yet_verified
+Ford F-650,2017,,,, | Status: not_yet_verified
+Ford F-650,2018,,,, | Status: not_yet_verified
+Ford F-650,2019,,,, | Status: not_yet_verified
+Ford F-650,2020,,,, | Status: not_yet_verified
+Ford F-650,2021,,,, | Status: not_yet_verified
+Ford F-650,2022,,,, | Status: not_yet_verified
+Ford F-650,2023,,,, | Status: not_yet_verified
+Ford F-650,2024,,,, | Status: not_yet_verified
+Ford F-650,2025,,,, | Status: not_yet_verified
+Ford F-650,2026,,,, | Status: not_yet_verified
+Ford F-750,2014,,,, | Status: not_yet_verified
+Ford F-750,2015,,,, | Status: not_yet_verified
+Ford F-750,2016,,,, | Status: not_yet_verified
+Ford F-750,2017,,,, | Status: not_yet_verified
+Ford F-750,2018,,,, | Status: not_yet_verified
+Ford F-750,2019,,,, | Status: not_yet_verified
+Ford F-750,2020,,,, | Status: not_yet_verified
+Ford F-750,2021,,,, | Status: not_yet_verified
+Ford F-750,2022,,,, | Status: not_yet_verified
+Ford F-750,2023,,,, | Status: not_yet_verified
+Ford F-750,2024,,,, | Status: not_yet_verified
+Ford F-750,2025,,,, | Status: not_yet_verified
+Ford F-750,2026,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2014,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2015,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2016,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2017,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2018,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2019,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2020,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2021,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2022,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2023,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2024,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2025,,,, | Status: not_yet_verified
+Ram 3500 Cab Chassis,2026,,,, | Status: not_yet_verified
+Ram 4500,2014,,,, | Status: not_yet_verified
+Ram 4500,2015,,,, | Status: not_yet_verified
+Ram 4500,2016,,,, | Status: not_yet_verified
+Ram 4500,2017,,,, | Status: not_yet_verified
+Ram 4500,2018,,,, | Status: not_yet_verified
+Ram 4500,2019,,,, | Status: not_yet_verified
+Ram 4500,2020,,,, | Status: not_yet_verified
+Ram 4500,2021,,,, | Status: not_yet_verified
+Ram 4500,2022,,,, | Status: not_yet_verified
+Ram 4500,2023,,,, | Status: not_yet_verified
+Ram 4500,2024,,,, | Status: not_yet_verified
+Ram 4500,2025,,,, | Status: not_yet_verified
+Ram 4500,2026,,,, | Status: not_yet_verified
+Ram 5500,2014,,,, | Status: not_yet_verified
+Ram 5500,2015,,,, | Status: not_yet_verified
+Ram 5500,2016,,,, | Status: not_yet_verified
+Ram 5500,2017,,,, | Status: not_yet_verified
+Ram 5500,2018,,,, | Status: not_yet_verified
+Ram 5500,2019,,,, | Status: not_yet_verified
+Ram 5500,2020,,,, | Status: not_yet_verified
+Ram 5500,2021,,,, | Status: not_yet_verified
+Ram 5500,2022,,,, | Status: not_yet_verified
+Ram 5500,2023,,,, | Status: not_yet_verified
+Ram 5500,2024,,,, | Status: not_yet_verified
+Ram 5500,2025,,,, | Status: not_yet_verified
+Ram 5500,2026,,,, | Status: not_yet_verified
+Chevrolet G4500,2014,,,, | Status: not_yet_verified
+Chevrolet G4500,2015,,,, | Status: not_yet_verified
+Chevrolet G4500,2016,,,, | Status: not_yet_verified
+Chevrolet G4500,2017,,,, | Status: not_yet_verified
+Chevrolet G4500,2018,,,, | Status: not_yet_verified
+Chevrolet G4500,2019,,,, | Status: not_yet_verified
+Chevrolet G4500,2020,,,, | Status: not_yet_verified
+Chevrolet G4500,2021,,,, | Status: not_yet_verified
+Chevrolet G4500,2022,,,, | Status: not_yet_verified
+Chevrolet G4500,2023,,,, | Status: not_yet_verified
+Chevrolet G4500,2024,,,, | Status: not_yet_verified
+Chevrolet G4500,2025,,,, | Status: not_yet_verified
+Chevrolet G4500,2026,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2014,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2015,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2016,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2017,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2018,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2019,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2020,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2021,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2022,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2023,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2024,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2025,,,, | Status: not_yet_verified
+Chevrolet Low Cab Forward,2026,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2014,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2015,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2016,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2017,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2018,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2019,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2020,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2021,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2022,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2023,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2024,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2025,,,, | Status: not_yet_verified
+Chevrolet Medium Duty,2026,,,, | Status: not_yet_verified
+Isuzu NPR,2014,,,, | Status: not_yet_verified
+Isuzu NPR,2015,,,, | Status: not_yet_verified
+Isuzu NPR,2016,,,, | Status: not_yet_verified
+Isuzu NPR,2017,,,, | Status: not_yet_verified
+Isuzu NPR,2018,,,, | Status: not_yet_verified
+Isuzu NPR,2019,,,, | Status: not_yet_verified
+Isuzu NPR,2020,,,, | Status: not_yet_verified
+Isuzu NPR,2021,,,, | Status: not_yet_verified
+Isuzu NPR,2022,,,, | Status: not_yet_verified
+Isuzu NPR,2023,,,, | Status: not_yet_verified
+Isuzu NPR,2024,,,, | Status: not_yet_verified
+Isuzu NPR,2025,,,, | Status: not_yet_verified
+Isuzu NPR,2026,,,, | Status: not_yet_verified
+Isuzu NQR,2014,,,, | Status: not_yet_verified
+Isuzu NQR,2015,,,, | Status: not_yet_verified
+Isuzu NQR,2016,,,, | Status: not_yet_verified
+Isuzu NQR,2017,,,, | Status: not_yet_verified
+Isuzu NQR,2018,,,, | Status: not_yet_verified
+Isuzu NQR,2019,,,, | Status: not_yet_verified
+Isuzu NQR,2020,,,, | Status: not_yet_verified
+Isuzu NQR,2021,,,, | Status: not_yet_verified
+Isuzu NQR,2022,,,, | Status: not_yet_verified
+Isuzu NQR,2023,,,, | Status: not_yet_verified
+Isuzu NQR,2024,,,, | Status: not_yet_verified
+Isuzu NQR,2025,,,, | Status: not_yet_verified
+Isuzu NQR,2026,,,, | Status: not_yet_verified
+Isuzu NRR,2014,,,, | Status: not_yet_verified
+Isuzu NRR,2015,,,, | Status: not_yet_verified
+Isuzu NRR,2016,,,, | Status: not_yet_verified
+Isuzu NRR,2017,,,, | Status: not_yet_verified
+Isuzu NRR,2018,,,, | Status: not_yet_verified
+Isuzu NRR,2019,,,, | Status: not_yet_verified
+Isuzu NRR,2020,,,, | Status: not_yet_verified
+Isuzu NRR,2021,,,, | Status: not_yet_verified
+Isuzu NRR,2022,,,, | Status: not_yet_verified
+Isuzu NRR,2023,,,, | Status: not_yet_verified
+Isuzu NRR,2024,,,, | Status: not_yet_verified
+Isuzu NRR,2025,,,, | Status: not_yet_verified
+Isuzu NRR,2026,,,, | Status: not_yet_verified
+Isuzu FTR,2014,,,, | Status: not_yet_verified
+Isuzu FTR,2015,,,, | Status: not_yet_verified
+Isuzu FTR,2016,,,, | Status: not_yet_verified
+Isuzu FTR,2017,,,, | Status: not_yet_verified
+Isuzu FTR,2018,,,, | Status: not_yet_verified
+Isuzu FTR,2019,,,, | Status: not_yet_verified
+Isuzu FTR,2020,,,, | Status: not_yet_verified
+Isuzu FTR,2021,,,, | Status: not_yet_verified
+Isuzu FTR,2022,,,, | Status: not_yet_verified
+Isuzu FTR,2023,,,, | Status: not_yet_verified
+Isuzu FTR,2024,,,, | Status: not_yet_verified
+Isuzu FTR,2025,,,, | Status: not_yet_verified
+Isuzu FTR,2026,,,, | Status: not_yet_verified
+Isuzu N-Series,2014,,,, | Status: not_yet_verified
+Isuzu N-Series,2015,,,, | Status: not_yet_verified
+Isuzu N-Series,2016,,,, | Status: not_yet_verified
+Isuzu N-Series,2017,,,, | Status: not_yet_verified
+Isuzu N-Series,2018,,,, | Status: not_yet_verified
+Isuzu N-Series,2019,,,, | Status: not_yet_verified
+Isuzu N-Series,2020,,,, | Status: not_yet_verified
+Isuzu N-Series,2021,,,, | Status: not_yet_verified
+Isuzu N-Series,2022,,,, | Status: not_yet_verified
+Isuzu N-Series,2023,,,, | Status: not_yet_verified
+Isuzu N-Series,2024,,,, | Status: not_yet_verified
+Isuzu N-Series,2025,,,, | Status: not_yet_verified
+Isuzu N-Series,2026,,,, | Status: not_yet_verified
+Hino Commercial Truck,2014,,,, | Status: not_yet_verified
+Hino Commercial Truck,2015,,,, | Status: not_yet_verified
+Hino Commercial Truck,2016,,,, | Status: not_yet_verified
+Hino Commercial Truck,2017,,,, | Status: not_yet_verified
+Hino Commercial Truck,2018,,,, | Status: not_yet_verified
+Hino Commercial Truck,2019,,,, | Status: not_yet_verified
+Hino Commercial Truck,2020,,,, | Status: not_yet_verified
+Hino Commercial Truck,2021,,,, | Status: not_yet_verified
+Hino Commercial Truck,2022,,,, | Status: not_yet_verified
+Hino Commercial Truck,2023,,,, | Status: not_yet_verified
+Hino Commercial Truck,2024,,,, | Status: not_yet_verified
+Hino Commercial Truck,2025,,,, | Status: not_yet_verified
+Hino Commercial Truck,2026,,,, | Status: not_yet_verified
+Freightliner M2,2014,,,, | Status: not_yet_verified
+Freightliner M2,2015,,,, | Status: not_yet_verified
+Freightliner M2,2016,,,, | Status: not_yet_verified
+Freightliner M2,2017,,,, | Status: not_yet_verified
+Freightliner M2,2018,,,, | Status: not_yet_verified
+Freightliner M2,2019,,,, | Status: not_yet_verified
+Freightliner M2,2020,,,, | Status: not_yet_verified
+Freightliner M2,2021,,,, | Status: not_yet_verified
+Freightliner M2,2022,,,, | Status: not_yet_verified
+Freightliner M2,2023,,,, | Status: not_yet_verified
+Freightliner M2,2024,,,, | Status: not_yet_verified
+Freightliner M2,2025,,,, | Status: not_yet_verified
+Freightliner M2,2026,,,, | Status: not_yet_verified
+International 4300,2014,,,, | Status: not_yet_verified
+International 4300,2015,,,, | Status: not_yet_verified
+International 4300,2016,,,, | Status: not_yet_verified
+International 4300,2017,,,, | Status: not_yet_verified
+International 4300,2018,,,, | Status: not_yet_verified
+International 4300,2019,,,, | Status: not_yet_verified
+International 4300,2020,,,, | Status: not_yet_verified
+International 4300,2021,,,, | Status: not_yet_verified
+International 4300,2022,,,, | Status: not_yet_verified
+International 4300,2023,,,, | Status: not_yet_verified
+International 4300,2024,,,, | Status: not_yet_verified
+International 4300,2025,,,, | Status: not_yet_verified
+International 4300,2026,,,, | Status: not_yet_verified
+International MV,2014,,,, | Status: not_yet_verified
+International MV,2015,,,, | Status: not_yet_verified
+International MV,2016,,,, | Status: not_yet_verified
+International MV,2017,,,, | Status: not_yet_verified
+International MV,2018,,,, | Status: not_yet_verified
+International MV,2019,,,, | Status: not_yet_verified
+International MV,2020,,,, | Status: not_yet_verified
+International MV,2021,,,, | Status: not_yet_verified
+International MV,2022,,,, | Status: not_yet_verified
+International MV,2023,,,, | Status: not_yet_verified
+International MV,2024,,,, | Status: not_yet_verified
+International MV,2025,,,, | Status: not_yet_verified
+International MV,2026,,,, | Status: not_yet_verified
+International CV,2014,,,, | Status: not_yet_verified
+International CV,2015,,,, | Status: not_yet_verified
+International CV,2016,,,, | Status: not_yet_verified
+International CV,2017,,,, | Status: not_yet_verified
+International CV,2018,,,, | Status: not_yet_verified
+International CV,2019,,,, | Status: not_yet_verified
+International CV,2020,,,, | Status: not_yet_verified
+International CV,2021,,,, | Status: not_yet_verified
+International CV,2022,,,, | Status: not_yet_verified
+International CV,2023,,,, | Status: not_yet_verified
+International CV,2024,,,, | Status: not_yet_verified
+International CV,2025,,,, | Status: not_yet_verified
+International CV,2026,,,, | Status: not_yet_verified
+Kenworth T170,2014,,,, | Status: not_yet_verified
+Kenworth T170,2015,,,, | Status: not_yet_verified
+Kenworth T170,2016,,,, | Status: not_yet_verified
+Kenworth T170,2017,,,, | Status: not_yet_verified
+Kenworth T170,2018,,,, | Status: not_yet_verified
+Kenworth T170,2019,,,, | Status: not_yet_verified
+Kenworth T170,2020,,,, | Status: not_yet_verified
+Kenworth T170,2021,,,, | Status: not_yet_verified
+Kenworth T170,2022,,,, | Status: not_yet_verified
+Kenworth T170,2023,,,, | Status: not_yet_verified
+Kenworth T170,2024,,,, | Status: not_yet_verified
+Kenworth T170,2025,,,, | Status: not_yet_verified
+Kenworth T170,2026,,,, | Status: not_yet_verified
+Kenworth T270,2014,,,, | Status: not_yet_verified
+Kenworth T270,2015,,,, | Status: not_yet_verified
+Kenworth T270,2016,,,, | Status: not_yet_verified
+Kenworth T270,2017,,,, | Status: not_yet_verified
+Kenworth T270,2018,,,, | Status: not_yet_verified
+Kenworth T270,2019,,,, | Status: not_yet_verified
+Kenworth T270,2020,,,, | Status: not_yet_verified
+Kenworth T270,2021,,,, | Status: not_yet_verified
+Kenworth T270,2022,,,, | Status: not_yet_verified
+Kenworth T270,2023,,,, | Status: not_yet_verified
+Kenworth T270,2024,,,, | Status: not_yet_verified
+Kenworth T270,2025,,,, | Status: not_yet_verified
+Kenworth T270,2026,,,, | Status: not_yet_verified
+Kenworth T280,2014,,,, | Status: not_yet_verified
+Kenworth T280,2015,,,, | Status: not_yet_verified
+Kenworth T280,2016,,,, | Status: not_yet_verified
+Kenworth T280,2017,,,, | Status: not_yet_verified
+Kenworth T280,2018,,,, | Status: not_yet_verified
+Kenworth T280,2019,,,, | Status: not_yet_verified
+Kenworth T280,2020,,,, | Status: not_yet_verified
+Kenworth T280,2021,,,, | Status: not_yet_verified
+Kenworth T280,2022,,,, | Status: not_yet_verified
+Kenworth T280,2023,,,, | Status: not_yet_verified
+Kenworth T280,2024,,,, | Status: not_yet_verified
+Kenworth T280,2025,,,, | Status: not_yet_verified
+Kenworth T280,2026,,,, | Status: not_yet_verified
+Kenworth T370,2014,,,, | Status: not_yet_verified
+Kenworth T370,2015,,,, | Status: not_yet_verified
+Kenworth T370,2016,,,, | Status: not_yet_verified
+Kenworth T370,2017,,,, | Status: not_yet_verified
+Kenworth T370,2018,,,, | Status: not_yet_verified
+Kenworth T370,2019,,,, | Status: not_yet_verified
+Kenworth T370,2020,,,, | Status: not_yet_verified
+Kenworth T370,2021,,,, | Status: not_yet_verified
+Kenworth T370,2022,,,, | Status: not_yet_verified
+Kenworth T370,2023,,,, | Status: not_yet_verified
+Kenworth T370,2024,,,, | Status: not_yet_verified
+Kenworth T370,2025,,,, | Status: not_yet_verified
+Kenworth T370,2026,,,, | Status: not_yet_verified
+Kenworth T380,2014,,,, | Status: not_yet_verified
+Kenworth T380,2015,,,, | Status: not_yet_verified
+Kenworth T380,2016,,,, | Status: not_yet_verified
+Kenworth T380,2017,,,, | Status: not_yet_verified
+Kenworth T380,2018,,,, | Status: not_yet_verified
+Kenworth T380,2019,,,, | Status: not_yet_verified
+Kenworth T380,2020,,,, | Status: not_yet_verified
+Kenworth T380,2021,,,, | Status: not_yet_verified
+Kenworth T380,2022,,,, | Status: not_yet_verified
+Kenworth T380,2023,,,, | Status: not_yet_verified
+Kenworth T380,2024,,,, | Status: not_yet_verified
+Kenworth T380,2025,,,, | Status: not_yet_verified
+Kenworth T380,2026,,,, | Status: not_yet_verified
+Peterbilt 330,2014,,,, | Status: not_yet_verified
+Peterbilt 330,2015,,,, | Status: not_yet_verified
+Peterbilt 330,2016,,,, | Status: not_yet_verified
+Peterbilt 330,2017,,,, | Status: not_yet_verified
+Peterbilt 330,2018,,,, | Status: not_yet_verified
+Peterbilt 330,2019,,,, | Status: not_yet_verified
+Peterbilt 330,2020,,,, | Status: not_yet_verified
+Peterbilt 330,2021,,,, | Status: not_yet_verified
+Peterbilt 330,2022,,,, | Status: not_yet_verified
+Peterbilt 330,2023,,,, | Status: not_yet_verified
+Peterbilt 330,2024,,,, | Status: not_yet_verified
+Peterbilt 330,2025,,,, | Status: not_yet_verified
+Peterbilt 330,2026,,,, | Status: not_yet_verified
+Peterbilt 337,2014,,,, | Status: not_yet_verified
+Peterbilt 337,2015,,,, | Status: not_yet_verified
+Peterbilt 337,2016,,,, | Status: not_yet_verified
+Peterbilt 337,2017,,,, | Status: not_yet_verified
+Peterbilt 337,2018,,,, | Status: not_yet_verified
+Peterbilt 337,2019,,,, | Status: not_yet_verified
+Peterbilt 337,2020,,,, | Status: not_yet_verified
+Peterbilt 337,2021,,,, | Status: not_yet_verified
+Peterbilt 337,2022,,,, | Status: not_yet_verified
+Peterbilt 337,2023,,,, | Status: not_yet_verified
+Peterbilt 337,2024,,,, | Status: not_yet_verified
+Peterbilt 337,2025,,,, | Status: not_yet_verified
+Peterbilt 337,2026,,,, | Status: not_yet_verified
+Peterbilt 537,2014,,,, | Status: not_yet_verified
+Peterbilt 537,2015,,,, | Status: not_yet_verified
+Peterbilt 537,2016,,,, | Status: not_yet_verified
+Peterbilt 537,2017,,,, | Status: not_yet_verified
+Peterbilt 537,2018,,,, | Status: not_yet_verified
+Peterbilt 537,2019,,,, | Status: not_yet_verified
+Peterbilt 537,2020,,,, | Status: not_yet_verified
+Peterbilt 537,2021,,,, | Status: not_yet_verified
+Peterbilt 537,2022,,,, | Status: not_yet_verified
+Peterbilt 537,2023,,,, | Status: not_yet_verified
+Peterbilt 537,2024,,,, | Status: not_yet_verified
+Peterbilt 537,2025,,,, | Status: not_yet_verified
+Peterbilt 537,2026,,,, | Status: not_yet_verified
+Peterbilt 548,2014,,,, | Status: not_yet_verified
+Peterbilt 548,2015,,,, | Status: not_yet_verified
+Peterbilt 548,2016,,,, | Status: not_yet_verified
+Peterbilt 548,2017,,,, | Status: not_yet_verified
+Peterbilt 548,2018,,,, | Status: not_yet_verified
+Peterbilt 548,2019,,,, | Status: not_yet_verified
+Peterbilt 548,2020,,,, | Status: not_yet_verified
+Peterbilt 548,2021,,,, | Status: not_yet_verified
+Peterbilt 548,2022,,,, | Status: not_yet_verified
+Peterbilt 548,2023,,,, | Status: not_yet_verified
+Peterbilt 548,2024,,,, | Status: not_yet_verified
+Peterbilt 548,2025,,,, | Status: not_yet_verified
+Peterbilt 548,2026,,,, | Status: not_yet_verified
+Fuso Canter,2014,,,, | Status: not_yet_verified
+Fuso Canter,2015,,,, | Status: not_yet_verified
+Fuso Canter,2016,,,, | Status: not_yet_verified
+Fuso Canter,2017,,,, | Status: not_yet_verified
+Fuso Canter,2018,,,, | Status: not_yet_verified
+Fuso Canter,2019,,,, | Status: not_yet_verified
+Fuso Canter,2020,,,, | Status: not_yet_verified
+Fuso Canter,2021,,,, | Status: not_yet_verified
+Fuso Canter,2022,,,, | Status: not_yet_verified
+Fuso Canter,2023,,,, | Status: not_yet_verified
+Fuso Canter,2024,,,, | Status: not_yet_verified
+Fuso Canter,2025,,,, | Status: not_yet_verified
+Fuso Canter,2026,,,, | Status: not_yet_verified
+Freightliner MT45,2014,,,, | Status: not_yet_verified
+Freightliner MT45,2015,,,, | Status: not_yet_verified
+Freightliner MT45,2016,,,, | Status: not_yet_verified
+Freightliner MT45,2017,,,, | Status: not_yet_verified
+Freightliner MT45,2018,,,, | Status: not_yet_verified
+Freightliner MT45,2019,,,, | Status: not_yet_verified
+Freightliner MT45,2020,,,, | Status: not_yet_verified
+Freightliner MT45,2021,,,, | Status: not_yet_verified
+Freightliner MT45,2022,,,, | Status: not_yet_verified
+Freightliner MT45,2023,,,, | Status: not_yet_verified
+Freightliner MT45,2024,,,, | Status: not_yet_verified
+Freightliner MT45,2025,,,, | Status: not_yet_verified
+Freightliner MT45,2026,,,, | Status: not_yet_verified
+Freightliner MT55,2014,,,, | Status: not_yet_verified
+Freightliner MT55,2015,,,, | Status: not_yet_verified
+Freightliner MT55,2016,,,, | Status: not_yet_verified
+Freightliner MT55,2017,,,, | Status: not_yet_verified
+Freightliner MT55,2018,,,, | Status: not_yet_verified
+Freightliner MT55,2019,,,, | Status: not_yet_verified
+Freightliner MT55,2020,,,, | Status: not_yet_verified
+Freightliner MT55,2021,,,, | Status: not_yet_verified
+Freightliner MT55,2022,,,, | Status: not_yet_verified
+Freightliner MT55,2023,,,, | Status: not_yet_verified
+Freightliner MT55,2024,,,, | Status: not_yet_verified
+Freightliner MT55,2025,,,, | Status: not_yet_verified
+Freightliner MT55,2026,,,, | Status: not_yet_verified
