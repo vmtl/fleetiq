@@ -16,6 +16,9 @@ from repair_intelligence import render_repair_cost_tab
 from maintenance_intelligence import render_maintenance_tab
 from recall_intelligence import render_recall_tab
 from ownership_intelligence import render_ownership_tab
+from vehicle_report import render_vehicle_report
+from fleet_workspace import render_fleet_workspace
+from business_economics import render_profitability, render_prediction_readiness
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
@@ -267,8 +270,8 @@ st.info(
     "Missing model-year rows are left blank, not treated as zero."
 )
 
-hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab, repair_tab, maintenance_tab, recalls_tab, ownership_tab = st.tabs(
-    ["Failure Hotspots", "Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data", "Repair costs", "Maintenance timing", "Safety recalls", "Ownership economics"]
+hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab, repair_tab, maintenance_tab, recalls_tab, ownership_tab, report_tab, fleet_tab = st.tabs(
+    ["Failure Hotspots", "Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data", "Repair costs", "Maintenance timing", "Safety recalls", "Ownership economics", "Vehicle report", "Fleet workspace"]
 )
 
 with overview_tab:
@@ -1348,3 +1351,13 @@ with recalls_tab:
 
 with ownership_tab:
     render_ownership_tab()
+
+
+with report_tab:
+    render_vehicle_report(DATA_DIR, complaints)
+
+with fleet_tab:
+    render_fleet_workspace()
+    st.divider()
+    render_profitability()
+    render_prediction_readiness()
