@@ -1182,7 +1182,7 @@ with hotspots_tab:
                 ].to_dict("index")
                 st_components.html(
                     render_cutaway(lookup, total, van, detailed=False),
-                    height=350, scrolling=False,
+                    height=515, scrolling=False,
                 )
                 table = pd.DataFrame([
                     {
@@ -1213,6 +1213,10 @@ with hotspots_tab:
                 ["complaints", "share_pct"]
             ].to_dict("index")
             st.markdown(f"##### Expanded mechanical cutaway — {focused_van}")
+            st.caption(
+                "Expanded view retains mechanical detail and complaint excerpts. "
+                "The compact comparison cards use simplified, smaller components."
+            )
             # Selectable SVG component groups reveal source excerpts directly.
             focus_evidence = hs.loc[hs["vehicle"].eq(focused_van)].copy()
             focus_evidence = focus_evidence.drop_duplicates(
@@ -1234,7 +1238,7 @@ with hotspots_tab:
                     focus_lookup, focused_total, focused_van,
                     detailed=True, evidence_rows=excerpts
                 ),
-                height=900, scrolling=True,
+                height=955, scrolling=False,
             )
             st.caption(
                 "Click a highlighted component in the cutaway to see its complaint "
