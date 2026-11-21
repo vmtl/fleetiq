@@ -1182,7 +1182,7 @@ with hotspots_tab:
                 ].to_dict("index")
                 st_components.html(
                     render_cutaway(lookup, total, van, detailed=False),
-                    height=515, scrolling=False,
+                    height=440, scrolling=False,
                 )
                 table = pd.DataFrame([
                     {
@@ -1238,7 +1238,7 @@ with hotspots_tab:
                     focus_lookup, focused_total, focused_van,
                     detailed=True, evidence_rows=excerpts
                 ),
-                height=955, scrolling=False,
+                height=895, scrolling=False,
             )
             st.caption(
                 "Click a highlighted component in the cutaway to see its complaint "
