@@ -47,3 +47,21 @@ streamlit run app.py
 ## Next data priorities
 
 Complete VIN- or configuration-specific manufacturer maintenance coverage for more years, engine and duty cycles. Add last-service history as a per-vehicle per-task field only with informed user consent. Establish verified real-world repair outcomes and mileage denominators before building predictive time-to-failure models.
+
+## Forecast and selected-van hotspots (2026-11-21 extension)
+
+The top of **Maintenance timing**, directly below the vehicle/year/odometer controls, now contains:
+
+- A **Maintenance Forecast & Budget** mileage chart through the next 50,000 miles, with a dashed current-odometer marker and clearly differentiated upcoming, overdue, monitor-limit, and conditional severe-duty milestones.
+- A **Failure Hotspots** chart for the same van and model year, showing reported NHTSA issue-tagged complaint counts. Counts may overlap across issue tags and are not failure rates.
+- An expandable **per-operation service-history editor**, with last completed service mileage, months since service, and optional user-supplied cost assumptions. No service history means no mileage-based due-date forecast; no phantom missed services are generated.
+- **Next 10k / 25k / 50k mile budget subtotals** computed only from price-supported events. Unpriced events are counted and exposed, not assumed free.
+- A table of exact maintenance milestones, price provenance, OEM maintenance sources, time-based/advisory exclusions, and CSV export.
+
+New files: `maintenance_forecast.py`, `data/maintenance_cost_refs.csv`, and `tests/test_maintenance_forecast.py`.
+
+The price table uses a small sample of independently attributed, publicly displayed **2020 model-year** RepairPal 2500-series service price ranges for oil service, air-filter work, and selected other operations (as of 2026-11-21). Figures are third-party reference estimates with year, trim and geographic limitations, not shop quotes. Some maintenance tasks have no sourced price: those totals cannot be known without a quote or explicit user-entered assumptions.
+
+For time-only service, expiry depends on months since last completion, never mileage alone. For monitor-directed oil service, the plotted mileage cap is an outer limit, not a recommended fixed oil-change interval. Repeated future visits on a recurring schedule are planning scenarios conditioned on completion of each preceding service, not forecasts of mechanical breakdowns.
+
+This feature does not infer repairs from complaints or use complaint odometer values to manufacture maintenance due dates. The latter would require separate failure-outcome and fleet-exposure evidence.
