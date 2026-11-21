@@ -67,17 +67,42 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
         for system in SYSTEMS
     }
 
-    def part(system, body):
+    # Independently size each mechanical assembly around its own center.
+    # Scaling a whole chassis around (0,0) displaced components from the
+    # wheels and body. Body geometry stays fixed in either layout.
+    part_sizes = {
+        "Interior / comfort": ((555, 240), .73, .85),
+        "Safety / driver assistance": ((640, 210), .75, .88),
+        "Fuel system": ((464, 343), .83, .91),
+        "Electrical / electronics": ((672, 285), .72, .86),
+        "Powertrain / transmission": ((672, 328), .80, .91),
+        "Engine / cooling": ((813, 281), .77, .88),
+        "Steering": ((779, 287), .83, .92),
+        "Visibility / lighting": ((980, 318), .88, .95),
+        "Other / unspecified": ((115, 191), .72, .86),
+    }
+
+    def part(system, body, center=None, scales=None):
         color = payload[system]["color"]
+        cx, cy = center or part_sizes.get(system, ((0, 0), 1, 1))[0]
+        compact_scale, detailed_scale = scales or part_sizes.get(
+            system, ((0, 0), 1, 1)
+        )[1:]
+        scale = detailed_scale if detailed else compact_scale
+        transform = (
+            f'transform="translate({cx} {cy}) scale({scale}) '
+            f'translate({-cx} {-cy})"'
+            if scale != 1 else ""
+        )
         return (
             '<g class="hotspot" role="button" tabindex="0" data-system="'
             + html.escape(system, quote=True)
-            + '" style="--heat:' + color + '">'
+            + '" style="--heat:' + color + '" ' + transform + '>'
             + body + '</g>'
         )
 
-    # Every part is a separate selectable SVG group. Main mechanical items
-    # are deliberately larger than numbered markers in the previous design.
+    # Each component is a separately selectable SVG group.
+    # Compact mode simplifies secondary details, while expanded mode retains them.
     sections = []
 
     # A high-roof cargo-van profile based on common full-size van proportions.
@@ -211,7 +236,10 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
       <path d="M778 311 L846 314" class="detail-line"/>
       <path d="M769 193 Q775 163 813 166 L870 170" class="part-line"/>
       <path d="M889 261 Q904 254 912 266" class="part-line"/>
-      <!-- Radiator is separately drawn but shares Engine / cooling classification -->
+    """))
+    # Cooling system shares NHTSA Engine / cooling category, but the radiator
+    # is separately scaled and stays at the nose of the van.
+    sections.append(part("Engine / cooling", """
       <rect x="928" y="210" width="43" height="152" rx="4" class="heat-fill"/>
       <path d="M936 220 V351 M943 220 V351 M950 220 V351 M957 220 V351
                M964 220 V351" class="detail-line"/>
@@ -219,7 +247,7 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
       <path d="M927 338 Q911 351 889 333" class="part-line"/>
       <circle cx="916" cy="287" r="15" class="heat-fill"/>
       <path d="M907 287 H925 M916 278 V296" class="detail-line"/>
-    """))
+    """, center=(950, 285), scales=(.75, .88)))
 
     # Steering column, steering wheel, rack and tie rod.
     sections.append(part("Steering", """
@@ -244,7 +272,7 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
                 stroke-width="7"/>
           <path d="M{pos-28} 266 H{pos+19} M{pos-30} 391 H{pos+20}"
                 class="part-line"/>
-        """))
+        """, center=(pos, 330), scales=(.78, .89)))
         sections.append(part("Wheels / tires", f"""
           <circle cx="{pos}" cy="410" r="93" fill="#091221" stroke="var(--heat)"
                   stroke-width="15"/>
@@ -258,7 +286,7 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
           <circle cx="{pos}" cy="410" r="83" fill="none"
                   stroke="#71889e" stroke-width="4"
                   stroke-dasharray="14 8" opacity=".56"/>
-        """))
+        """, center=(pos, 410), scales=(.86, .93)))
         sections.append(part("Brakes", f"""
           <circle cx="{pos}" cy="410" r="49" fill="none"
                   stroke="var(--heat)" stroke-width="6" opacity=".8"/>
@@ -268,7 +296,7 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
           <path d="M{pos+47} 390 L{pos+72} 397 M{pos+47} 405 L{pos+70} 411"
                 class="detail-line"/>
           <circle cx="{pos+72}" cy="398" r="5" class="bolt"/>
-        """))
+        """, center=(pos, 410), scales=(.78, .90)))
 
     # Headlamps, rear tail lamps and bright front lamp signatures.
     sections.append(part("Visibility / lighting", """
@@ -326,7 +354,21 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
         padding:14px 17px 6px;color:#e3f3ff}
       .name{font-size:15px;font-weight:700;letter-spacing:.02em}
       .context{font-size:11px;color:#98b1cb}
-      svg{display:block;width:100%;height:auto;max-height:520px}
+      .frame{height:var(--frame-height);display:flex;flex-direction:column}
+      svg{display:block;width:100%;height:100%;min-height:0;flex:1 1 auto;
+          overflow:visible}
+      .frame.compact .detail-line{opacity:.30}
+      .frame.compact .panel-line{opacity:.20}
+      .frame.compact .roof-line{opacity:.4}
+      .frame.compact .handles{stroke-width:4}
+      .frame.compact .hotspot:hover{filter:brightness(1.18)}
+      .frame.compact .legend{padding-bottom:8px}
+      .frame.compact .details{min-height:47px}
+      .frame.expanded .evidence{flex:0 0 auto;max-height:235px;
+          overflow-y:auto}
+      .frame.expanded .legend{flex:0 0 auto}
+      .frame .top{flex:0 0 auto}
+      .frame .details{flex:0 0 auto}
       .skin{fill:rgba(108,163,199,.105);stroke:rgba(189,226,247,.87);stroke-width:4}
       .door-panel{fill:rgba(105,153,189,.025);stroke:rgba(166,212,241,.42);stroke-width:2}
       .mirror{fill:rgba(110,160,193,.26);stroke:rgba(181,224,245,.75);stroke-width:2}
@@ -450,9 +492,12 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
     if (preferred) activate(preferred);
     </script>""".replace("__DATA__", schema)
 
+    viewer_class = "expanded" if detailed else "compact"
+    frame_height = 945 if detailed else 505
     return (
       style
-      + '<div class="frame"><div class="top">'
+      + f'<div class="frame {viewer_class}" style="--frame-height:{frame_height}px">'
+      + '<div class="top">'
       + '<span class="name">' + title + '</span>'
       + '<span class="context">' + f"{total:,}" + ' unique NHTSA complaints</span>'
       + '</div>' + svg
