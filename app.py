@@ -8,10 +8,100 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+import plotly.express as px
+import plotly.graph_objects as go
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
 DATA_DIR = Path(__file__).resolve().parent / "data"
+
+# Shared FleetIQ chart palette; chart styling never changes source data.
+NEON_PALETTE = ["#00F5D4", "#E879F9", "#00BFFF", "#FBBF24",
+                "#FF5277", "#B4F000", "#A78BFA", "#FF8A4C"]
+
+
+def neon_style(fig):
+    """Use one readable dark neon theme for every FleetIQ chart."""
+    fig.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="#080E1D",
+        plot_bgcolor="#101B31",
+        font=dict(color="#E8F3FF", family="Arial, sans-serif", size=13),
+        colorway=NEON_PALETTE,
+        margin=dict(l=24, r=24, t=25, b=30),
+        legend=dict(bgcolor="rgba(8,14,29,0)", font=dict(color="#D7E9FF")),
+        hoverlabel=dict(bgcolor="#17243B", font_color="#F5FBFF"),
+    )
+    fig.update_xaxes(
+        showline=False, zeroline=False,
+        gridcolor="rgba(113,142,178,0.14)",
+        tickfont=dict(color="#C6D7EB"),
+        title_font=dict(color="#DCEAFB"),
+    )
+    fig.update_yaxes(
+        showline=False, zeroline=False,
+        gridcolor="rgba(113,142,178,0.18)",
+        tickfont=dict(color="#C6D7EB"),
+        title_font=dict(color="#DCEAFB"),
+    )
+    return fig
+
+
+def neon_bar(data, horizontal=False, x_label=None, y_label=None):
+    """Show existing series or wide tables without changing their counts."""
+    frame = data.to_frame() if isinstance(data, pd.Series) else data.copy()
+    fig = go.Figure()
+    for index, column in enumerate(frame.columns):
+        color = NEON_PALETTE[index % len(NEON_PALETTE)]
+        values = pd.to_numeric(frame[column], errors="coerce")
+        categories = [str(item) for item in frame.index]
+        trace_args = dict(
+            name=str(column), marker_color=color,
+            marker_line=dict(color=color, width=0.5), opacity=0.92,
+        )
+        if horizontal:
+            fig.add_trace(go.Bar(
+                x=values, y=categories, orientation="h", **trace_args
+            ))
+        else:
+            fig.add_trace(go.Bar(x=categories, y=values, **trace_args))
+    neon_style(fig)
+    fig.update_layout(
+        barmode="group", showlegend=len(frame.columns) > 1,
+        xaxis_title=x_label, yaxis_title=y_label,
+    )
+    if horizontal:
+        fig.update_yaxes(autorange="reversed")
+        fig.update_layout(height=max(330, min(760, 35 * len(frame.index) + 110)))
+    st.plotly_chart(fig, use_container_width=True)
+
+
+def neon_line(data, x_label=None, y_label=None):
+    """Show time series with neon accents; missing values remain gaps."""
+    frame = data.to_frame() if isinstance(data, pd.Series) else data.copy()
+    fig = go.Figure()
+    labels = [str(item) for item in frame.index]
+    for index, column in enumerate(frame.columns):
+        color = NEON_PALETTE[index % len(NEON_PALETTE)]
+        values = pd.to_numeric(frame[column], errors="coerce")
+        fig.add_trace(go.Scatter(
+            x=labels, y=values, mode="lines", name=str(column),
+            line=dict(color=color, width=9), opacity=0.13,
+            hoverinfo="skip", showlegend=False, connectgaps=False,
+        ))
+        fig.add_trace(go.Scatter(
+            x=labels, y=values, mode="lines+markers", name=str(column),
+            line=dict(color=color, width=2.5),
+            marker=dict(size=7, color=color), connectgaps=False,
+        ))
+    neon_style(fig)
+    fig.update_layout(
+        xaxis_title=x_label, yaxis_title=y_label,
+        hovermode="x unified", showlegend=len(frame.columns) > 1,
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
 
 
 @st.cache_data(show_spinner=False)
@@ -184,7 +274,7 @@ with overview_tab:
         hide_index=True,
         use_container_width=True,
     )
-    st.bar_chart(totals.set_index("vehicle")["unique_complaints"], x_label="Vehicle platform", y_label="Unique complaints")
+    neon_bar(totals.set_index("vehicle")["unique_complaints"], x_label="Vehicle platform", y_label="Unique complaints")
 
     st.markdown("#### Compare the same model years")
     trend = summary_filtered.pivot(
@@ -194,7 +284,7 @@ with overview_tab:
     trend_chart = trend.copy()
     trend_chart.index = trend_chart.index.astype(int).astype(str)
     trend_chart.index.name = "Model year"
-    st.line_chart(trend_chart, x_label="Model year", y_label="Unique complaints")
+    neon_line(trend_chart, x_label="Model year", y_label="Unique complaints")
 
     # Format a display-only copy so missing values show as a dash, not None.
     # Keep true nulls in the underlying trend table and line chart.
@@ -233,7 +323,7 @@ with components_tab:
             .fillna(0)
             .reindex(top_components)
         )
-        st.bar_chart(chart_data, horizontal=True, x_label="Complaint reports mentioning component", y_label="Component")
+        neon_bar(chart_data, horizontal=True, x_label="Complaint reports mentioning component", y_label="Component")
         st.dataframe(
             components.sort_values("complaints", ascending=False).rename(columns={
                 "vehicle": "Vehicle", "component": "NHTSA component", "complaints": "Unique complaints"
@@ -318,7 +408,7 @@ with detail_tab:
     # Horizontal Streamlit bar charts render labels more clearly than a very
     # long list of raw NHTSA component strings.
     overview_systems = totals_by_system.head(15)
-    st.bar_chart(
+    neon_bar(
         overview_systems,
         horizontal=True,
         x_label="Unique complaints mentioning system",
@@ -334,7 +424,7 @@ with detail_tab:
     year_frame = year_counts.rename("Unique complaints").to_frame()
     year_frame.index = year_frame.index.astype(int).astype(str)
     year_frame.index.name = "Model year"
-    st.bar_chart(year_frame, x_label="Model year", y_label="Unique complaints")
+    neon_bar(year_frame, x_label="Model year", y_label="Unique complaints")
     st.caption("Only model years with matched complaint records appear. Missing years are not verified zeros.")
 
     st.markdown("##### Specific NHTSA components in this system")
@@ -542,7 +632,7 @@ with intelligence_tab:
                 if issue_counts.empty:
                     st.info("No specific issues were detected in these records.")
                 else:
-                    st.bar_chart(
+                    neon_bar(
                         issue_counts.head(15), horizontal=True,
                         x_label="Unique complaints mentioning issue",
                         y_label="Reported issue"
@@ -560,7 +650,7 @@ with intelligence_tab:
                     .reindex(age_order, fill_value=0)
                     .rename("Unique complaints")
                 )
-                st.bar_chart(age_counts, x_label="Approximate age at complaint receipt", y_label="Unique complaints")
+                neon_bar(age_counts, x_label="Approximate age at complaint receipt", y_label="Unique complaints")
                 st.caption(
                     "These counts describe when NHTSA received reports, not the exact age "
                     "when a fault began. They are not age-specific failure rates: different "
@@ -587,7 +677,7 @@ with intelligence_tab:
                         .reindex(age_order, fill_value=0)
                         .rename("Unique complaints")
                     )
-                    st.bar_chart(
+                    neon_bar(
                         issue_by_age, x_label="Approximate age at report receipt",
                         y_label="Complaints mentioning issue"
                     )
@@ -653,6 +743,24 @@ with severity_tab:
         }),
         hide_index=True, use_container_width=True,
     )
+    st.markdown("##### Crash and fire indicators by vehicle")
+    incident_chart = incidents_summary.set_index("vehicle")[
+        ["crash_reports", "fire_reports"]
+    ].rename(columns={
+        "crash_reports": "Crash-flagged complaints",
+        "fire_reports": "Fire-flagged complaints",
+    })
+    if incident_chart.empty or not incident_chart.to_numpy().any():
+        st.info("No crash or fire indicators are reported in this selection.")
+    else:
+        neon_bar(
+            incident_chart, x_label="Vehicle",
+            y_label="Unique complaints with reported indicator",
+        )
+    st.caption(
+        "A single complaint may report both a crash and a fire; bars may overlap. "
+        "These are consumer-reported flags, not confirmed causal findings."
+    )
     st.caption(
         "Crash/fire flags reflect consumer reports, not confirmed causation. "
         "Mileage is missing for many records. Mileage coverage is the percentage of unique complaints "
@@ -679,6 +787,25 @@ with records_tab:
     st.caption(
         f"{records['odi_number'].nunique():,} unique complaints across "
         f"{len(records):,} component rows"
+    )
+    st.markdown("##### Most frequently mentioned NHTSA components")
+    record_components = (
+        records[["odi_number", "component"]].drop_duplicates()
+        .groupby("component")["odi_number"].nunique()
+        .sort_values(ascending=False).head(12)
+        .rename("Unique complaints")
+    )
+    if record_components.empty:
+        st.info("No component reports match the current filters.")
+    else:
+        neon_bar(
+            record_components, horizontal=True,
+            x_label="Unique complaints mentioning component",
+            y_label="NHTSA component",
+        )
+    st.caption(
+        "Component categories can overlap within a complaint; do not add the "
+        "bars together as unique complaints."
     )
     st.dataframe(records[display_cols], hide_index=True, use_container_width=True)
     st.download_button(
@@ -712,7 +839,6 @@ with sales_tab:
                     + ", ".join(sorted(missing_columns))
                 )
             else:
-                import plotly.express as px
 
                 sales["calendar_year"] = pd.to_numeric(
                     sales["calendar_year"], errors="coerce"
@@ -829,6 +955,7 @@ with sales_tab:
                             chart_rows.sort_values("Calendar year"),
                             x="Calendar year", y="us_sales", color="vehicle",
                             markers=True,
+                            color_discrete_sequence=NEON_PALETTE,
                             labels={
                                 "us_sales": "U.S. sales",
                                 "vehicle": "Vehicle",
@@ -841,6 +968,7 @@ with sales_tab:
                             margin=dict(l=10, r=10, t=15, b=10),
                         )
                         fig_trend.update_xaxes(dtick=1, tickformat="d")
+                        neon_style(fig_trend)
                         st.plotly_chart(
                             fig_trend, use_container_width=True, key="sales_trend_chart"
                         )
@@ -864,12 +992,14 @@ with sales_tab:
                         ].sort_values("us_sales", ascending=False)
                         fig_bar = px.bar(
                             bar_rows, x="vehicle", y="us_sales", color="vehicle",
+                            color_discrete_sequence=NEON_PALETTE,
                             labels={"vehicle": "Vehicle", "us_sales": "U.S. sales"},
                             hover_data={"Status": True, "source_name": True},
                         )
                         fig_bar.update_layout(
                             showlegend=False, margin=dict(l=10, r=10, t=15, b=10)
                         )
+                        neon_style(fig_bar)
                         st.plotly_chart(
                             fig_bar, use_container_width=True, key="sales_year_bar_chart"
                         )
