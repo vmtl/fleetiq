@@ -1,5 +1,5 @@
 {
-  "as_of_date": "2026-11-20",
+  "as_of_date": "2026-11-21",
   "input_file": "data/sales.csv",
   "output_file": "data/sales_clean.csv",
   "total_rows": 624,
@@ -85,5 +85,17 @@
       "populated_sales": 6
     }
   ],
-  "interpretation": "Ready means structurally suitable for full-year comparison based on existing labels. It is not independent verification of source accuracy or comparable vehicle definitions."
+  "interpretation": "Structural eligibility does not imply independent source validation. Use source_verified and verified_for_comparison for manufacturer-backed annual sales; other sales remain contextual or unresolved.",
+  "source_verified_sales_rows": 20,
+  "verified_for_comparison": 20,
+  "verification_status_counts": {
+    "not_audited": 572,
+    "secondary_only": 22,
+    "verified_manufacturer": 13,
+    "corrected_manufacturer": 7,
+    "partial_year": 4,
+    "conflict_unresolved": 3,
+    "scope_mismatch": 2,
+    "corroborated_independent": 1
+  }
 }
