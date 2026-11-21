@@ -91,8 +91,12 @@ def clean(input_file: Path, output_file: Path, report_file: Path, as_of: date | 
         & ~df["needs_source_revalidation"] & ~duplicated
         & df["vehicle"].ne("")
     )
+    # A formerly provisional row can become verified after its manufacturer
+    # evidence is recorded. Do not require the old notes-derived source label.
     df["verified_for_comparison"] = (
-        df["ready_for_full_year_comparison"] & df["source_verified"]
+        df["sales_available"] & df["valid_sales_value"] & df["valid_year"]
+        & df["is_complete_calendar_year"] & df["has_source_reference"]
+        & df["source_verified"] & ~duplicated & df["vehicle"].ne("")
     )
     df = df.sort_values(["vehicle", "calendar_year"], kind="stable", na_position="last")
     output_file.parent.mkdir(parents=True, exist_ok=True)
