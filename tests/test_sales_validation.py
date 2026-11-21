@@ -53,3 +53,19 @@ def test_duplicate_verification_rows_rejected(tmp_path):
     pd.concat([ledger, ledger]).to_csv(tmp_path / "sales_verification.csv", index=False)
     with pytest.raises(ValueError, match="Duplicate vehicle-year"):
         clean(src, tmp_path / "clean.csv", tmp_path / "quality.json", date(2026, 11, 21))
+
+
+def test_repository_audit_all_52_rows_and_corrected_counts():
+    root = Path(__file__).resolve().parents[1]
+    sales = pd.read_csv(root / "data" / "sales.csv")
+    audit = pd.read_csv(root / "data" / "sales_verification.csv")
+    assert len(audit) == 52
+    assert not audit.duplicated(["vehicle", "calendar_year"]).any()
+    matches = audit.merge(sales[["vehicle", "calendar_year", "us_sales"]], on=["vehicle", "calendar_year"], validate="one_to_one")
+    assert len(matches) == 52
+    assert (matches["validated_sales"] == matches["us_sales"]).all()
+    assert (matches["validated_sales"] != matches["original_sales"]).sum() == 11
+    verified = matches["status"].isin(["verified_manufacturer", "corrected_manufacturer"])
+    assert verified.sum() == 28
+    assert not verified[matches["calendar_year"].eq(2026)].any()
+    assert (matches.loc[matches["calendar_year"].eq(2026), "status"] == "partial_year").all()
