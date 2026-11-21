@@ -691,48 +691,97 @@ with records_tab:
 with sales_tab:
     st.markdown("#### U.S. vehicle sales reference data")
     st.caption(
-        "This is a separately maintained source table. Published U.S. sales are usually "
-        "calendar-year totals, whereas NHTSA complaints use vehicle model years. "
-        "These are different cohorts and must not be divided to claim a reliability rate."
+        "Source: FleetIQ cleaned sales dataset. Calendar-year sales and NHTSA "
+        "model-year complaint counts represent different populations. "
+        "Do not divide them to calculate failure or reliability rates."
     )
-    sales_path = DATA_DIR / "sales.csv"
+    sales_path = DATA_DIR / "sales_clean.csv"
     required_sales = {
-        "vehicle", "calendar_year", "us_sales", "source_name", "source_url", "notes"
+        "vehicle", "calendar_year", "us_sales", "source_name", "source_url",
+        "notes", "source_status", "quality_flags", "ready_for_full_year_comparison"
     }
-    if not sales_path.exists():
-        st.info("Optional sales dataset not installed. Add data/sales.csv to your repository when you have verified annual sales figures.")
-        st.code(
-            "vehicle,calendar_year,us_sales,source_name,source_url,notes\n"
-            "Ford Transit,2025,161797,Ford Motor Company,"
-            "https://www.fromtheroad.ford.com/us/en/articles/2026/ford-2025-full-year-us-sales-results,"
-            "US calendar-year sales; includes Transit configurations; not model-year cohort sales",
-            language="text",
+    if not sales_path.is_file():
+        st.warning(
+            "Cleaned sales data is unavailable. Run python clean_sales.py "
+            "to generate data/sales_clean.csv."
         )
     else:
         try:
             sales = pd.read_csv(sales_path)
             if missing := required_sales - set(sales.columns):
-                st.error("data/sales.csv is missing: " + ", ".join(sorted(missing)))
-            else:
-                sales["calendar_year"] = pd.to_numeric(sales["calendar_year"], errors="coerce")
-                sales["us_sales"] = pd.to_numeric(sales["us_sales"], errors="coerce")
-                sales = sales.loc[sales["us_sales"].gt(0) & sales["calendar_year"].notna()].copy()
-                subset = sales.loc[sales["vehicle"].isin(selected_vehicles)].copy()
-                if subset.empty:
-                    st.info("No verified sales records yet for the selected vehicle platforms.")
-                else:
-                    st.dataframe(
-                        subset.sort_values(["vehicle", "calendar_year"]),
-                        hide_index=True, use_container_width=True,
-                        column_config={"source_url": st.column_config.LinkColumn("Source")},
-                    )
-                st.caption(
-                    "Sales figures may combine cargo, passenger, electric, chassis, or other variants; "
-                    "verify manufacturer definitions before comparing. No complaint-rate calculation "
-                    "is performed using calendar-year sales."
+                st.error(
+                    "data/sales_clean.csv is missing columns: "
+                    + ", ".join(sorted(missing))
                 )
+            else:
+                sales["calendar_year"] = pd.to_numeric(
+                    sales["calendar_year"], errors="coerce"
+                ).astype("Int64")
+                sales["us_sales"] = pd.to_numeric(
+                    sales["us_sales"], errors="coerce"
+                )
+
+                # Keep missing and reported-zero values visible, rather than
+                # silently dropping them as the original sales tab did.
+                subset = sales.loc[
+                    sales["vehicle"].isin(selected_vehicles)
+                ].copy()
+                if subset.empty:
+                    st.info(
+                        "No sales reference rows for the selected vehicles. "
+                        "Use the sidebar to choose a platform with sales coverage."
+                    )
+                else:
+                    subset["Verification"] = subset["source_status"].map({
+                        "source_reported_model_family": "Source-reported (not independently verified)",
+                        "previously_sourced_needs_revalidation": "Needs source revalidation",
+                        "not_yet_verified": "No verified sales figure",
+                    }).fillna("Status unknown — review needed")
+                    subset["Sales data"] = "Reported"
+                    subset.loc[subset["us_sales"].isna(), "Sales data"] = "Missing"
+                    subset.loc[subset["us_sales"].eq(0), "Sales data"] = "Reported zero — verify"
+                    subset["Full-year comparison"] = subset[
+                        "ready_for_full_year_comparison"
+                    ].fillna(False).map({
+                        True: "Structurally eligible; source not independently checked",
+                        False: "Not eligible",
+                    })
+
+                    display_cols = [
+                        "vehicle", "calendar_year", "us_sales", "Sales data",
+                        "Verification", "Full-year comparison", "source_name",
+                        "source_url", "quality_flags", "notes"
+                    ]
+                    display = subset[display_cols].rename(columns={
+                        "vehicle": "Vehicle",
+                        "calendar_year": "Calendar year",
+                        "us_sales": "U.S. sales",
+                        "source_name": "Reported source",
+                        "source_url": "Source link",
+                        "quality_flags": "Quality flags",
+                        "notes": "Source notes",
+                    }).sort_values(["Vehicle", "Calendar year"])
+                    st.dataframe(
+                        display, hide_index=True, use_container_width=True,
+                        column_config={
+                            "Source link": st.column_config.LinkColumn("Source link"),
+                            "U.S. sales": st.column_config.NumberColumn(
+                                "U.S. sales", format="%d"
+                            ),
+                        },
+                    )
+                    st.caption(
+                        "Missing values mean no usable figure is available; they "
+                        "are not zero sales. A reported zero requires source confirmation. "
+                        "Source-reported is not independently verified. "
+                        "Full-year eligibility is a structural check, not an accuracy certification."
+                    )
+                    st.caption(
+                        "This table follows the vehicle selections in the sidebar. "
+                        "Sales-specific filters and visualizations are planned for the next step."
+                    )
         except (OSError, ValueError, pd.errors.ParserError) as exc:
-            st.error(f"Unable to load optional sales dataset: {exc}")
+            st.error(f"Unable to load cleaned sales dataset: {exc}")
 
 st.divider()
 st.caption(
