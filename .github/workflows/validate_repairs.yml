@@ -1,0 +1,47 @@
+name: Validate FleetIQ Repair Cost Intelligence
+
+on:
+  push:
+    paths:
+      - app.py
+      - repair_intelligence.py
+      - data/repair_costs.csv
+      - tests/test_repair_intelligence.py
+      - .github/workflows/validate_repairs.yml
+  pull_request:
+    paths:
+      - app.py
+      - repair_intelligence.py
+      - data/repair_costs.csv
+      - tests/test_repair_intelligence.py
+      - .github/workflows/validate_repairs.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-repair-costs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install application dependencies and tests
+        run: pip install -r requirements.txt pytest
+      - name: Compile Python source
+        run: python -m py_compile app.py repair_intelligence.py van_cutaway.py tests/test_repair_intelligence.py
+      - name: Test the repair reference system
+        run: python -m pytest -q tests/test_repair_intelligence.py
+      - name: Check Streamlit application startup
+        run: |
+          python - <<'PY'
+          from streamlit.testing.v1 import AppTest
+          app = AppTest.from_file("app.py", default_timeout=90).run()
+          if app.exception:
+              raise AssertionError("FleetIQ Streamlit startup failed: " + str(app.exception))
+          print("Streamlit application loaded; tabs:", [t.label for t in app.tabs])
+          assert "Repair costs" in [t.label for t in app.tabs]
+          PY
