@@ -16,7 +16,20 @@
 7. **Safety recalls:** Retrieve the latest official NHTSA make/model/year recall campaigns on demand, read remedy and safety consequence details, and follow the official VIN lookup.
 8. **Ownership economics:** Compare vans with editable purchase prices, residual values, annual miles, fuel efficiency, annual operating-cost allowances, downtime, and financing *interest/fees*.
 
-The application currently contains **12 primary tabs**. Some data series have uneven coverage. Where FleetIQ cannot verify an interval, outcome, denominator, or cost, it displays limits rather than inventing values.
+The application now contains **14 primary tabs** (including Vehicle report and Fleet workspace). Some data series have uneven coverage. Where FleetIQ cannot verify an interval, outcome, denominator, or cost, it displays limits rather than inventing values.
+
+## Business-facing pilot features
+
+- **Vehicle report:** Download a consolidated HTML research report for the selected van and model year, with manufacturer references, NHTSA report counts, contextual repair-cost examples and a link to the NHTSA VIN recall verification page.
+- **Fleet workspace:** Manage basic anonymized unit IDs, odometer readings and completed service transactions for *one Streamlit session*. Export a ZIP to keep records; re-import that ZIP later. There is **no authentication, account isolation, server-side database or guaranteed persistence** yet; don't upload sensitive VINs, customer information or identifiable driver records.
+- **Route economics:** Estimate weekly delivery-route contribution from user-entered revenue, driver pay, fuel, insurance, maintenance allowance and missed routes.
+- **Predictive readiness gate:** Evaluate the shape of an anonymized, consented historical repair-outcome cohort. There is no trained time-to-failure model, and complaint counts must never be used as fleet failure probabilities.
+
+## OEM maintenance catalog transparency
+
+**The 2014–2026 source inventory is implemented but the full service database is NOT complete.** A coverage audit in Maintenance timing shows every intended van/year, year-matched verified operations and source gaps. We added partial 2021–2023 manufacturer-backed operations for specified Ford Transit configurations and 2021 Chevrolet Express normal/severe-duty schedules. Most model-year and powertrain combinations still require review. See [DATA_CATALOG_AUDIT.md](DATA_CATALOG_AUDIT.md). The 2014 US full-size Ford Transit is not applicable.
+
+See [COMMERCIAL_READINESS.md](COMMERCIAL_READINESS.md) for work still needed before FleetIQ can be sold as a secured fleet-management service.
 
 ## Quick start
 
@@ -30,7 +43,7 @@ The NHTSA recall feature calls the public NHTSA API on request and caches succes
 For validation, install `pytest` then run:
 
 ```bash
-python -m pytest -q tests/test_release_intelligence.py tests/test_maintenance_forecast.py tests/test_maintenance_intelligence.py tests/test_repair_intelligence.py
+python -m pytest -q tests/test_release_intelligence.py tests/test_maintenance_forecast.py tests/test_maintenance_intelligence.py tests/test_business_foundations.py tests/test_repair_intelligence.py
 ```
 
 GitHub Actions checks the new release features, verifies cost calculations and data contracts, and runs Streamlit's application startup test.
@@ -40,7 +53,7 @@ GitHub Actions checks the new release features, verifies cost calculations and d
 - **NHTSA consumer complaints are not measured component-failure rates.** Counts have no matched denominator of vehicles exposed to failure, and reporting is voluntary.
 - **A model-level recall campaign is not an open recall for an individual VIN.** Use the official [NHTSA VIN recall check](https://www.nhtsa.gov/recalls) to determine applicability and open status. FleetIQ does not ask for or store a VIN.
 - **Reported mileage is not verified repair mileage.** A complaint can describe a concern without establishing a fault or documented repair.
-- **Manufacturer maintenance service schedules depend on exact model year, engine, duty cycle and owner history.** Currently verified schedule coverage is concentrated on the 2020 model year; Sprinter data remains marketing-level advisory where engine-specific evidence is not established.
+- **Manufacturer maintenance service schedules depend on exact model year, engine, duty cycle and owner history.** Currently verified schedule coverage is still partial, concentrated in 2020 and selected 2021–2023 van-year operations; Sprinter data remains marketing-level advisory where engine-specific evidence is not established.
 - **Maintenance and repair estimates are reference ranges, not guaranteed quotes.** Many operations have no defensible cost reference and are shown as unpriced.
 - **Ownership costs are user-defined planning scenarios.** Default values are illustrative placeholders, the same for all vans. Lowest scenario cost is not a reliability or value ranking. An annual maintenance allowance and repair reserve are separate user budgets; adjust them to avoid double counting if your inputs overlap.
 - **Financing field is interest and fees only** because ownership depreciation already accounts for acquisition less residual value. Do not enter loan principal again.
@@ -56,7 +69,7 @@ GitHub Actions checks the new release features, verifies cost calculations and d
 | Recalls | Official NHTSA API on demand | `recall_intelligence.py`, no built-in or saved VIN register |
 | Ownership planning | User-supplied assumptions | `ownership_intelligence.py`, not stored between visits |
 
-## Roadmap after the MVP
+## Outstanding roadmap work (not finished or commercially launched)
 
 - Expand manufacturer-verified maintenance intervals and price coverage across additional model years and engine configurations.
 - Add more licensed parts-price and labor-time references, with local estimates where permitted.
