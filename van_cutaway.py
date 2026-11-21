@@ -37,7 +37,7 @@ def band(share, count):
     return "Lower share", COLORS["low"]
 
 
-def render_cutaway(lookup, total, vehicle, detailed=False):
+def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
     """Return self-contained SVG/HTML to embed with st.components.v1.html.
 
     Colored, addressable SVG groups are interactive within the iframe. Native
@@ -53,6 +53,19 @@ def render_cutaway(lookup, total, vehicle, detailed=False):
             "count": count, "share": round(share, 1),
             "status": label, "color": color,
         }
+
+    evidence_rows = evidence_rows or {}
+    safe_evidence = {
+        system: [
+            {
+                "model_year": str(item.get("model_year", ""))[:8],
+                "component": str(item.get("component", ""))[:120],
+                "description": str(item.get("description", ""))[:300],
+            }
+            for item in evidence_rows.get(system, [])[:3]
+        ]
+        for system in SYSTEMS
+    }
 
     def part(system, body):
         color = payload[system]["color"]
@@ -230,7 +243,10 @@ def render_cutaway(lookup, total, vehicle, detailed=False):
             stroke-width="5"/>
     """))
 
-    schema = json.dumps(payload, ensure_ascii=True).replace("<", "\\u003c")
+    schema = json.dumps(
+        {"stats": payload, "evidence": safe_evidence},
+        ensure_ascii=True
+    ).replace("<", "\\u003c")
     title = html.escape(vehicle, quote=True)
     style = """
     <style>
@@ -272,6 +288,14 @@ def render_cutaway(lookup, total, vehicle, detailed=False):
       .legend span{font-size:10px;color:#bad0e4}
       .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
       .legend b{font-weight:600}
+      .evidence{padding:4px 16px 16px;border-top:1px solid rgba(122,194,231,.16)}
+      .evidence h4{margin:7px 0 9px;font-size:13px;font-weight:650;color:#d9edff}
+      .evidence-card{background:rgba(26,48,78,.42);
+          border:1px solid rgba(124,191,226,.16);border-radius:10px;
+          padding:8px 11px;margin:7px 0}
+      .evidence-card b{font-size:11px;color:#b7d8ed;display:block;margin-bottom:3px}
+      .evidence-card p{margin:0;color:#dbe7f3;font-size:11px;line-height:1.45}
+      .empty-evidence{font-size:12px;color:#a7bfd6}
     </style>"""
 
     # Fixed coordinate system: width 1100 by height 530; front points right.
@@ -314,12 +338,35 @@ def render_cutaway(lookup, total, vehicle, detailed=False):
     function activate(el) {
        areas.forEach(node => node.classList.remove('active'));
        el.classList.add('active');
-       const entry = DATA[el.dataset.system];
+       const entry = DATA.stats[el.dataset.system];
        chosen.textContent = el.dataset.system;
        count.textContent = entry.count.toLocaleString() + ' complaint(s)';
        share.textContent = entry.share.toFixed(1) + '% of this vehicle\\'s complaints';
        status.textContent = entry.status;
        status.style.borderColor = entry.color;
+       const evidenceBox = document.getElementById('evidence-list');
+       if (evidenceBox) {
+          evidenceBox.replaceChildren();
+          const examples = DATA.evidence[el.dataset.system] || [];
+          if (!examples.length) {
+              const empty = document.createElement('p');
+              empty.className = 'empty-evidence';
+              empty.textContent = 'No matching excerpts for this vehicle, model-year range and system.';
+              evidenceBox.appendChild(empty);
+          } else {
+              examples.forEach(example => {
+                 const card = document.createElement('div');
+                 card.className = 'evidence-card';
+                 const heading = document.createElement('b');
+                 heading.textContent = example.model_year + ' · ' + example.component;
+                 const paragraph = document.createElement('p');
+                 paragraph.textContent = example.description;
+                 card.appendChild(heading);
+                 card.appendChild(paragraph);
+                 evidenceBox.appendChild(card);
+              });
+          }
+       }
     }
     areas.forEach(el => {
        el.addEventListener('click', () => activate(el));
@@ -343,6 +390,9 @@ def render_cutaway(lookup, total, vehicle, detailed=False):
       + '<span class="pill" id="count"></span>'
       + '<span class="pill" id="share"></span>'
       + '<span class="pill" id="status"></span></div>'
-      + '<div class="legend">' + legend + '</div></div>'
+      + '<div class="legend">' + legend + '</div>'
+      + ('<div class="evidence"><h4>Selected system · NHTSA complaint excerpts</h4>'
+         '<div id="evidence-list"></div></div>' if detailed else '')
+      + '</div>'
       + javascript
     )
