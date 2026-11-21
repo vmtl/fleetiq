@@ -61,26 +61,14 @@ CREATE INDEX IF NOT EXISTS ix_odometer_org_asset_date
 CREATE INDEX IF NOT EXISTS ix_audit_org_time
   ON audit_events(org_id, recorded_at DESC);
 
--- Fail-closed row isolation via app context set with SET LOCAL in the transaction.
--- These policies are not a substitute for authenticating the actor and enforcing
--- member roles in a trusted server. Application connections MUST NOT be superusers,
--- table owners, or BYPASSRLS roles.
-CREATE OR REPLACE FUNCTION fleetiq_can_access(target_org uuid)
-RETURNS boolean LANGUAGE sql STABLE SECURITY INVOKER AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM members m
-    WHERE m.org_id = target_org
-      AND m.user_id = NULLIF(current_setting('fleetiq.user_id', true), '')::uuid
-  )
-$$;
-CREATE OR REPLACE FUNCTION fleetiq_can_write(target_org uuid)
-RETURNS boolean LANGUAGE sql STABLE SECURITY INVOKER AS $$
-  SELECT EXISTS (
-    SELECT 1 FROM members m
-    WHERE m.org_id = target_org
-      AND m.user_id = NULLIF(current_setting('fleetiq.user_id', true), '')::uuid
-      AND m.role IN ('owner','manager')
-  )
+-- The trusted backend must authenticate user membership and authorize each
+-- requested org BEFORE using the database. It must begin a transaction and
+-- SET LOCAL fleetiq.org_id = '<validated server-side org UUID>'.
+-- Never let untrusted clients connect directly to this DB or set session vars.
+-- RLS is an additional safeguard, not the identity/authorization system.
+CREATE OR REPLACE FUNCTION fleetiq_current_org()
+RETURNS uuid LANGUAGE sql STABLE AS $$
+  SELECT NULLIF(current_setting('fleetiq.org_id', true), '')::uuid
 $$;
 
 ALTER TABLE organizations ENABLE ROW LEVEL SECURITY;
@@ -90,7 +78,6 @@ ALTER TABLE service_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE odometer_observations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_events ENABLE ROW LEVEL SECURITY;
 
--- FORCE prevents accidental bypass by a table-owner session.
 ALTER TABLE organizations FORCE ROW LEVEL SECURITY;
 ALTER TABLE members FORCE ROW LEVEL SECURITY;
 ALTER TABLE vehicles FORCE ROW LEVEL SECURITY;
@@ -98,25 +85,25 @@ ALTER TABLE service_events FORCE ROW LEVEL SECURITY;
 ALTER TABLE odometer_observations FORCE ROW LEVEL SECURITY;
 ALTER TABLE audit_events FORCE ROW LEVEL SECURITY;
 
--- Bootstrap organizations and first owner through a separately audited privileged
--- administrative process, never via an untrusted user connection.
-CREATE POLICY org_read ON organizations FOR SELECT
-  USING (fleetiq_can_access(org_id));
-CREATE POLICY members_read ON members FOR SELECT
-  USING (fleetiq_can_access(org_id));
-CREATE POLICY vehicle_read ON vehicles FOR SELECT
-  USING (fleetiq_can_access(org_id));
-CREATE POLICY vehicle_write ON vehicles FOR ALL
-  USING (fleetiq_can_write(org_id)) WITH CHECK (fleetiq_can_write(org_id));
-CREATE POLICY service_read ON service_events FOR SELECT
-  USING (fleetiq_can_access(org_id));
-CREATE POLICY service_write ON service_events FOR ALL
-  USING (fleetiq_can_write(org_id)) WITH CHECK (fleetiq_can_write(org_id));
-CREATE POLICY observation_read ON odometer_observations FOR SELECT
-  USING (fleetiq_can_access(org_id));
-CREATE POLICY observation_write ON odometer_observations FOR ALL
-  USING (fleetiq_can_write(org_id)) WITH CHECK (fleetiq_can_write(org_id));
-CREATE POLICY audit_read ON audit_events FOR SELECT
-  USING (fleetiq_can_access(org_id));
+-- Tenant GUC must never be derived directly from arbitrary client requests.
+-- Application IAM and member roles are checked in a separate trusted service.
+-- App SQL role gets only minimal CRUD grants, no DDL or owner privileges.
+CREATE POLICY org_scope ON organizations FOR ALL
+  USING (org_id = fleetiq_current_org())
+  WITH CHECK (org_id = fleetiq_current_org());
+CREATE POLICY member_scope ON members FOR ALL
+  USING (org_id = fleetiq_current_org())
+  WITH CHECK (org_id = fleetiq_current_org());
+CREATE POLICY vehicle_scope ON vehicles FOR ALL
+  USING (org_id = fleetiq_current_org())
+  WITH CHECK (org_id = fleetiq_current_org());
+CREATE POLICY service_scope ON service_events FOR ALL
+  USING (org_id = fleetiq_current_org())
+  WITH CHECK (org_id = fleetiq_current_org());
+CREATE POLICY observation_scope ON odometer_observations FOR ALL
+  USING (org_id = fleetiq_current_org())
+  WITH CHECK (org_id = fleetiq_current_org());
+CREATE POLICY audit_scope ON audit_events FOR SELECT
+  USING (org_id = fleetiq_current_org());
 
 COMMIT;
