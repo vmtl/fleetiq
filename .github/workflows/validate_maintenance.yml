@@ -15,6 +15,9 @@ on:
     paths:
       - app.py
       - maintenance_intelligence.py
+      - maintenance_forecast.py
+      - data/maintenance_cost_refs.csv
+      - tests/test_maintenance_forecast.py
       - data/maintenance_schedules.csv
       - tests/test_maintenance_intelligence.py
       - .github/workflows/validate_maintenance.yml
