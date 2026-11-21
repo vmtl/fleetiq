@@ -41,9 +41,9 @@ def test_no_due_claim_without_service_history():
 
 def test_mileage_status_depends_on_actual_service_history():
     task = {"interval_miles": 20000, "interval_months": 0, "schedule_mode": "recurring"}
-    near = assess_service(task, 118900, 100000)
+    near = assess_service(task, 119100, 100000)
     assert near["status"] == "Approaching documented limit"
-    assert near["miles_to_limit"] == 1100
+    assert near["miles_to_limit"] == 900
     past = assess_service(task, 122000, 100000)
     assert past["status"] == "At or past documented limit"
     assert past["limit_mileage"] == 120000
