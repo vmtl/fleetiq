@@ -40,7 +40,7 @@ class CutawayTests(unittest.TestCase):
         self.assertIn('class="frame compact"', compact)
         self.assertIn('height:430px', compact)
         self.assertIn('class="frame expanded"', expanded)
-        self.assertIn('height:875px', expanded)
+        self.assertIn('height:675px', expanded)
         self.assertIn('viewBox="0 0 1200 565"', compact)
         self.assertIn('r="69" class="tire"', compact)
         self.assertIn('CARGO VAN', compact)
