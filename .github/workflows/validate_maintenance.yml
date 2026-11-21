@@ -1,0 +1,50 @@
+name: Validate FleetIQ Maintenance and Repair Timing
+
+on:
+  push:
+    paths:
+      - app.py
+      - maintenance_intelligence.py
+      - data/maintenance_schedules.csv
+      - tests/test_maintenance_intelligence.py
+      - .github/workflows/validate_maintenance.yml
+  pull_request:
+    paths:
+      - app.py
+      - maintenance_intelligence.py
+      - data/maintenance_schedules.csv
+      - tests/test_maintenance_intelligence.py
+      - .github/workflows/validate_maintenance.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  maintenance-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+      - name: Compile application
+        run: python -m py_compile app.py maintenance_intelligence.py repair_intelligence.py tests/test_maintenance_intelligence.py
+      - name: Check manufacturer schedule and mileage calculations
+        run: python -m pytest -q tests/test_maintenance_intelligence.py tests/test_repair_intelligence.py
+      - name: Test full Streamlit application
+        run: |
+          python - <<'PY'
+          from streamlit.testing.v1 import AppTest
+          app = AppTest.from_file("app.py", default_timeout=90).run()
+          if app.exception:
+              raise AssertionError(str(app.exception))
+          tabs = [t.label for t in app.tabs]
+          print("Live Streamlit tabs:", tabs)
+          assert len(tabs) == 10, tabs
+          assert "Maintenance timing" in tabs
+          assert "Repair costs" in tabs
+          PY
