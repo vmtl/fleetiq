@@ -53,7 +53,7 @@ class CutawayTests(unittest.TestCase):
         self.assertNotIn('<div id="evidence-list"></div>', compact)
         self.assertIn('<div id="evidence-list"></div>', expanded)
         for markup in (compact, expanded):
-            match = re.search(r"<svg\\b.*?</svg>", markup, flags=re.DOTALL)
+            match = re.search(r"<svg\b.*?</svg>", markup, flags=re.DOTALL)
             self.assertIsNotNone(match)
             ET.fromstring(match.group(0))
 
