@@ -844,7 +844,8 @@ with sales_tab:
     sales_required = {
         "vehicle", "calendar_year", "us_sales", "source_name", "source_url",
         "notes", "source_status", "quality_flags",
-        "ready_for_full_year_comparison"
+        "ready_for_full_year_comparison", "source_verification_status",
+        "verified_for_comparison"
     }
     if not sales_path.is_file():
         st.warning("Cleaned sales data is missing. Run `python clean_sales.py`.")
@@ -874,6 +875,17 @@ with sales_tab:
                 sales["Status"] = (
                     sales["source_status"].map(labels).fillna("Review needed")
                 )
+                verification_labels = {
+                    "verified_manufacturer": "Verified",
+                    "corrected_manufacturer": "Corrected & verified",
+                    "corroborated_independent": "Independently corroborated",
+                    "secondary_only": "Provisional",
+                    "conflict_unresolved": "Unresolved",
+                    "scope_mismatch": "Mixed scope",
+                    "partial_year": "Partial year",
+                }
+                evidence_labels = sales["source_verification_status"].map(verification_labels)
+                sales["Status"] = evidence_labels.fillna(sales["Status"])
                 sales.loc[sales["us_sales"].isna(), "Status"] = "Missing"
                 sales.loc[sales["us_sales"].eq(0), "Status"] = "Reported zero"
                 sales["Source link"] = sales["source_url"].fillna("")
@@ -915,7 +927,11 @@ with sales_tab:
                         value=(all_sales_years[0], all_sales_years[-1]),
                         key="sales_year_filter",
                     )
-                status_options = ["Source-reported", "Review needed", "Reported zero", "Missing"]
+                status_options = [
+                    "Verified", "Corrected & verified", "Independently corroborated",
+                    "Source-reported", "Provisional", "Unresolved", "Mixed scope",
+                    "Partial year", "Reported zero", "Missing",
+                ]
                 sales_statuses = st.multiselect(
                     "Data status", options=status_options,
                     default=status_options, key="sales_status_filter",
@@ -936,7 +952,8 @@ with sales_tab:
                     with_values = sales_subset.loc[available, "vehicle"].nunique()
                     coverage_pct = 100 * int(available.sum()) / total_rows
                     review_count = int(
-                        (sales_subset["Status"] == "Review needed").sum()
+                        sales_subset["us_sales"].notna().sum()
+                        - sales_subset["Status"].isin(["Verified", "Corrected & verified"]).sum()
                     )
                     m1, m2, m3, m4 = st.columns(4)
                     m1.metric("Sales records available", f"{int(available.sum()):,}")
@@ -950,17 +967,17 @@ with sales_tab:
 
                     st.markdown("##### Annual U.S. sales trends")
                     show_provisional = st.checkbox(
-                        "Include source figures marked Review needed (provisional)",
-                        value=True, key="sales_include_provisional",
-                        help="Source-reported values are also not independently verified.",
+                        "Include provisional full-year figures in charts",
+                        value=False, key="sales_include_provisional",
+                        help="Off: manufacturer-verified annual figures only. On: also include provisional and independently corroborated totals; unresolved and mixed-scope figures remain excluded.",
                     )
                     chart_rows = sales_subset.loc[
                         sales_subset["is_complete_calendar_year"]
                         & sales_subset["us_sales"].notna()
                         & sales_subset["us_sales"].gt(0)
                         & sales_subset["Status"].isin(
-                            ["Source-reported", "Review needed"]
-                            if show_provisional else ["Source-reported"]
+                            ["Verified", "Corrected & verified", "Independently corroborated", "Provisional", "Source-reported"]
+                            if show_provisional else ["Verified", "Corrected & verified"]
                         )
                     ].copy()
                     if chart_rows.empty:
@@ -995,7 +1012,7 @@ with sales_tab:
                         st.caption(
                             "Only completed calendar years with positive published figures "
                             "are plotted. Gaps mean unavailable or excluded data. "
-                            "Review-needed values are provisional, not confirmed."
+                            "Provisional figures are shown only when requested; disputed and mixed-scope rows are excluded."
                         )
 
                         st.markdown("##### Compare vehicles in one year")
@@ -1051,9 +1068,9 @@ with sales_tab:
                         },
                     )
                     st.caption(
-                        "Missing is not zero. Source-reported is not independently "
-                        "verified; Review needed indicates the historical value "
-                        "requires revalidation. Partial years are not annual totals."
+                        "Verified denotes documented manufacturer evidence. Provisional and source-reported "
+                        "figures remain unverified; unresolved and mixed-scope totals require further research. "
+                        "Partial years are not full annual totals."
                     )
 
                     with st.expander("Data quality, source notes & download"):
@@ -1076,12 +1093,15 @@ with sales_tab:
                             sales_subset[[
                                 "vehicle", "calendar_year", "us_sales", "Status",
                                 "source_name", "Source link", "quality_flags",
-                                "notes", "ready_for_full_year_comparison"
+                                "notes", "ready_for_full_year_comparison",
+                                "source_verification_status", "verified_for_comparison"
                             ]].rename(columns={
                                 "vehicle": "Vehicle", "calendar_year": "Year",
                                 "us_sales": "U.S. sales", "source_name": "Source",
                                 "quality_flags": "Quality flags", "notes": "Source notes",
                                 "ready_for_full_year_comparison": "Structurally eligible",
+                                "source_verification_status": "Audit status",
+                                "verified_for_comparison": "Manufacturer verified annual",
                             }).sort_values(["Vehicle", "Year"]),
                             hide_index=True, use_container_width=True,
                             column_config={

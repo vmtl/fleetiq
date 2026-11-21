@@ -1,0 +1,68 @@
+name: Validate FleetIQ Sales
+
+on:
+  push:
+    paths:
+      - clean_sales.py
+      - data/sales.csv
+      - data/sales_verification.csv
+      - tests/test_sales_validation.py
+      - .github/workflows/validate_sales.yml
+  pull_request:
+    paths:
+      - clean_sales.py
+      - data/sales.csv
+      - data/sales_verification.csv
+      - tests/test_sales_validation.py
+      - .github/workflows/validate_sales.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-sales:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install pandas pytest
+      - name: Validate syntax
+        run: python -m py_compile clean_sales.py tests/test_sales_validation.py
+      - name: Run verification regression tests
+        run: python -m pytest -q tests/test_sales_validation.py
+      - name: Regenerate sales in temporary output directory
+        run: |
+          python clean_sales.py --as-of 2026-11-21 --output /tmp/sales_clean.csv --report /tmp/sales_quality_report.json
+          python - <<'PY'
+          import json
+          import pandas as pd
+          r = json.load(open('/tmp/sales_quality_report.json'))
+          df = pd.read_csv('/tmp/sales_clean.csv')
+          assert r['total_rows'] == 624
+          assert r['duplicate_vehicle_year_rows'] == 0
+          assert r['source_verified_sales_rows'] >= 20
+          assert len(df) == 624
+          assert not df[['vehicle','calendar_year']].duplicated().any()
+          assert df.loc[(df.vehicle=='Chevrolet Express') & (df.calendar_year==2018),'us_sales'].iloc[0] == 81239
+          assert df.loc[(df.vehicle=='Ram ProMaster') & (df.calendar_year==2016),'us_sales'].iloc[0] == 40440
+          assert not df.loc[df.calendar_year==2026,'verified_for_comparison'].any()
+          print(r['verification_status_counts'])
+          PY
+      - name: Regenerate committed sales outputs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/sales-validation-2026-11-21'
+        run: python clean_sales.py --as-of 2026-11-21
+      - name: Commit generated datasets to validation branch
+        if: github.event_name == 'push' && github.ref == 'refs/heads/sales-validation-2026-11-21'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/sales_clean.csv data/sales_quality_report.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Regenerate verified sales datasets"
+            git push
+          fi
