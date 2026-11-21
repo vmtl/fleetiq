@@ -14,6 +14,8 @@ import streamlit.components.v1 as st_components
 from van_cutaway import render_cutaway, SYSTEMS
 from repair_intelligence import render_repair_cost_tab
 from maintenance_intelligence import render_maintenance_tab
+from recall_intelligence import render_recall_tab
+from ownership_intelligence import render_ownership_tab
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
@@ -265,8 +267,8 @@ st.info(
     "Missing model-year rows are left blank, not treated as zero."
 )
 
-hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab, repair_tab, maintenance_tab = st.tabs(
-    ["Failure Hotspots", "Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data", "Repair costs", "Maintenance timing"]
+hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab, repair_tab, maintenance_tab, recalls_tab, ownership_tab = st.tabs(
+    ["Failure Hotspots", "Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data", "Repair costs", "Maintenance timing", "Safety recalls", "Ownership economics"]
 )
 
 with overview_tab:
@@ -1329,7 +1331,7 @@ with hotspots_tab:
 st.divider()
 st.caption(
     "FleetIQ uses the NHTSA bulk complaint archive processed by refresh_data.py. "
-    "Recalls are not displayed because this data pipeline has not yet collected a verified recall dataset. "
+    "Official recall campaigns are queried on demand in the Safety recalls tab. "
     "Sales/registration denominators will be needed before any complaint-rate or reliability ranking is appropriate."
 )
 
@@ -1339,3 +1341,10 @@ with repair_tab:
 
 with maintenance_tab:
     render_maintenance_tab(DATA_DIR)
+
+
+with recalls_tab:
+    render_recall_tab()
+
+with ownership_tab:
+    render_ownership_tab()
