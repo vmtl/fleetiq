@@ -229,7 +229,7 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
       .frame{display:flex;flex-direction:column;min-width:0;
         border:1px solid rgba(119,199,239,.25);border-radius:16px;overflow:hidden;
         background:linear-gradient(135deg,rgba(26,50,79,.65),rgba(8,18,36,.62))}
-      .frame.compact{height:430px}.frame.expanded{height:875px}
+      .frame.compact{height:430px}.frame.expanded{height:675px}
       .top{display:flex;align-items:center;justify-content:space-between;gap:8px;
         padding:12px 15px 3px;flex-shrink:0}
       .name{font-size:14px;font-weight:700}.context{font-size:10px;color:#b0c5d9}
