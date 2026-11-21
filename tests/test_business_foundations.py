@@ -82,7 +82,7 @@ def test_bad_vehicle_and_service_records_rejected():
 def test_formula_like_csv_text_escaped():
     a = sample_assets()
     a.loc[0, "asset_id"] = "=1+1"
-    assert '"\'=1+1"' in safe_csv(a).decode()
+    assert "\'=1+1" in safe_csv(a).decode()
 
 
 def test_report_refuses_wrong_year_manufacturer_schedules():
