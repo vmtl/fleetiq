@@ -1333,4 +1333,5 @@ st.caption(
 )
 
 
-with repair_tab:\n    render_repair_cost_tab(DATA_DIR)\n
+with repair_tab:
+    render_repair_cost_tab(DATA_DIR)
