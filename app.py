@@ -10,7 +10,7 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-import streamlit.components.v1 as components
+import streamlit.components.v1 as st_components
 from van_cutaway import render_cutaway, SYSTEMS
 
 
@@ -1180,7 +1180,7 @@ with hotspots_tab:
                 lookup = sub.set_index("system")[
                     ["complaints", "share_pct"]
                 ].to_dict("index")
-                components.html(
+                st_components.html(
                     render_cutaway(lookup, total, van, detailed=False),
                     height=350, scrolling=False,
                 )
@@ -1229,7 +1229,7 @@ with hotspots_tab:
                     }
                     for row in section.head(3).itertuples(index=False)
                 ]
-            components.html(
+            st_components.html(
                 render_cutaway(
                     focus_lookup, focused_total, focused_van,
                     detailed=True, evidence_rows=excerpts
