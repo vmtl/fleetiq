@@ -1104,22 +1104,6 @@ with sales_tab:
 
 
 # The diagram is illustrative: marker positions denote broad component systems.
-HOTSPOT_LOCATIONS = {
-    "Engine / cooling": (7.75, 2.90),
-    "Powertrain / transmission": (6.48, 2.25),
-    "Fuel system": (3.71, 2.20),
-    "Electrical / electronics": (5.45, 3.34),
-    "Brakes": (8.60, 1.67),
-    "Steering": (7.45, 2.10),
-    "Suspension": (2.16, 2.44),
-    "Wheels / tires": (2.14, 1.47),
-    "Body / structure": (3.40, 3.78),
-    "Safety / driver assistance": (6.25, 3.19),
-    "Visibility / lighting": (9.52, 3.08),
-    "Interior / comfort": (4.59, 2.56),
-    "Other / unspecified": (1.10, 3.37),
-}
-
 
 def hotspot_level(pct, count):
     # Descriptive shares, never calibrated part failure probabilities.
@@ -1202,13 +1186,13 @@ with hotspots_tab:
                 )
                 table = pd.DataFrame([
                     {
-                        "Marker": i, "System": system,
+                        "System": system,
                         "Complaints": int(lookup.get(system, {}).get("complaints", 0)),
                         "Share (%)": round(
                             float(lookup.get(system, {}).get("share_pct", 0)), 1
                         ),
                     }
-                    for i, system in enumerate(SYSTEMS, 1)
+                    for system in SYSTEMS
                 ])
                 table["Level"] = table.apply(
                     lambda row: hotspot_level(
