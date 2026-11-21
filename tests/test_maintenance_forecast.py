@@ -6,6 +6,7 @@ import pytest
 
 from maintenance_forecast import (
     budget_windows, build_forecast, hotspot_table, validate_maintenance_costs,
+    cutaway_complaint_metrics, nhtsa_component_system,
 )
 from maintenance_intelligence import validate_schedule
 
@@ -138,3 +139,44 @@ def test_hotspots_are_selected_year_not_cross_model_aggregation():
     result = hotspot_table(source, "Ford Transit", 2020)
     assert result["unique_complaints"].tolist() == [7]
     assert result.iloc[0].mileage_coverage_pct == 28.6
+
+def test_heat_map_counts_unique_odi_ids_per_selected_vehicle_year():
+    complaints = pd.DataFrame([
+        {"vehicle": "Ford Transit", "model_year": 2020,
+         "odi_number": "111", "component": "ENGINE"},
+        {"vehicle": "Ford Transit", "model_year": 2020,
+         "odi_number": "111", "component": "ENGINE AND ENGINE COOLING"},
+        {"vehicle": "Ford Transit", "model_year": 2020,
+         "odi_number": "111", "component": "POWER TRAIN"},
+        {"vehicle": "Ford Transit", "model_year": 2020,
+         "odi_number": "222", "component": "SERVICE BRAKES"},
+        {"vehicle": "Ford Transit", "model_year": 2021,
+         "odi_number": "333", "component": "ENGINE"},
+        {"vehicle": "Ram ProMaster", "model_year": 2020,
+         "odi_number": "444", "component": "ENGINE"},
+    ])
+    lookup, total = cutaway_complaint_metrics(complaints, "Ford Transit", 2020)
+    assert total == 2
+    assert lookup["Engine / cooling"] == {"complaints": 1, "share_pct": 50.0}
+    assert lookup["Powertrain / transmission"]["complaints"] == 1
+    assert lookup["Brakes"]["share_pct"] == 50.0
+    assert nhtsa_component_system("SERVICE BRAKES") == "Brakes"
+
+
+def test_heatmap_does_not_infer_vehicle_reports_from_other_years():
+    complaints = pd.DataFrame([{
+        "vehicle": "Ford Transit", "model_year": 2021,
+        "odi_number": "900", "component": "ENGINE"
+    }])
+    lookup, total = cutaway_complaint_metrics(complaints, "Ford Transit", 2020)
+    assert total == 0
+    assert lookup == {}
+
+
+def test_original_cutaway_is_reused_for_heatmap():
+    from van_cutaway import render_cutaway
+    lookup = {"Brakes": {"complaints": 1, "share_pct": 50.0}}
+    rendered = render_cutaway(lookup, 2, "Ford Transit")
+    assert "Ford Transit" in rendered
+    assert "Brakes" in rendered
+    assert "50.0" in rendered
