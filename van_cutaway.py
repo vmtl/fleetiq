@@ -80,18 +80,60 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
     # are deliberately larger than numbered markers in the previous design.
     sections = []
 
-    # Bodywork: thin translucent skins and sliding-door seams.
+    # A high-roof cargo-van profile based on common full-size van proportions.
+    # The long, almost level roof, forward cabin, raked windshield, short hood,
+    # wheel-arch cutouts and rear cargo doors make the silhouette legible
+    # even when two vehicles are displayed side by side.
     sections.append(part("Body / structure", """
-      <path d="M58 294 L58 129 Q58 106 81 106 L606 106 L646 68
-       L844 68 Q877 68 900 100 L1006 219 L1023 249
-       L1023 301 L58 301 Z" class="skin"/>
-      <path d="M65 294 H1008" class="body-rail"/>
-      <path d="M644 114 L667 85 H837 L913 194 H644Z" class="window"/>
-      <path d="M575 108 V295 M370 110 V295 M200 112 V293" class="panel-line"/>
-      <path d="M406 198 h42 M541 194 h32" class="handles"/>
-      <path d="M72 117 H605" class="roof-line"/>
-      <path d="M102 291 L105 308 H981" class="rail-soft"/>
-      <path d="M86 142 H570" class="panel-line" opacity=".35"/>
+      <path d="
+       M 61,399 Q 46,398 46,380
+       L 46,171 Q 46,133 84,128
+       Q 310,117 555,123 L 703,123
+       Q 738,124 757,143 L 853,247
+       Q 862,260 903,260
+       L 962,265 Q 1010,273 1021,307
+       L 1032,362 Q 1041,392 1017,402
+       L 973,402
+       C 969,346 926,312 865,316
+       C 819,319 787,350 784,403
+       L 327,403
+       C 324,350 282,315 238,315
+       C 188,315 155,348 151,402
+       L 74,402 Z" class="skin"/>
+      <!-- High-roof cargo panel, roof gutter and pressed vertical ribs -->
+      <path d="M 67,166 Q 69,146 93,145
+               L 710,143" class="roof-line"/>
+      <path d="M 80,153 H695" class="panel-line" opacity=".35"/>
+      <path d="M 71,181 L 71,343" class="panel-line"/>
+      <path d="M 402,160 V365
+               M 594,154 V371" class="panel-line"/>
+      <path d="M 71,344 H784 M 79,380 H165 M 328,379 H785"
+            class="rail-soft"/>
+      <!-- Sliding cargo door, track, recessed handle and rear door -->
+      <path d="M 409,218 L 584,218
+               L 584,364 L 409,364 Z" class="door-panel"/>
+      <path d="M 397,207 H601" class="body-rail" opacity=".55"/>
+      <path d="M 528,249 H561" class="handles"/>
+      <path d="M 75,184 L 75,356 M 94,185 L94,358"
+            class="panel-line" opacity=".38"/>
+      <!-- Cab door and raked side window, clearly behind the hood -->
+      <path d="M 650,174 L 733,157 Q 741,156 750,164
+               L 849,269 L 846,281 L 649,281 Z" class="window"/>
+      <path d="M 743,163 L 748,279 M 649,280 L 649,363
+               M 850,280 L 849,319" class="panel-line"/>
+      <path d="M 805,304 H829" class="handles"/>
+      <path d="M 852,271 L 868,269 L 883,279
+               L 880,294 L 860,297 Z" class="mirror"/>
+      <!-- Front windshield follows the steep, rounded front pillar -->
+      <path d="M 756,144 Q 782,150 803,174
+               L 881,258" class="windshield-line"/>
+      <!-- The wheel openings are intentionally NOT filled with body panels. -->
+      <path d="M 151,401 C 155,348 188,315 238,315
+               C 282,315 324,350 327,401"
+            class="arch-line"/>
+      <path d="M 784,401 C 787,350 819,319 865,316
+               C 926,312 969,346 973,401"
+            class="arch-line"/>
     """))
 
     # Chassis underbody beneath both axles.
@@ -228,13 +270,37 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
           <circle cx="{pos+72}" cy="398" r="5" class="bolt"/>
         """))
 
-    # Body lighting zones.
+    # Headlamps, rear tail lamps and bright front lamp signatures.
     sections.append(part("Visibility / lighting", """
-      <path d="M1001 241 L1023 238 L1023 278 L1001 277Z" class="heat-fill"/>
-      <path d="M58 237 H76 V276 H58Z" class="heat-fill"/>
-      <path d="M1019 239 L1073 215 L1060 270 L1023 274"
-            fill="rgba(255,231,150,.08)" stroke="none"/>
+      <path d="M 1001,291 L 1021,304 L 1026,322
+               L 1004,328 L 987,308 Z" class="heat-fill"/>
+      <path d="M 47,296 H 69 V 342 H 47 Z" class="heat-fill"/>
+      <path d="M 997,305 L 1018,314" class="detail-line"/>
+      <path d="M 1020,308 L 1074,278 L 1060,325 L 1022,326"
+            fill="rgba(255,232,161,.08)" stroke="none"/>
     """))
+
+    # Translucent exterior details over the exposed powertrain. These elements
+    # remain noninteractive so clicking visible mechanical parts still works.
+    sections.append("""
+      <g aria-hidden="true" pointer-events="none">
+        <path d="M 863,257 Q 906,254 964,263 Q 1003,269 1020,307"
+              fill="none" stroke="#a2dafa" stroke-width="4" opacity=".76"/>
+        <path d="M 982,360 L 1029,360 L 1035,385
+                 Q 1029,400 1008,402 H 977"
+              fill="none" stroke="#8dc8ed" stroke-width="3" opacity=".6"/>
+        <path d="M 1014,352 H1030" fill="none"
+              stroke="#d8edf9" stroke-width="3" opacity=".6"/>
+        <path d="M 80,393 H150 M 328,395 H785"
+              stroke="#9bc7e4" stroke-width="3" opacity=".6"/>
+        <path d="M 659,296 H843" stroke="#a3d6ef" stroke-width="2"
+              opacity=".35"/>
+        <path d="M 69,347 L 145,347 M 336,346 L 399,346"
+              fill="none" stroke="#9ac9e8" stroke-width="2" opacity=".35"/>
+        <path d="M 88,118 Q 390,109 706,117"
+              fill="none" stroke="#c1e8ff" stroke-width="2" opacity=".3"/>
+      </g>
+    """)
 
     # Fallback only: other/unspecified has no discrete physical part.
     sections.append(part("Other / unspecified", """
@@ -261,7 +327,11 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
       .name{font-size:15px;font-weight:700;letter-spacing:.02em}
       .context{font-size:11px;color:#98b1cb}
       svg{display:block;width:100%;height:auto;max-height:520px}
-      .skin{fill:rgba(81,138,181,.10);stroke:rgba(164,217,249,.8);stroke-width:4}
+      .skin{fill:rgba(108,163,199,.105);stroke:rgba(189,226,247,.87);stroke-width:4}
+      .door-panel{fill:rgba(105,153,189,.025);stroke:rgba(166,212,241,.42);stroke-width:2}
+      .mirror{fill:rgba(110,160,193,.26);stroke:rgba(181,224,245,.75);stroke-width:2}
+      .windshield-line{fill:none;stroke:rgba(203,234,250,.68);stroke-width:3}
+      .arch-line{fill:none;stroke:rgba(173,218,245,.65);stroke-width:4}
       .body-rail{fill:none;stroke:rgba(120,195,238,.75);stroke-width:3}
       .window{fill:rgba(47,134,171,.24);stroke:rgba(165,227,250,.64);stroke-width:3}
       .panel-line{fill:none;stroke:rgba(144,207,243,.30);stroke-width:2}
