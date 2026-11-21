@@ -12,6 +12,8 @@ import math
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+import streamlit.components.v1 as st_components
+from van_cutaway import SYSTEMS, render_cutaway
 
 COST_COLUMNS = {"vehicle", "model_year", "task", "low_usd", "high_usd",
                 "reference_configuration", "source_url", "source_name",
@@ -172,6 +174,74 @@ def hotspot_table(problem_summary: pd.DataFrame, vehicle: str,
     ).head(max_rows)
 
 
+
+# Match the same NHTSA component-to-system hierarchy used by FleetIQ's
+# original Failure Hotspots tab. Never treat a complaint's multiple component
+# records as independent vehicle failures.
+SYSTEM_KEYWORDS = [
+    ("Powertrain / transmission", ("POWER TRAIN", "TRANSMISSION")),
+    ("Engine / cooling", ("ENGINE", "COOLING")),
+    ("Fuel system", ("FUEL", "PROPULSION")),
+    ("Electrical / electronics", ("ELECTRICAL", "ELECTRONIC", "SOFTWARE")),
+    ("Brakes", ("BRAKE",)),
+    ("Steering", ("STEERING",)),
+    ("Suspension", ("SUSPENSION",)),
+    ("Wheels / tires", ("WHEEL", "TIRE")),
+    ("Body / structure", ("STRUCTURE", "BODY", "DOOR", "LATCH")),
+    ("Safety / driver assistance", (
+        "AIR BAG", "SEAT BELT", "FORWARD COLLISION", "BACK OVER",
+        "LANE DEPARTURE", "BLIND SPOT", "CRUISE CONTROL", "VEHICLE SPEED CONTROL",
+    )),
+    ("Visibility / lighting", ("VISIBILITY", "WIPER", "EXTERIOR LIGHTING")),
+    ("Interior / comfort", ("SEAT", "EQUIPMENT", "HVAC")),
+]
+
+
+def nhtsa_component_system(component: str) -> str:
+    """Classify an NHTSA component using FleetIQ's existing broad categories."""
+    term = str(component).upper().strip()
+    for label, terms in SYSTEM_KEYWORDS:
+        if any(keyword in term for keyword in terms):
+            return label
+    return "Other / unspecified"
+
+
+def cutaway_complaint_metrics(complaints: pd.DataFrame, vehicle: str,
+                              model_year: int) -> tuple[dict, int]:
+    """One ODI per broad system and unique ODI denominator for selected year."""
+    required = {"vehicle", "model_year", "odi_number", "component"}
+    if required - set(complaints.columns):
+        raise ValueError("NHTSA complaint archive missing cutaway fields")
+    rows = complaints.loc[
+        complaints["vehicle"].eq(vehicle)
+        & pd.to_numeric(complaints["model_year"], errors="coerce").eq(model_year)
+    ].copy()
+    rows = rows.loc[rows["odi_number"].notna() & rows["odi_number"].astype(str).ne("")]
+    total = rows["odi_number"].astype(str).nunique()
+    if not total:
+        return {}, 0
+    rows["system"] = rows["component"].map(nhtsa_component_system)
+    unique = rows.drop_duplicates(["odi_number", "system"])
+    counts = unique.groupby("system")["odi_number"].nunique()
+    lookup = {
+        system: {
+            "complaints": int(count),
+            "share_pct": round(100 * int(count) / total, 1),
+        } for system, count in counts.items()
+    }
+    return lookup, int(total)
+
+
+@st.cache_data(show_spinner=False)
+def load_heatmap_complaints(path: str, mtime: int) -> pd.DataFrame:
+    """Load actual NHTSA component rows, never symptom-keyword summaries."""
+    return pd.read_csv(
+        path,
+        dtype={"odi_number": "string"},
+        usecols=["vehicle", "model_year", "odi_number", "component"],
+        low_memory=False,
+    )
+
 @st.cache_data(show_spinner=False)
 def load_maintenance_prices(path: str, mtime: int) -> pd.DataFrame:
     return validate_maintenance_costs(pd.read_csv(path))
@@ -312,50 +382,60 @@ def render_forecast_overview(data_dir: Path, selected: pd.DataFrame,
                 "Future repetitions assume each preceding scheduled service is completed."
             )
     with right:
-        st.markdown("**Failure Hotspots — selected van**")
-        problem_path = data_dir / "problem_summary.csv"
-        if problem_path.exists():
+        st.markdown("**Van Failure Hotspot Heat Map**")
+        st.caption(
+            f"Interactive vehicle cutaway for the {year} {vehicle}. "
+            "Heat colors describe the SHARE of distinct NHTSA consumer "
+            "complaints referencing a system — not part failure risk. "
+            "Click a highlighted mechanical component to inspect its count."
+        )
+        complaints_path = data_dir / "complaints.csv"
+        if complaints_path.exists():
             try:
-                source = problem_summary_loader(
-                    str(problem_path), problem_path.stat().st_mtime_ns
+                raw = load_heatmap_complaints(
+                    str(complaints_path), complaints_path.stat().st_mtime_ns
                 )
-                hotspots = hotspot_table(source, vehicle, int(year))
-                if hotspots.empty:
-                    st.info("No classified complaint hotspots for the selected model year.")
-                else:
-                    names = hotspots.sort_values("unique_complaints")
-                    hotspot_fig = go.Figure(go.Bar(
-                        x=names.unique_complaints, y=names.issue,
-                        orientation="h", marker_color="#E879F9",
-                        opacity=0.8,
-                        customdata=names[["mileage_samples", "median_reported_miles"]].to_numpy(),
-                        hovertemplate=(
-                            "%{y}: %{x} complaint reports"
-                            "<br>Reports with mileage: %{customdata[0]}"
-                            "<br>Median reported miles: %{customdata[1]:,.0f}"
-                            "<extra></extra>"
-                        ),
-                    ))
-                    hotspot_fig.update_layout(
-                        template="plotly_dark", height=max(320, min(540, len(names)*58+145)),
-                        paper_bgcolor="rgba(7,14,30,0)",
-                        plot_bgcolor="rgba(19,34,56,.23)",
-                        xaxis_title="Issue-tagged reports (not failure rates)",
-                        margin=dict(l=5, r=10, t=10, b=35),
-                        yaxis=dict(automargin=True),
-                    )
-                    st.plotly_chart(
-                        hotspot_fig, use_container_width=True,
-                        key="forecast_hotspot_chart",
+                heat_lookup, unique_total = cutaway_complaint_metrics(
+                    raw, vehicle, int(year)
+                )
+                if unique_total:
+                    st_components.html(
+                        render_cutaway(heat_lookup, unique_total, vehicle,
+                                       detailed=False),
+                        height=440, scrolling=False,
                     )
                     st.caption(
-                        "NHTSA complaint issue counts can overlap. Mileage samples "
-                        "are incomplete; this chart does NOT predict when repairs are needed."
+                        f"{unique_total:,} distinct NHTSA complaint IDs for "
+                        f"the selected model year. Broad system shares may "
+                        "sum to more than 100%, because one complaint can "
+                        "mention more than one system. Generic vehicle "
+                        "schematic, not a model-specific mechanical diagram."
+                    )
+                    table = pd.DataFrame([
+                        {
+                            "System": system,
+                            "Complaints": int(heat_lookup.get(system, {}).get(
+                                "complaints", 0
+                            )),
+                            "Share (%)": float(heat_lookup.get(system, {}).get(
+                                "share_pct", 0
+                            )),
+                        } for system in SYSTEMS
+                    ]).sort_values("Complaints", ascending=False)
+                    with st.expander("View vehicle heat-map source counts"):
+                        st.dataframe(
+                            table, hide_index=True,
+                            use_container_width=True,
+                        )
+                else:
+                    st.info(
+                        "No NHTSA complaint records for this vehicle and "
+                        "model year. No heat colors are inferred."
                     )
             except (OSError, ValueError, pd.errors.ParserError) as exc:
-                st.warning(f"Hotspot evidence unavailable: {exc}")
+                st.warning(f"Vehicle heat-map evidence is unavailable: {exc}")
         else:
-            st.info("No historical hotspot dataset currently available.")
+            st.info("NHTSA complaint archive is unavailable for this view.")
 
     st.markdown("##### Potential scheduled maintenance spending")
     budget = budget_windows(events)
