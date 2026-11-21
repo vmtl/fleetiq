@@ -41,7 +41,7 @@ FleetIQ explores a transparent decision-support approach that distinguishes manu
 - [PR #5](https://github.com/vmtl/fleetiq/pull/5) — Original interactive vehicle hotspot diagram restored to maintenance timing.
 - [PR #6](https://github.com/vmtl/fleetiq/pull/6) — Recall intelligence and ownership economics.
 - [PR #7](https://github.com/vmtl/fleetiq/pull/7) — Fleet pilot, report generation, route economics and 2014–2026 source-coverage matrix.
-- Current work: further database schema, operational history reminders, source-quality gates and case-study instrumentation.
+- [PR #12](https://github.com/vmtl/fleetiq/pull/12) — Source-checked 2018–2019 Ram schedules, catalog quality audit, operational service reminders, SQL tenancy schema, offline verified-outcome survival research and case-study evidence (merge status must be verified before publication).
 
 ## 5. Metrics and what they actually mean
 
@@ -69,3 +69,9 @@ Once a pilot exists, measure service-record completion, time needed to compare v
 - Clearly separate implemented features from future production-roadmap items.
 
 **No formal, independently reviewed customer production deployment is claimed.**
+
+## 8. Experimental survival methodology (not customer predictions)
+
+`survival_research.py` implements a research-only Kaplan–Meier estimator using delayed-entry odometer observations and right-censored verified outcomes. It validates one platform/system cohort, positive odometer exposure and minimum outcome counts before calculating risk sets. Its numerical outputs are **not** displayed as production reliability scores. Selection bias, competing risks, cohort representativeness, service record data rights, held-out calibration and confidence interval validation still need real-world evidence.
+
+The example unit tests use synthetic events solely to verify calculation correctness; they are not empirical evidence of vehicle reliability.
