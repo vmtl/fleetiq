@@ -85,3 +85,52 @@ def test_database_schema_has_tenant_isolation_and_foreign_keys():
     assert "FOREIGN KEY (org_id, asset_id)" in schema
     assert "fleetiq_current_org" in schema
     assert "ALTER TABLE service_events" in schema
+
+
+def test_survival_research_requires_verified_outcomes_and_censored_cohort():
+    from survival_research import validate_cohort
+    data = pd.DataFrame([{
+        "asset_id": "vanA", "vehicle": "Ford Transit",
+        "model_year": 2020, "system": "Powertrain",
+        "entry_miles": 5000, "exit_miles": 50000,
+        "event_observed": 1, "outcome_verified": False,
+    }])
+    with pytest.raises(ValueError, match="source-verified"):
+        validate_cohort(data, min_vehicles=1, min_events=1, min_censored=0)
+
+
+def test_survival_research_left_truncation_and_censoring():
+    from survival_research import kaplan_meier_mileage
+    data = pd.DataFrame([
+        {"asset_id":"a", "vehicle":"Ford Transit", "model_year":2020,
+         "system":"Transmission", "entry_miles":0, "exit_miles":20000,
+         "event_observed":1, "outcome_verified":True},
+        {"asset_id":"b", "vehicle":"Ford Transit", "model_year":2020,
+         "system":"Transmission", "entry_miles":0, "exit_miles":50000,
+         "event_observed":0, "outcome_verified":True},
+        {"asset_id":"c", "vehicle":"Ford Transit", "model_year":2020,
+         "system":"Transmission", "entry_miles":30000, "exit_miles":60000,
+         "event_observed":1, "outcome_verified":True},
+    ])
+    result = kaplan_meier_mileage(
+        data, min_vehicles=3, min_events=2, min_censored=1
+    )
+    assert result.iloc[0].mileage == 20000
+    assert result.iloc[0].at_risk == 2  # late entry c is not in risk set yet
+    assert result.iloc[0].estimated_survival == 0.5
+    assert result.iloc[1].at_risk == 1
+    assert result.iloc[1].estimated_survival == 0.0
+
+
+def test_survival_research_cannot_pool_outcomes_without_review():
+    from survival_research import validate_cohort
+    data = pd.DataFrame([
+        {"asset_id":"a", "vehicle":"Ford Transit", "model_year":2020,
+         "system":"Transmission", "entry_miles":0, "exit_miles":10000,
+         "event_observed":1, "outcome_verified":True},
+        {"asset_id":"b", "vehicle":"Ram ProMaster", "model_year":2020,
+         "system":"Transmission", "entry_miles":0, "exit_miles":20000,
+         "event_observed":0, "outcome_verified":True},
+    ])
+    with pytest.raises(ValueError, match="one vehicle"):
+        validate_cohort(data, min_vehicles=2, min_events=1, min_censored=1)
