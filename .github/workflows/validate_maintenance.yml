@@ -3,6 +3,11 @@ name: Validate FleetIQ Maintenance and Repair Timing
 on:
   push:
     paths:
+      - vehicle_report.py
+      - fleet_workspace.py
+      - business_economics.py
+      - maintenance_coverage.py
+      - tests/test_business_foundations.py
       - app.py
       - maintenance_intelligence.py
       - maintenance_forecast.py
@@ -13,6 +18,11 @@ on:
       - .github/workflows/validate_maintenance.yml
   pull_request:
     paths:
+      - vehicle_report.py
+      - fleet_workspace.py
+      - business_economics.py
+      - maintenance_coverage.py
+      - tests/test_business_foundations.py
       - app.py
       - maintenance_intelligence.py
       - maintenance_forecast.py
@@ -38,9 +48,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt pytest
       - name: Compile application
-        run: python -m py_compile app.py maintenance_intelligence.py maintenance_forecast.py repair_intelligence.py tests/test_maintenance_intelligence.py tests/test_maintenance_forecast.py
+        run: python -m py_compile app.py maintenance_intelligence.py maintenance_forecast.py maintenance_coverage.py fleet_workspace.py vehicle_report.py business_economics.py repair_intelligence.py tests/test_maintenance_intelligence.py tests/test_maintenance_forecast.py
       - name: Check manufacturer schedule and mileage calculations
-        run: python -m pytest -q tests/test_maintenance_intelligence.py tests/test_maintenance_forecast.py tests/test_repair_intelligence.py
+        run: python -m pytest -q tests/test_maintenance_intelligence.py tests/test_maintenance_forecast.py tests/test_business_foundations.py tests/test_repair_intelligence.py
       - name: Test full Streamlit application
         run: |
           python - <<'PY'
@@ -50,8 +60,10 @@ jobs:
               raise AssertionError(str(app.exception))
           tabs = [t.label for t in app.tabs]
           print("Live Streamlit tabs:", tabs)
-          assert len(tabs) == 12, tabs
+          assert len(tabs) == 14, tabs
           assert "Maintenance timing" in tabs
           assert not app.exception
           assert "Repair costs" in tabs
+          assert "Fleet workspace" in tabs
+          assert "Vehicle report" in tabs
           PY
