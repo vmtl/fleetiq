@@ -18,8 +18,8 @@ def seed():
 def test_catalog_is_sourced_and_scoped_to_all_four_vans():
     data = validate_schedule(seed())
     assert set(data.vehicle) == set(VEHICLES)
-    assert (data.model_year_start == 2020).all()
-    assert (data.model_year_end == 2020).all()
+    assert set(data.model_year_start.unique()) >= {2020, 2021, 2022, 2023}
+    assert (data.model_year_start == data.model_year_end).all()
     assert len(data) >= 12
     assert data.source_url.str.startswith("https://").all()
 
