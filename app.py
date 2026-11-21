@@ -24,8 +24,8 @@ def neon_style(fig):
     """Use one readable dark neon theme for every FleetIQ chart."""
     fig.update_layout(
         template="plotly_dark",
-        paper_bgcolor="#080E1D",
-        plot_bgcolor="#101B31",
+        paper_bgcolor="rgba(7,14,30,0)",
+        plot_bgcolor="rgba(19,34,56,.23)",
         font=dict(color="#E8F3FF", family="Arial, sans-serif", size=13),
         colorway=NEON_PALETTE,
         margin=dict(l=24, r=24, t=25, b=30),
@@ -34,13 +34,13 @@ def neon_style(fig):
     )
     fig.update_xaxes(
         showline=False, zeroline=False,
-        gridcolor="rgba(113,142,178,0.14)",
+        gridcolor="rgba(113,142,178,0.09)",
         tickfont=dict(color="#C6D7EB"),
         title_font=dict(color="#DCEAFB"),
     )
     fig.update_yaxes(
         showline=False, zeroline=False,
-        gridcolor="rgba(113,142,178,0.18)",
+        gridcolor="rgba(113,142,178,0.10)",
         tickfont=dict(color="#C6D7EB"),
         title_font=dict(color="#DCEAFB"),
     )
@@ -57,7 +57,7 @@ def neon_bar(data, horizontal=False, x_label=None, y_label=None):
         categories = [str(item) for item in frame.index]
         trace_args = dict(
             name=str(column), marker_color=color,
-            marker_line=dict(color=color, width=0.5), opacity=0.92,
+            marker_line=dict(color=color, width=0.5), opacity=0.76,
         )
         if horizontal:
             fig.add_trace(go.Bar(
@@ -86,7 +86,7 @@ def neon_line(data, x_label=None, y_label=None):
         values = pd.to_numeric(frame[column], errors="coerce")
         fig.add_trace(go.Scatter(
             x=labels, y=values, mode="lines", name=str(column),
-            line=dict(color=color, width=9), opacity=0.13,
+            line=dict(color=color, width=9), opacity=0.09,
             hoverinfo="skip", showlegend=False, connectgaps=False,
         ))
         fig.add_trace(go.Scatter(
@@ -135,6 +135,23 @@ def load_data(summary_mtime, complaints_mtime):
     )
     return summary, complaints
 
+
+st.markdown("""
+<style>
+[data-testid="stAppViewContainer"] {background: radial-gradient(ellipse at 80% 0%, #192b48, #0b1425 44%, #080d1a);}
+[data-testid="stSidebar"] {background: rgba(10,21,39,.94);}
+[data-testid="stMetric"] {
+ padding:14px 17px; border:1px solid rgba(115,211,249,.18);
+ border-radius:15px; background:linear-gradient(135deg,rgba(32,64,90,.37),rgba(15,25,48,.28));
+ backdrop-filter:blur(12px); box-shadow:0 6px 24px rgba(0,0,0,.14);
+}
+[data-testid="stPlotlyChart"] {
+ background:linear-gradient(145deg,rgba(48,80,117,.20),rgba(12,24,48,.21));
+ border:1px solid rgba(111,203,241,.19); border-radius:18px;
+ padding:8px; backdrop-filter:blur(14px); box-shadow:0 8px 30px rgba(0,0,0,.12);
+}
+</style>
+""", unsafe_allow_html=True)
 
 st.title("🚐 FleetIQ")
 st.subheader("Cargo Van & Commercial Truck Complaint Intelligence")
@@ -244,8 +261,8 @@ st.info(
     "Missing model-year rows are left blank, not treated as zero."
 )
 
-overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab = st.tabs(
-    ["Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data"]
+overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab, hotspots_tab = st.tabs(
+    ["Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data", "Failure Hotspots"]
 )
 
 with overview_tab:
@@ -968,6 +985,7 @@ with sales_tab:
                             margin=dict(l=10, r=10, t=15, b=10),
                         )
                         fig_trend.update_xaxes(dtick=1, tickformat="d")
+                        fig_trend.update_traces(opacity=0.83)
                         neon_style(fig_trend)
                         st.plotly_chart(
                             fig_trend, use_container_width=True, key="sales_trend_chart"
@@ -999,6 +1017,7 @@ with sales_tab:
                         fig_bar.update_layout(
                             showlegend=False, margin=dict(l=10, r=10, t=15, b=10)
                         )
+                        fig_bar.update_traces(opacity=0.76)
                         neon_style(fig_bar)
                         st.plotly_chart(
                             fig_bar, use_container_width=True, key="sales_year_bar_chart"
@@ -1080,6 +1099,234 @@ with sales_tab:
                         )
         except (OSError, ValueError, pd.errors.ParserError) as exc:
             st.error(f"Unable to load cleaned sales dataset: {exc}")
+
+
+# The diagram is illustrative: marker positions denote broad component systems.
+HOTSPOT_LOCATIONS = {
+    "Engine / cooling": (7.65, 3.00),
+    "Powertrain / transmission": (5.86, 1.72),
+    "Fuel system": (3.63, 1.77),
+    "Electrical / electronics": (6.23, 3.12),
+    "Brakes": (8.17, 1.63),
+    "Steering": (7.53, 2.36),
+    "Suspension": (2.78, 1.67),
+    "Wheels / tires": (2.14, 0.99),
+    "Body / structure": (4.43, 3.09),
+    "Safety / driver assistance": (5.22, 2.42),
+    "Visibility / lighting": (8.85, 2.71),
+    "Interior / comfort": (3.18, 2.43),
+    "Other / unspecified": (1.31, 3.08),
+}
+
+
+def hotspot_level(pct, count):
+    # Descriptive shares, never calibrated part failure probabilities.
+    if count == 0:
+        return "No reports", "#76899C"
+    if pct >= 30:
+        return "High share", "#FF5277"
+    if pct >= 15:
+        return "Elevated share", "#FFAD42"
+    if pct >= 5:
+        return "Moderate share", "#FFE66D"
+    return "Lower share", "#00F5D4"
+
+
+def draw_hotspot_van(lookup, total):
+    fig = go.Figure()
+    fig.add_shape(
+        type="path",
+        path="M .45,1.25 L .45,3.4 L 5.45,3.4 L 6.46,4.1 "
+             "L 8.4,4.1 L 9.45,2.8 L 9.45,1.25 Z",
+        fillcolor="rgba(107,189,245,.12)",
+        line=dict(color="rgba(139,214,254,.72)", width=2),
+    )
+    fig.add_shape(
+        type="path", path="M 6.5,3.43 L 7.1,3.98 L 8.32,3.98 "
+                          "L 8.92,3.12 L 6.5,3.12 Z",
+        fillcolor="rgba(82,188,231,.18)",
+        line=dict(color="rgba(135,219,248,.42)", width=1),
+    )
+    for wx in (2.1, 7.98):
+        fig.add_shape(
+            type="circle", x0=wx-.49, x1=wx+.49, y0=.77, y1=1.75,
+            fillcolor="#0A1425", line=dict(color="#79B7D5", width=3),
+        )
+    fig.add_shape(
+        type="line", x0=4.78, x1=4.78, y0=1.9, y1=3.4,
+        line=dict(color="rgba(150,222,253,.28)", width=2),
+    )
+    for idx, (system, pos) in enumerate(HOTSPOT_LOCATIONS.items(), 1):
+        item = lookup.get(system, {})
+        count = int(item.get("complaints", 0))
+        pct = float(item.get("share_pct", 0.0))
+        level, color = hotspot_level(pct, count)
+        fig.add_trace(go.Scatter(
+            x=[pos[0]], y=[pos[1]], mode="markers+text",
+            text=[str(idx)], textposition="middle center",
+            textfont=dict(color="#06121F", size=11),
+            marker=dict(size=30, color=color, opacity=.86,
+                        line=dict(color="rgba(255,255,255,.65)", width=1)),
+            customdata=[[system, count, pct, level]],
+            hovertemplate="<b>%{customdata[0]}</b><br>"
+                          "Distinct complaints: %{customdata[1]}<br>"
+                          "Share of vehicle complaints: %{customdata[2]:.1f}%<br>"
+                          "%{customdata[3]}<extra></extra>",
+            showlegend=False,
+        ))
+    neon_style(fig)
+    fig.update_layout(
+        height=340, margin=dict(l=0, r=0, t=12, b=0),
+        xaxis=dict(range=[0, 10], visible=False, fixedrange=True),
+        yaxis=dict(range=[.5, 4.55], visible=False, fixedrange=True),
+        annotations=[dict(
+            x=.5, y=4.43, xref="x", yref="y",
+            text=f"{total:,} distinct complaints", showarrow=False,
+            xanchor="left", font=dict(size=12, color="#D2E5F9"),
+        )],
+    )
+    return fig
+
+
+with hotspots_tab:
+    st.markdown("#### Failure Hotspots — Reported Vehicle Systems")
+    st.caption(
+        "Compare up to three vehicles. Colors show the share of distinct NHTSA "
+        "complaints mentioning a system, NOT the likelihood that a part will fail. "
+        "The illustrated van and part positions are schematic."
+    )
+    hotspot_options = sorted(complaints["vehicle"].dropna().unique().tolist())
+    favorite_hotspots = [
+        x for x in ("Ford Transit", "Ram ProMaster", "Mercedes Sprinter")
+        if x in hotspot_options
+    ]
+    hotspot_vans = st.multiselect(
+        "Vehicles to compare (up to 3)", hotspot_options,
+        default=favorite_hotspots[:2] or hotspot_options[:2],
+        max_selections=3, key="hotspot_vans",
+    )
+    hotspot_years = sorted(
+        complaints["model_year"].dropna().astype(int).unique().tolist()
+    )
+    hotspot_period = st.select_slider(
+        "Model-year range", options=hotspot_years,
+        value=(hotspot_years[0], hotspot_years[-1]),
+        key="hotspot_period",
+    )
+    st.caption(
+        "Independent hotspot filters. A complaint can reference multiple systems, "
+        "but is counted only once within any single system."
+    )
+    if not hotspot_vans:
+        st.info("Choose one or more vehicles to view their reported systems.")
+    else:
+        hs = complaints.loc[
+            complaints["vehicle"].isin(hotspot_vans)
+            & complaints["model_year"].between(*hotspot_period)
+        ].copy()
+        hs["system"] = hs["component"].map(component_system)
+        hs_unique = hs.drop_duplicates(["vehicle", "odi_number", "system"])
+        denominators = hs.groupby("vehicle")["odi_number"].nunique()
+        counts = (
+            hs_unique.groupby(["vehicle", "system"])["odi_number"]
+            .nunique().reset_index(name="complaints")
+        )
+        counts["total"] = counts["vehicle"].map(denominators)
+        counts["share_pct"] = 100 * counts["complaints"] / counts["total"]
+        st.caption(
+            "🟢 Lower share (<5%) · 🟡 Moderate (5–<15%) · "
+            "🟠 Elevated (15–<30%) · 🔴 High (30%+) · "
+            "Gray = no matched reports. Thresholds are descriptive, not risk ratings."
+        )
+        columns = st.columns(len(hotspot_vans))
+        for column, van in zip(columns, hotspot_vans):
+            with column:
+                total = int(denominators.get(van, 0))
+                st.markdown(f"##### {van}")
+                if not total:
+                    st.info("No matching complaints for these model years.")
+                    continue
+                sub = counts.loc[counts["vehicle"].eq(van)]
+                lookup = sub.set_index("system")[
+                    ["complaints", "share_pct"]
+                ].to_dict("index")
+                st.plotly_chart(
+                    draw_hotspot_van(lookup, total),
+                    use_container_width=True, key=f"hotspot_map_{van}",
+                )
+                table = pd.DataFrame([
+                    {
+                        "Marker": i, "System": system,
+                        "Complaints": int(lookup.get(system, {}).get("complaints", 0)),
+                        "Share (%)": round(
+                            float(lookup.get(system, {}).get("share_pct", 0)), 1
+                        ),
+                    }
+                    for i, system in enumerate(HOTSPOT_LOCATIONS, 1)
+                ])
+                table["Level"] = table.apply(
+                    lambda row: hotspot_level(
+                        row["Share (%)"], row["Complaints"]
+                    )[0], axis=1
+                )
+                st.dataframe(
+                    table, hide_index=True, use_container_width=True, height=340
+                )
+        if not counts.empty:
+            st.markdown("##### Compare complaint shares across vehicles")
+            shares = counts.pivot(
+                index="system", columns="vehicle", values="share_pct"
+            ).reindex(list(HOTSPOT_LOCATIONS)).fillna(0)
+            neon_bar(
+                shares, horizontal=True,
+                x_label="Share of each vehicle's distinct complaints (%)",
+                y_label="Reported system",
+            )
+            st.caption(
+                "System shares can total more than 100%, since one complaint "
+                "may involve several systems. Lower shares are not evidence of "
+                "greater reliability."
+            )
+        st.markdown("##### Review the underlying NHTSA complaints")
+        evidence_van = st.selectbox(
+            "Vehicle for evidence", hotspot_vans, key="hotspot_evidence_van"
+        )
+        evidence_system = st.selectbox(
+            "Reported system", list(HOTSPOT_LOCATIONS),
+            key="hotspot_evidence_system",
+        )
+        evidence = hs.loc[
+            hs["vehicle"].eq(evidence_van)
+            & hs["system"].eq(evidence_system)
+        ].drop_duplicates("odi_number").sort_values(
+            "received_date", ascending=False
+        )
+        st.caption(
+            f"{len(evidence):,} distinct complaints mention {evidence_system} "
+            f"for {evidence_van} in the selected model years."
+        )
+        if evidence.empty:
+            st.info("No matching reports for this system and vehicle.")
+        else:
+            evidence_cols = [
+                "odi_number", "model_year", "received_date",
+                "component", "mileage", "description",
+            ]
+            st.dataframe(
+                evidence[evidence_cols], hide_index=True,
+                use_container_width=True,
+            )
+            st.download_button(
+                "Download hotspot complaint evidence",
+                data=evidence[evidence_cols].to_csv(index=False).encode("utf-8"),
+                file_name="fleetiq_hotspot_evidence.csv", mime="text/csv",
+                key="hotspot_evidence_download",
+            )
+    st.info(
+        "Sales-context limitation: calendar-year vehicle sales are not the "
+        "registered model-year population at risk. FleetIQ does not calculate "
+        "failure probabilities from these incompatible datasets."
+    )
 
 st.divider()
 st.caption(
