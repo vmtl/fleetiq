@@ -1238,7 +1238,7 @@ with hotspots_tab:
                     focus_lookup, focused_total, focused_van,
                     detailed=True, evidence_rows=excerpts
                 ),
-                height=895, scrolling=False,
+                height=695, scrolling=False,
             )
             st.caption(
                 "Click a highlighted component in the cutaway to see its complaint "
