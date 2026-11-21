@@ -13,6 +13,7 @@ import plotly.graph_objects as go
 import streamlit.components.v1 as st_components
 from van_cutaway import render_cutaway, SYSTEMS
 from repair_intelligence import render_repair_cost_tab
+from maintenance_intelligence import render_maintenance_tab
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
@@ -264,8 +265,8 @@ st.info(
     "Missing model-year rows are left blank, not treated as zero."
 )
 
-hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab, repair_tab = st.tabs(
-    ["Failure Hotspots", "Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data", "Repair costs"]
+hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab, repair_tab, maintenance_tab = st.tabs(
+    ["Failure Hotspots", "Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data", "Repair costs", "Maintenance timing"]
 )
 
 with overview_tab:
@@ -1335,3 +1336,6 @@ st.caption(
 
 with repair_tab:
     render_repair_cost_tab(DATA_DIR)
+
+with maintenance_tab:
+    render_maintenance_tab(DATA_DIR)
