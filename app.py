@@ -12,6 +12,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit.components.v1 as st_components
 from van_cutaway import render_cutaway, SYSTEMS
+from repair_intelligence import render_repair_cost_tab
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
@@ -263,8 +264,8 @@ st.info(
     "Missing model-year rows are left blank, not treated as zero."
 )
 
-hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab = st.tabs(
-    ["Failure Hotspots", "Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data"]
+hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severity_tab, records_tab, sales_tab, repair_tab = st.tabs(
+    ["Failure Hotspots", "Compare vehicles", "Problem categories", "Component deep dive", "Problem Intelligence", "Reported incidents", "Complaint records", "Sales data", "Repair costs"]
 )
 
 with overview_tab:
@@ -1330,3 +1331,6 @@ st.caption(
     "Recalls are not displayed because this data pipeline has not yet collected a verified recall dataset. "
     "Sales/registration denominators will be needed before any complaint-rate or reliability ranking is appropriate."
 )
+
+
+with repair_tab:\n    render_repair_cost_tab(DATA_DIR)\n
