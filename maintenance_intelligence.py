@@ -10,6 +10,7 @@ from pathlib import Path
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from maintenance_forecast import render_forecast_overview
 
 SCHEDULE_REQUIRED = {
     "vehicle", "model_year_start", "model_year_end", "task",
@@ -174,6 +175,13 @@ def render_maintenance_tab(data_dir: Path) -> None:
         & catalog["model_year_start"].le(year)
         & catalog["model_year_end"].ge(year)
     ].copy()
+    # High-priority maintenance timeline and failure hotspots appear immediately
+    # below vehicle selection and before the existing detailed tools.
+    render_forecast_overview(
+        data_dir, selected, vehicle, int(year), int(odometer),
+        load_problem_summary,
+    )
+    st.divider()
     if selected.empty:
         st.info(
             "No year-specific manufacturer maintenance schedule has been "
