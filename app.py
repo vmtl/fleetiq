@@ -20,7 +20,7 @@ from vehicle_report import render_vehicle_report
 from fleet_workspace import render_fleet_workspace
 from business_economics import render_profitability, render_prediction_readiness
 from age_comparison import render_age_matched_comparison
-from normalized_overview import render_normalized_overview
+from normalized_overview import render_normalized_overview, render_tab_sales_context
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
@@ -290,7 +290,7 @@ st.caption(
 )
 
 st.info(
-    "Comparisons are **complaint volumes only**. Higher counts may reflect more vehicles "
+    "Underlying complaint charts show **report counts**; the primary cross-vehicle metric is the sales-normalized reporting index. Higher counts may reflect more vehicles "
     "sold, more years on the road, or greater mileage—not necessarily lower reliability. "
     "Missing model-year rows are left blank, not treated as zero."
 )
@@ -306,8 +306,6 @@ with overview_tab:
     st.divider()
     render_age_matched_comparison(complaints, NEON_PALETTE)
     with st.expander("Underlying complaint counts and model-year trends", expanded=False):
-        render_age_matched_comparison(complaints, NEON_PALETTE)
-        st.divider()
         st.markdown("#### Total complaints in selected model years")
         totals = (
             summary_filtered.groupby(["vehicle", "vehicle_class"], as_index=False)
@@ -360,6 +358,8 @@ with overview_tab:
         )
     
 with components_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     st.markdown("#### Most frequently reported components")
     components = (
         complaints_filtered[["vehicle", "odi_number", "component"]]
@@ -421,6 +421,8 @@ def component_system(component):
 
 
 with detail_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     st.markdown("#### Component-level complaint investigation")
     st.caption("Identify recurring systems, affected model years, available odometer readings, and original NHTSA narratives.")
     detail_vehicle = st.selectbox("Vehicle platform", selected_vehicles, key="detail_vehicle")
@@ -560,6 +562,8 @@ def load_problem_analysis(file_mtime):
 
 
 with intelligence_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     st.markdown("#### Problem Intelligence — reported issues by vehicle age")
     st.caption(
         "Issue labels are preliminary keyword-based interpretations of owner narratives, "
@@ -765,6 +769,8 @@ with intelligence_tab:
                     )
 
 with severity_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     st.markdown("#### Reported crash, fire, and mileage indicators")
     # Flags are consolidated across component records for each ODI ID.
     incident_rows = complaints_filtered.copy()
@@ -828,6 +834,8 @@ with severity_tab:
     )
 
 with records_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     st.markdown("#### Underlying NHTSA complaint records")
     available_components = sorted(complaints_filtered["component"].dropna().unique().tolist())
     chosen_components = st.multiselect(
@@ -875,6 +883,8 @@ with records_tab:
     )
 
 with sales_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     st.markdown("#### Vehicle Sales Intelligence")
     st.caption(
         "Explore published U.S. calendar-year model-family sales. These figures "
@@ -1179,6 +1189,8 @@ def hotspot_level(pct, count):
 
 
 with hotspots_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     st.markdown("#### Failure Hotspots — Reported Vehicle Systems")
     st.caption(
         "Compare up to three vehicles. Colors show the share of distinct NHTSA "
@@ -1373,23 +1385,35 @@ st.caption(
 
 
 with repair_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     render_repair_cost_tab(DATA_DIR)
 
 with maintenance_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     render_maintenance_tab(DATA_DIR)
 
 
 with recalls_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     render_recall_tab()
 
 with ownership_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     render_ownership_tab()
 
 
 with report_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     render_vehicle_report(DATA_DIR, complaints)
 
 with fleet_tab:
+    render_tab_sales_context(complaints, DATA_DIR, selected_vehicles)
+    st.divider()
     render_fleet_workspace()
     st.divider()
     render_profitability()
