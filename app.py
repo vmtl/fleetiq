@@ -20,7 +20,7 @@ from vehicle_report import render_vehicle_report
 from fleet_workspace import render_fleet_workspace
 from business_economics import render_profitability, render_prediction_readiness
 from age_comparison import render_age_matched_comparison
-from normalized_overview import render_normalized_overview, render_tab_sales_context
+from normalized_overview import render_normalized_overview, render_tab_sales_context, normalized_component_chart
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
@@ -382,7 +382,10 @@ with components_tab:
             .fillna(0)
             .reindex(top_components)
         )
-        neon_bar(chart_data, horizontal=True, x_label="Complaint reports mentioning component", y_label="Component")
+        st.markdown("##### Component reporting index by vehicle")
+        normalized_component_chart(complaints, DATA_DIR, selected_vehicles)
+        with st.expander("Underlying component report counts", expanded=False):
+            neon_bar(chart_data, horizontal=True, x_label="Complaint reports mentioning component", y_label="Component")
         st.dataframe(
             components.sort_values("complaints", ascending=False).rename(columns={
                 "vehicle": "Vehicle", "component": "NHTSA component", "complaints": "Unique complaints"
@@ -818,10 +821,10 @@ with severity_tab:
     if incident_chart.empty or not incident_chart.to_numpy().any():
         st.info("No crash or fire indicators are reported in this selection.")
     else:
-        neon_bar(
-            incident_chart, x_label="Vehicle",
-            y_label="Unique complaints with reported indicator",
-        )
+        st.markdown("##### Crash and fire reporting index by vehicle")
+        normalized_component_chart(complaints, DATA_DIR, selected_vehicles, flags={"Crash-flagged reports": "crash", "Fire-flagged reports": "fire"})
+        with st.expander("Underlying crash and fire report counts", expanded=False):
+            neon_bar(incident_chart, x_label="Vehicle", y_label="Unique complaints with reported indicator")
     st.caption(
         "A single complaint may report both a crash and a fire; bars may overlap. "
         "These are consumer-reported flags, not confirmed causal findings."
@@ -1321,20 +1324,22 @@ with hotspots_tab:
                 "system categories when complaint records lack part-level precision."
             )
         if not counts.empty:
-            st.markdown("##### Compare complaint shares across vehicles")
-            shares = counts.pivot(
-                index="system", columns="vehicle", values="share_pct"
-            ).reindex(SYSTEMS).fillna(0)
-            neon_bar(
-                shares, horizontal=True,
-                x_label="Share of each vehicle's distinct complaints (%)",
-                y_label="Reported system",
-            )
-            st.caption(
-                "System shares can total more than 100%, since one complaint "
-                "may involve several systems. Lower shares are not evidence of "
-                "greater reliability."
-            )
+            st.markdown("##### Compare system reporting indices across vehicles")
+            normalized_component_chart(complaints, DATA_DIR, hotspot_vans, component_mapper=component_system)
+            with st.expander("Underlying system complaint shares", expanded=False):
+                shares = counts.pivot(
+                    index="system", columns="vehicle", values="share_pct"
+                ).reindex(SYSTEMS).fillna(0)
+                neon_bar(
+                    shares, horizontal=True,
+                    x_label="Share of each vehicle's distinct complaints (%)",
+                    y_label="Reported system",
+                )
+                st.caption(
+                    "System shares can total more than 100%, since one complaint "
+                    "may involve several systems. Lower shares are not evidence of "
+                    "greater reliability."
+                )
         st.markdown("##### Review the underlying NHTSA complaints")
         evidence_van = st.selectbox(
             "Vehicle for evidence", hotspot_vans, key="hotspot_evidence_van"
