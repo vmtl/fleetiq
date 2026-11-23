@@ -300,59 +300,65 @@ hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severi
 )
 
 with overview_tab:
-    render_age_matched_comparison(complaints, NEON_PALETTE)
+    st.markdown("### Sales-normalized comparison")
+    st.caption("Primary comparison: NHTSA reports received per 1,000 U.S. vehicles sold over the selected calendar-year period.")
+    render_normalized_overview(complaints, DATA_DIR, key_prefix="compare")
     st.divider()
-    st.markdown("#### Total complaints in selected model years")
-    totals = (
-        summary_filtered.groupby(["vehicle", "vehicle_class"], as_index=False)
-        .agg(
-            unique_complaints=("complaint_count", "sum"),
-            component_records=("component_records", "sum"),
-            model_years_with_records=("model_year", "nunique"),
+    render_age_matched_comparison(complaints, NEON_PALETTE)
+    with st.expander("Underlying complaint counts and model-year trends", expanded=False):
+        render_age_matched_comparison(complaints, NEON_PALETTE)
+        st.divider()
+        st.markdown("#### Total complaints in selected model years")
+        totals = (
+            summary_filtered.groupby(["vehicle", "vehicle_class"], as_index=False)
+            .agg(
+                unique_complaints=("complaint_count", "sum"),
+                component_records=("component_records", "sum"),
+                model_years_with_records=("model_year", "nunique"),
+            )
+            .sort_values("unique_complaints", ascending=False)
         )
-        .sort_values("unique_complaints", ascending=False)
-    )
-    # Complaint IDs across different years/platforms should not be summed twice.
-    verified_totals = (
-        complaint_level.groupby("vehicle")["odi_number"].nunique()
-    )
-    totals["unique_complaints"] = totals["vehicle"].map(verified_totals).fillna(0).astype(int)
-    st.dataframe(
-        totals.rename(columns={
-            "vehicle": "Vehicle", "vehicle_class": "Category",
-            "unique_complaints": "Unique complaints",
-            "component_records": "Component records",
-            "model_years_with_records": "Years with reports",
-        }),
-        hide_index=True,
-        use_container_width=True,
-    )
-    neon_bar(totals.set_index("vehicle")["unique_complaints"], x_label="Vehicle platform", y_label="Unique complaints")
-
-    st.markdown("#### Compare the same model years")
-    trend = summary_filtered.pivot(
-        index="model_year", columns="vehicle", values="complaint_count"
-    ).sort_index()
-    # Treat model years as categories to avoid axis labels like 2,016.
-    trend_chart = trend.copy()
-    trend_chart.index = trend_chart.index.astype(int).astype(str)
-    trend_chart.index.name = "Model year"
-    neon_line(trend_chart, x_label="Model year", y_label="Unique complaints")
-
-    # Format a display-only copy so missing values show as a dash, not None.
-    # Keep true nulls in the underlying trend table and line chart.
-    trend_display = trend.copy()
-    trend_display.index = trend_display.index.astype(int).astype(str)
-    trend_display.index.name = "Model year"
-    trend_display = trend_display.apply(
-        lambda col: col.map(lambda value: "—" if pd.isna(value) else f"{int(value):,}")
-    )
-    st.dataframe(trend_display, use_container_width=True)
-    st.caption(
-        "Blank cells mean the pipeline has no matched complaint records for that platform/year. "
-        "They must not be interpreted as zero until coverage is verified."
-    )
-
+        # Complaint IDs across different years/platforms should not be summed twice.
+        verified_totals = (
+            complaint_level.groupby("vehicle")["odi_number"].nunique()
+        )
+        totals["unique_complaints"] = totals["vehicle"].map(verified_totals).fillna(0).astype(int)
+        st.dataframe(
+            totals.rename(columns={
+                "vehicle": "Vehicle", "vehicle_class": "Category",
+                "unique_complaints": "Unique complaints",
+                "component_records": "Component records",
+                "model_years_with_records": "Years with reports",
+            }),
+            hide_index=True,
+            use_container_width=True,
+        )
+        neon_bar(totals.set_index("vehicle")["unique_complaints"], x_label="Vehicle platform", y_label="Unique complaints")
+    
+        st.markdown("#### Compare the same model years")
+        trend = summary_filtered.pivot(
+            index="model_year", columns="vehicle", values="complaint_count"
+        ).sort_index()
+        # Treat model years as categories to avoid axis labels like 2,016.
+        trend_chart = trend.copy()
+        trend_chart.index = trend_chart.index.astype(int).astype(str)
+        trend_chart.index.name = "Model year"
+        neon_line(trend_chart, x_label="Model year", y_label="Unique complaints")
+    
+        # Format a display-only copy so missing values show as a dash, not None.
+        # Keep true nulls in the underlying trend table and line chart.
+        trend_display = trend.copy()
+        trend_display.index = trend_display.index.astype(int).astype(str)
+        trend_display.index.name = "Model year"
+        trend_display = trend_display.apply(
+            lambda col: col.map(lambda value: "—" if pd.isna(value) else f"{int(value):,}")
+        )
+        st.dataframe(trend_display, use_container_width=True)
+        st.caption(
+            "Blank cells mean the pipeline has no matched complaint records for that platform/year. "
+            "They must not be interpreted as zero until coverage is verified."
+        )
+    
 with components_tab:
     st.markdown("#### Most frequently reported components")
     components = (
