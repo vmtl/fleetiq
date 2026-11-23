@@ -45,6 +45,58 @@ def render_normalized_overview(complaints, data_dir, key_prefix="overview"):
     st.caption(f"Reporting period: {year_start}–{year_end}. Only platforms with selected positive sales in every year are shown. Sales are calendar-year transactions, not a count of unique vehicles in service. Complaints may involve vehicles sold in earlier years or multiple reports about one vehicle. Rankings describe reporting volume relative to sales, not mechanical reliability.")
 
 
+
+@st.cache_data(show_spinner=False)
+def eligible_sales(data_dir, start, end):
+    """Only complete selected annual U.S. sales histories are comparable."""
+    path = Path(data_dir) / "sales_selection.csv"
+    if not path.exists():
+        return pd.Series(dtype=float)
+    sales = pd.read_csv(path)
+    required = {"vehicle", "calendar_year", "us_sales", "selection_status", "comparison_eligibility"}
+    if not required.issubset(sales.columns):
+        return pd.Series(dtype=float)
+    sales["calendar_year"] = pd.to_numeric(sales["calendar_year"], errors="coerce")
+    sales["us_sales"] = pd.to_numeric(sales["us_sales"], errors="coerce")
+    sales = sales.loc[
+        sales["calendar_year"].between(start, end)
+        & sales["selection_status"].eq("selected")
+        & sales["comparison_eligibility"].eq("annual_sales_only")
+        & sales["us_sales"].gt(0)
+    ].drop_duplicates(["vehicle", "calendar_year"])
+    totals = sales.groupby("vehicle").agg(units=("us_sales", "sum"), years=("calendar_year", "nunique"))
+    return totals.loc[totals["years"].eq(end - start + 1), "units"]
+
+
+def normalized_component_chart(complaints, data_dir, vehicles, component_mapper=None, flags=None):
+    """Compare report categories per 1,000 sales using one consistent receipt window."""
+    window = st.session_state.get("overview_normalized_years", (2015, 2025))
+    start, end = map(int, window)
+    denominators = eligible_sales(str(data_dir), start, end)
+    denominators = denominators[denominators.index.isin(vehicles)]
+    if denominators.empty:
+        st.info("No complete positive annual sales series for these vehicles and calendar years.")
+        return
+    c = complaints.loc[complaints["vehicle"].isin(denominators.index)].copy()
+    c = c.loc[pd.to_datetime(c["received_date"], errors="coerce").dt.year.between(start, end)]
+    if flags:
+        frames = []
+        for label, column in flags.items():
+            flagged = c.loc[c[column].astype(str).str.upper().isin(["Y", "YES", "TRUE", "1"])].copy()
+            flagged["category"] = label
+            frames.append(flagged)
+        c = pd.concat(frames, ignore_index=True) if frames else c.iloc[0:0]
+    else:
+        c["category"] = c["component"].map(component_mapper) if component_mapper else c["component"]
+    if c.empty:
+        st.info("No matching complaint indicators in this calendar-year reporting window.")
+        return
+    counts = c.drop_duplicates(["vehicle", "category", "odi_number"]).groupby(["category", "vehicle"])["odi_number"].nunique().unstack(fill_value=0)
+    chart = counts.reindex(columns=denominators.index, fill_value=0).div(denominators, axis=1).mul(1000)
+    chart = chart.loc[chart.max(axis=1).sort_values(ascending=False).head(15).index]
+    st.bar_chart(chart, horizontal=True, x_label="Reports mentioning category per 1,000 U.S. vehicles sold")
+    st.caption(f"{start}–{end} calendar-year reporting index. Categories can overlap; sales and complaint cohorts are not linked. Not a failure rate.")
+
 def render_tab_sales_context(complaints, data_dir, selected_vehicles=None):
     """Compact shared reporting index, not a model-year failure rate."""
     path = Path(data_dir) / "sales_selection.csv"
@@ -56,7 +108,7 @@ def render_tab_sales_context(complaints, data_dir, selected_vehicles=None):
         return
     sales["calendar_year"] = pd.to_numeric(sales["calendar_year"], errors="coerce")
     sales["us_sales"] = pd.to_numeric(sales["us_sales"], errors="coerce")
-    window = st.session_state.get("normalized_years", (2015, 2025))
+    window = st.session_state.get("overview_normalized_years", (2015, 2025))
     start, end = int(window[0]), int(window[1])
     sales = sales[
         sales["calendar_year"].between(start, end)
