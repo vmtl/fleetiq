@@ -20,7 +20,7 @@ from vehicle_report import render_vehicle_report
 from fleet_workspace import render_fleet_workspace
 from business_economics import render_profitability, render_prediction_readiness
 from age_comparison import render_age_matched_comparison
-from normalized_overview import render_normalized_overview, render_tab_sales_context, normalized_component_chart
+from normalized_overview import render_normalized_overview, render_tab_sales_context, normalized_component_chart, eligible_sales
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
@@ -278,8 +278,8 @@ render_normalized_overview(complaints, DATA_DIR)
 st.divider()
 
 metric1, metric2, metric3, metric4 = st.columns(4)
-metric1.metric("Unique complaints", f"{complaint_level['odi_number'].nunique():,}")
-metric2.metric("Component rows", f"{len(complaints_filtered):,}")
+metric1.metric("Primary metric", "Reports per 1,000 sold ↑")
+metric2.metric("Eligible sales platforms", len(eligible_sales(str(DATA_DIR), *st.session_state.get("overview_normalized_years", (2015, 2025)))))
 metric3.metric("Platforms", f"{summary_filtered['vehicle'].nunique():,}")
 metric4.metric("Model years", f"{summary_filtered['model_year'].nunique():,}")
 
@@ -459,7 +459,16 @@ with detail_tab:
     coverage_pct = 100 * available / system_complaints if system_complaints else 0
     all_odi = int(detail_rows["odi_number"].nunique())
     x1, x2, x3, x4 = st.columns(4)
-    x1.metric("System complaints", f"{system_complaints:,}")
+    window_start, window_end = map(int, st.session_state.get("overview_normalized_years", (2015, 2025)))
+    sales_units = eligible_sales(str(DATA_DIR), window_start, window_end)
+    report_rows = complaints.loc[
+        complaints["vehicle"].eq(detail_vehicle)
+        & complaints["received_date"].dt.year.between(window_start, window_end)
+    ].copy()
+    report_rows["system"] = report_rows["component"].map(component_system)
+    system_reports = report_rows.loc[report_rows["system"].eq(selected_system), "odi_number"].nunique()
+    system_index = 1000 * system_reports / sales_units[detail_vehicle] if detail_vehicle in sales_units.index else None
+    x1.metric("System reports / 1,000 sold", f"{system_index:.2f}" if system_index is not None else "N/A")
     x2.metric("Of vehicle complaints", f"{system_complaints / all_odi:.1%}" if all_odi else "—")
     x3.metric("Mileage coverage", f"{available:,}/{system_complaints:,} ({coverage_pct:.0f}%)")
     x4.metric("Median reported miles", f"{odometer.median():,.0f}" if available else "—")
@@ -472,12 +481,9 @@ with detail_tab:
     # Horizontal Streamlit bar charts render labels more clearly than a very
     # long list of raw NHTSA component strings.
     overview_systems = totals_by_system.head(15)
-    neon_bar(
-        overview_systems,
-        horizontal=True,
-        x_label="Unique complaints mentioning system",
-        y_label="Problem system",
-    )
+    normalized_component_chart(complaints, DATA_DIR, [detail_vehicle], component_mapper=component_system)
+    with st.expander("Underlying system report counts", expanded=False):
+        neon_bar(overview_systems, horizontal=True, x_label="Unique complaints mentioning system", y_label="Problem system")
 
     st.markdown(f"##### {selected_system}: complaints by model year")
     year_counts = (
@@ -637,7 +643,14 @@ with intelligence_tab:
                 coverage_pct = 100 * specific_count / complaint_total if complaint_total else 0
 
                 m1, m2, m3, m4 = st.columns(4)
-                m1.metric("Complaints", f"{complaint_total:,}")
+                window_start, window_end = map(int, st.session_state.get("overview_normalized_years", (2015, 2025)))
+                sales_units = eligible_sales(str(DATA_DIR), window_start, window_end)
+                reports_in_window = complaints.loc[
+                    complaints["vehicle"].eq(chosen_vehicle)
+                    & complaints["received_date"].dt.year.between(window_start, window_end),
+                    "odi_number",
+                ].nunique()
+                m1.metric("Reports / 1,000 sold", f"{1000 * reports_in_window / sales_units[chosen_vehicle]:.2f}" if chosen_vehicle in sales_units.index else "N/A")
                 m2.metric("Age available", f"{age_count:,}/{complaint_total:,}")
                 m3.metric("Specific issues", f"{specific_count:,} ({coverage_pct:.1f}%)")
                 m4.metric("Needs review", f"{unclassified_count:,}")
