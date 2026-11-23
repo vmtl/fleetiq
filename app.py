@@ -19,6 +19,7 @@ from ownership_intelligence import render_ownership_tab
 from vehicle_report import render_vehicle_report
 from fleet_workspace import render_fleet_workspace
 from business_economics import render_profitability, render_prediction_readiness
+from age_comparison import render_age_matched_comparison
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
@@ -295,6 +296,8 @@ hotspots_tab, overview_tab, components_tab, detail_tab, intelligence_tab, severi
 )
 
 with overview_tab:
+    render_age_matched_comparison(complaints, NEON_PALETTE)
+    st.divider()
     st.markdown("#### Total complaints in selected model years")
     totals = (
         summary_filtered.groupby(["vehicle", "vehicle_class"], as_index=False)
