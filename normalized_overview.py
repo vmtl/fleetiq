@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-def render_normalized_overview(complaints, data_dir):
+def render_normalized_overview(complaints, data_dir, key_prefix="overview"):
     st.subheader("Sales-normalized complaint comparison")
     st.caption("Unique NHTSA complaints received per 1,000 U.S. vehicles sold in the same calendar-year window. This is a reporting index, not the percentage of vehicles that failed.")
     path = Path(data_dir) / "sales_selection.csv"
@@ -23,7 +23,7 @@ def render_normalized_overview(complaints, data_dir):
         st.info("No eligible annual sales figures.")
         return
     available = sorted(sales["calendar_year"].astype(int).unique())
-    year_start, year_end = st.select_slider("Calendar-year reporting window", options=available, value=(available[0], available[-1]), key="normalized_years")
+    year_start, year_end = st.select_slider("Calendar-year reporting window", options=available, value=(available[0], available[-1]), key=f"{key_prefix}_normalized_years")
     sales = sales[sales["calendar_year"].between(year_start, year_end)]
     # Require complete positive annual sales coverage within the selected window.
     expected = year_end - year_start + 1
