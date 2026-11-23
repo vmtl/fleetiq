@@ -20,6 +20,7 @@ from vehicle_report import render_vehicle_report
 from fleet_workspace import render_fleet_workspace
 from business_economics import render_profitability, render_prediction_readiness
 from age_comparison import render_age_matched_comparison
+from normalized_overview import render_normalized_overview
 
 
 st.set_page_config(page_title="FleetIQ | Fleet Vehicle Comparisons", page_icon="🚐", layout="wide")
@@ -272,6 +273,9 @@ mileage_by_complaint = (
 mileage_reported = int(mileage_by_complaint["reported_mileage"].notna().sum())
 mileage_total = len(mileage_by_complaint)
 mileage_coverage = 100 * mileage_reported / mileage_total if mileage_total else 0
+
+render_normalized_overview(complaints, DATA_DIR)
+st.divider()
 
 metric1, metric2, metric3, metric4 = st.columns(4)
 metric1.metric("Unique complaints", f"{complaint_level['odi_number'].nunique():,}")
