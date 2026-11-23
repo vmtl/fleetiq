@@ -278,7 +278,16 @@ render_normalized_overview(complaints, DATA_DIR)
 st.divider()
 
 metric1, metric2, metric3, metric4 = st.columns(4)
-metric1.metric("Primary metric", "Reports per 1,000 sold ↑")
+main_window = st.session_state.get("overview_normalized_years", (2015, 2025))
+main_sales = eligible_sales(str(DATA_DIR), *main_window)
+main_reports = complaints.loc[
+    complaints["vehicle"].isin(selected_vehicles)
+    & complaints["vehicle"].isin(main_sales.index)
+    & complaints["received_date"].dt.year.between(*main_window)
+].drop_duplicates(["vehicle", "odi_number"])
+main_units = main_sales.reindex(selected_vehicles).dropna().sum()
+main_index = 1000 * len(main_reports) / main_units if main_units > 0 else None
+metric1.metric("Reports / 1,000 sold", f"{main_index:.2f}" if main_index is not None else "N/A")
 metric2.metric("Eligible sales platforms", len(eligible_sales(str(DATA_DIR), *st.session_state.get("overview_normalized_years", (2015, 2025)))))
 metric3.metric("Platforms", f"{summary_filtered['vehicle'].nunique():,}")
 metric4.metric("Model years", f"{summary_filtered['model_year'].nunique():,}")
