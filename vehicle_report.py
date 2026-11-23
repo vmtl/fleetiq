@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+from normalized_overview import eligible_sales
 
 VANS = ("Ford Transit", "Ram ProMaster", "Mercedes Sprinter", "Chevrolet Express")
 
@@ -61,6 +62,9 @@ th,td{{border-bottom:1px solid #37465a;padding:8px;text-align:left}}
 small{{color:#b5c4db}}h1,h2{{color:#8ce1e4}}</style></head><body>
 <h1>FleetIQ Vehicle Intelligence Report</h1>
 <p><strong>{e(label)}</strong> · Entered odometer: {data['miles']:,} miles · Generated: {date.today().isoformat()}</p>
+<h2>Sales-normalized complaint reporting index</h2>
+<p>{f"{data['reporting_index']:.2f} complaints received per 1,000 U.S. vehicles sold" if data.get('reporting_index') is not None else "Unavailable: incomplete eligible annual sales coverage"} during {data.get('reporting_window', ('?', '?'))[0]}–{data.get('reporting_window', ('?', '?'))[1]}.</p>
+<small>Calendar-year sales and complaint cohorts are not linked; this is not a model-year failure rate.</small>
 <h2>Historical NHTSA consumer complaints</h2>
 <p>Distinct complaint records: {data['unique_complaints']:,}.
 Records with usable reported mileage: {data['reports_with_mileage']:,}.
@@ -103,8 +107,19 @@ def render_vehicle_report(data_dir: Path, complaints: pd.DataFrame) -> None:
     except (OSError, pd.errors.ParserError, ValueError) as exc:
         st.error(f"Unable to compile report: {exc}")
         return
+    window = st.session_state.get("overview_normalized_years", (2015, 2025))
+    start, end = map(int, window)
+    sales = eligible_sales(str(data_dir), start, end)
+    received = complaints.loc[
+        complaints["vehicle"].eq(vehicle)
+        & pd.to_datetime(complaints["received_date"], errors="coerce").dt.year.between(start, end),
+        "odi_number",
+    ].nunique()
+    reporting_index = 1000 * received / sales[vehicle] if vehicle in sales.index else None
+    result["reporting_index"] = reporting_index
+    result["reporting_window"] = (start, end)
     a, b, c = st.columns(3)
-    a.metric("NHTSA distinct reports", f"{result['unique_complaints']:,}")
+    a.metric("Reports / 1,000 sold", f"{reporting_index:.2f}" if reporting_index is not None else "N/A")
     b.metric("Reports with mileage", f"{result['reports_with_mileage']:,}")
     c.metric("Year-matched OEM service entries", len(result["maintenance"]))
     if result["maintenance"].empty:
