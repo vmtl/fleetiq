@@ -68,6 +68,18 @@ def eligible_sales(data_dir, start, end):
     return totals.loc[totals["years"].eq(end - start + 1), "units"]
 
 
+def reporting_index(complaints, denominators, start, end, category=None):
+    """Unique ODI reports per 1,000 sales; missing denominators remain NaN."""
+    units = pd.to_numeric(denominators, errors="coerce")
+    units = units.where(units.gt(0))
+    c = complaints.loc[pd.to_datetime(complaints["received_date"], errors="coerce").dt.year.between(start, end)]
+    if category is None:
+        counts = c.groupby("vehicle")["odi_number"].nunique()
+        return counts.reindex(units.index, fill_value=0).div(units).mul(1000)
+    counts = c.groupby([category, "vehicle"])["odi_number"].nunique().unstack(fill_value=0)
+    return counts.reindex(columns=units.index, fill_value=0).div(units, axis=1).mul(1000)
+
+
 def normalized_component_chart(complaints, data_dir, vehicles, component_mapper=None, flags=None):
     """Compare report categories per 1,000 sales using one consistent receipt window."""
     window = st.session_state.get("overview_normalized_years", (2015, 2025))
@@ -91,8 +103,7 @@ def normalized_component_chart(complaints, data_dir, vehicles, component_mapper=
     if c.empty:
         st.info("No matching complaint indicators in this calendar-year reporting window.")
         return
-    counts = c.drop_duplicates(["vehicle", "category", "odi_number"]).groupby(["category", "vehicle"])["odi_number"].nunique().unstack(fill_value=0)
-    chart = counts.reindex(columns=denominators.index, fill_value=0).div(denominators, axis=1).mul(1000)
+    chart = reporting_index(c, denominators, start, end, category="category")
     chart = chart.loc[chart.max(axis=1).sort_values(ascending=False).head(15).index]
     st.bar_chart(chart, horizontal=True, x_label="Reports mentioning category per 1,000 U.S. vehicles sold")
     st.caption(f"{start}–{end} calendar-year reporting index. Categories can overlap; sales and complaint cohorts are not linked. Not a failure rate.")
@@ -130,7 +141,7 @@ def render_tab_sales_context(complaints, data_dir, selected_vehicles=None):
     c = c[c["year"].between(start, end)]
     counts = c.groupby("vehicle")["odi_number"].nunique()
     grouped["reports"] = grouped["vehicle"].map(counts).fillna(0).astype(int)
-    grouped["per_1000"] = 1000 * grouped["reports"] / grouped["sales_units"]
+    grouped["per_1000"] = grouped["vehicle"].map(reporting_index(complaints, eligible_sales(str(data_dir), start, end), start, end))
     grouped = grouped.sort_values("per_1000")
     st.markdown("##### Sales-normalized complaint context")
     st.dataframe(
