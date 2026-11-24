@@ -1089,13 +1089,14 @@ with sales_tab:
                                 "vehicle": "Vehicle",
                                 "Calendar year": "Calendar year",
                             },
-                            hover_data={"Status": True, "source_name": True},
+                            hover_data={"us_sales": ":,.0f", "Status": True, "source_name": True},
                         )
                         fig_trend.update_layout(
                             legend_title_text="Vehicle",
                             margin=dict(l=10, r=10, t=15, b=10),
                         )
                         fig_trend.update_xaxes(dtick=1, tickformat="d")
+                        fig_trend.update_yaxes(tickformat=",.0f")
                         fig_trend.update_traces(opacity=0.83)
                         neon_style(fig_trend)
                         st.plotly_chart(
@@ -1123,11 +1124,12 @@ with sales_tab:
                             bar_rows, x="vehicle", y="us_sales", color="vehicle",
                             color_discrete_sequence=NEON_PALETTE,
                             labels={"vehicle": "Vehicle", "us_sales": "U.S. sales"},
-                            hover_data={"Status": True, "source_name": True},
+                            hover_data={"us_sales": ":,.0f", "Status": True, "source_name": True},
                         )
                         fig_bar.update_layout(
                             showlegend=False, margin=dict(l=10, r=10, t=15, b=10)
                         )
+                        fig_bar.update_yaxes(tickformat=",.0f")
                         fig_bar.update_traces(opacity=0.76)
                         neon_style(fig_bar)
                         st.plotly_chart(
@@ -1155,7 +1157,7 @@ with sales_tab:
                         column_config={
                             "Source link": st.column_config.LinkColumn("Reference"),
                             "U.S. sales": st.column_config.NumberColumn(
-                                "U.S. sales", format="%d"
+                                "U.S. sales", format="localized"
                             ),
                         },
                     )
