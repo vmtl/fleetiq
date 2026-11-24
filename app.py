@@ -1235,8 +1235,8 @@ with hotspots_tab:
     st.divider()
     st.markdown("#### Failure Hotspots — Reported Vehicle Systems")
     st.caption(
-        "Compare up to three vehicles. Colors show the share of distinct NHTSA "
-        "complaints mentioning a system, NOT the likelihood that a part will fail. "
+        "Compare up to three vehicles. Colors indicate whether reports were recorded; the index is reports per 1,000 sold, "
+        "NOT the likelihood that a part will fail. "
         "The illustrated vehicle is a generic mechanical cutaway; actual layouts vary."
     )
     hotspot_options = sorted(complaints["vehicle"].dropna().unique().tolist())
@@ -1249,14 +1249,9 @@ with hotspots_tab:
         default=favorite_hotspots[:2] or hotspot_options[:2],
         max_selections=3, key="hotspot_vans",
     )
-    hotspot_years = sorted(
-        complaints["model_year"].dropna().astype(int).unique().tolist()
-    )
-    hotspot_period = st.select_slider(
-        "Model-year range", options=hotspot_years,
-        value=(hotspot_years[0], hotspot_years[-1]),
-        key="hotspot_period",
-    )
+    hotspot_period = tuple(map(int, st.session_state.get("overview_normalized_years", (2015, 2025))))
+    hotspot_sales = eligible_sales(str(DATA_DIR), *hotspot_period)
+    st.caption(f"Calendar-year reporting window: {hotspot_period[0]}–{hotspot_period[1]}.")
     st.caption(
         "Independent hotspot filters. A complaint can reference multiple systems, "
         "but is counted only once within any single system."
@@ -1266,7 +1261,7 @@ with hotspots_tab:
     else:
         hs = complaints.loc[
             complaints["vehicle"].isin(hotspot_vans)
-            & complaints["model_year"].between(*hotspot_period)
+            & complaints["received_date"].dt.year.between(*hotspot_period)
         ].copy()
         hs["system"] = hs["component"].map(component_system)
         hs_unique = hs.drop_duplicates(["vehicle", "odi_number", "system"])
@@ -1278,28 +1273,25 @@ with hotspots_tab:
         counts["total"] = counts["vehicle"].map(denominators)
         counts["share_pct"] = 100 * counts["complaints"] / counts["total"]
         st.caption(
-            "🟢 Lower share (<5%) · 🟡 Moderate (5–<15%) · "
-            "🟠 Elevated (15–<30%) · 🔴 High (30%+) · "
-            "Gray = no matched reports. Thresholds are descriptive, not risk ratings."
+            "Green = reports recorded; gray = no reports or insufficient sales data."
         )
         st.markdown("##### System reports per 1,000 sold")
         normalized_component_chart(complaints, DATA_DIR, hotspot_vans, component_mapper=component_system)
-        st.caption("Mechanical diagrams below are supporting complaint-share evidence, not sales-normalized risk.")
-        with st.expander("Underlying mechanical cutaways and complaint shares", expanded=False):
+        st.caption("Mechanical diagrams use the same calendar-year reporting index.")
+        with st.container():
             columns = st.columns(len(hotspot_vans))
             for column, van in zip(columns, hotspot_vans):
                 with column:
                     total = int(denominators.get(van, 0))
                     st.markdown(f"##### {van}")
-                    if not total:
-                        st.info("No matching complaints for these model years.")
-                        continue
+                    if van not in hotspot_sales.index:
+                        st.info("Insufficient sales data for this reporting window.")
                     sub = counts.loc[counts["vehicle"].eq(van)]
                     lookup = sub.set_index("system")[
                         ["complaints", "share_pct"]
                     ].to_dict("index")
                     st_components.html(
-                        render_cutaway(lookup, total, van, detailed=False),
+                        render_cutaway(lookup, total, van, detailed=False, sales_units=float(hotspot_sales.get(van, 0))),
                         height=440, scrolling=False,
                     )
                     table = pd.DataFrame([
@@ -1312,14 +1304,9 @@ with hotspots_tab:
                         }
                         for system in SYSTEMS
                     ])
-                    table["Level"] = table.apply(
-                        lambda row: hotspot_level(
-                            row["Share (%)"], row["Complaints"]
-                        )[0], axis=1
-                    )
-                    st.dataframe(
-                        table, hide_index=True, use_container_width=True, height=340
-                    )
+                    units = float(hotspot_sales.get(van, 0))
+                    table["Reports per 1,000 sold"] = table["Complaints"].mul(1000 / units).round(2) if units > 0 else None
+                    st.dataframe(table[["System", "Reports per 1,000 sold"]], hide_index=True, use_container_width=True, height=340)
             focused_van = st.selectbox(
                 "Inspect detailed vehicle anatomy",
                 hotspot_vans, key="hotspot_detailed_van",
@@ -1354,13 +1341,13 @@ with hotspots_tab:
                 st_components.html(
                     render_cutaway(
                         focus_lookup, focused_total, focused_van,
-                        detailed=True, evidence_rows=excerpts
+                        detailed=True, evidence_rows=excerpts, sales_units=float(hotspot_sales.get(focused_van, 0))
                     ),
                     height=695, scrolling=False,
                 )
                 st.caption(
                     "Click a highlighted component in the cutaway to see its complaint "
-                    "share and short NHTSA excerpts inside the viewer. The detailed "
+                    "reporting index and short NHTSA excerpts inside the viewer. The detailed "
                     "table and downloadable source evidence remain below. "
                     "This is a generic schematic, not a vehicle-specific service diagram. "
                     "Engine/radiator and front/rear wheel-end parts share broad NHTSA "
@@ -1399,7 +1386,7 @@ with hotspots_tab:
         )
         st.caption(
             f"{len(evidence):,} distinct complaints mention {evidence_system} "
-            f"for {evidence_van} in the selected model years."
+            f"for {evidence_van} in the selected calendar years."
         )
         if evidence.empty:
             st.info("No matching reports for this system and vehicle.")
