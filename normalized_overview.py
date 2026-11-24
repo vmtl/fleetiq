@@ -41,7 +41,9 @@ def render_normalized_overview(complaints, data_dir, key_prefix="overview"):
         return
     st.bar_chart(grouped.set_index("vehicle")["index"], horizontal=True, x_label="Complaints received per 1,000 vehicles sold")
     display = grouped.rename(columns={"vehicle": "Vehicle", "sales_units": "U.S. sales", "complaints_received": "Unique complaints received", "index": "Complaints per 1,000 sold"})
-    st.dataframe(display[["Vehicle", "U.S. sales", "Unique complaints received", "Complaints per 1,000 sold"]], hide_index=True, use_container_width=True, column_config={"Complaints per 1,000 sold": st.column_config.NumberColumn(format="%.2f"), "U.S. sales": st.column_config.NumberColumn(format="localized"), "Unique complaints received": st.column_config.NumberColumn(format="localized")})
+    for column in ("U.S. sales", "Unique complaints received"):
+        display[column] = display[column].map(lambda value: f"{value:,.0f}" if pd.notna(value) else None)
+    st.dataframe(display[["Vehicle", "U.S. sales", "Unique complaints received", "Complaints per 1,000 sold"]], hide_index=True, use_container_width=True, column_config={"Complaints per 1,000 sold": st.column_config.NumberColumn(format="%.2f"), "U.S. sales": st.column_config.TextColumn(), "Unique complaints received": st.column_config.TextColumn()})
     st.caption(f"Reporting period: {year_start}–{year_end}. Only platforms with selected positive sales in every year are shown. Sales are calendar-year transactions, not a count of unique vehicles in service. Complaints may involve vehicles sold in earlier years or multiple reports about one vehicle. Rankings describe reporting volume relative to sales, not mechanical reliability.")
 
 
@@ -143,11 +145,14 @@ def render_tab_sales_context(complaints, data_dir, selected_vehicles=None):
     grouped["reports"] = grouped["vehicle"].map(counts).fillna(0).astype(int)
     grouped["per_1000"] = grouped["vehicle"].map(reporting_index(complaints, eligible_sales(str(data_dir), start, end), start, end))
     grouped = grouped.sort_values("per_1000")
+    grouped = grouped.copy()
+    for column in ("sales_units", "reports"):
+        grouped[column] = grouped[column].map(lambda value: f"{value:,.0f}" if pd.notna(value) else None)
     st.markdown("##### Sales-normalized complaint context")
     st.dataframe(
         grouped.rename(columns={"vehicle": "Vehicle", "sales_units": "U.S. sales", "reports": "Complaints received", "per_1000": "Reports per 1,000 sold"})
         [["Vehicle", "Reports per 1,000 sold", "U.S. sales", "Complaints received"]],
         hide_index=True, use_container_width=True,
-        column_config={"Reports per 1,000 sold": st.column_config.NumberColumn(format="%.2f"), "U.S. sales": st.column_config.NumberColumn(format="localized"), "Complaints received": st.column_config.NumberColumn(format="localized")},
+        column_config={"Reports per 1,000 sold": st.column_config.NumberColumn(format="%.2f"), "U.S. sales": st.column_config.TextColumn(), "Complaints received": st.column_config.TextColumn()},
     )
     st.caption(f"{start}–{end} calendar-year reporting index. Sales and complaint cohorts are not linked; this is not a vehicle failure rate.")
