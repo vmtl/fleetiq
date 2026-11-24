@@ -31,16 +31,17 @@ def band(share, count):
     return "Lower share", COLORS["low"]
 
 
-def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
+def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None, sales_units=None):
     """Return self-contained clickable technical SVG suitable for Streamlit HTML."""
     payload = {}
     for system in SYSTEMS:
         item = lookup.get(system, {})
         count = int(item.get("complaints", 0))
         share = float(item.get("share_pct", 0.0))
-        label, color = band(share, count)
+        index = 1000 * count / sales_units if sales_units and sales_units > 0 else None
+        label, color = band(share, count) if sales_units is None else (("Unavailable", COLORS["none"]) if index is None else ("No reports", COLORS["none"]) if index == 0 else ("Reports recorded", COLORS["low"]))
         payload[system] = {"count": count, "share": round(share, 1),
-                           "status": label, "color": color}
+                           "status": label, "color": color, "index": index}
     evidence_rows = evidence_rows or {}
     safe_evidence = {
         system: [
@@ -192,7 +193,7 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
         <text x="1059" y="505">CALIPER</text>
       </g>""" if detailed else ""
 
-    data_json = json.dumps({"stats": payload, "evidence": safe_evidence},
+    data_json = json.dumps({"stats": payload, "evidence": safe_evidence, "normalized": sales_units is not None},
                            ensure_ascii=True).replace("<", "\\u003c")
     name = html.escape(str(vehicle), quote=True)
     mode = "expanded" if detailed else "compact"
@@ -215,11 +216,11 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
     legend = "".join(
         '<span><i class="dot" style="background:' + color + '"></i>'
         + html.escape(label) + '</span>'
-        for label, color in [
+        for label, color in ([("Reports recorded", COLORS["low"]), ("No reports / unavailable", COLORS["none"])] if sales_units is not None else [
             ("Lower share", COLORS["low"]), ("Moderate", COLORS["moderate"]),
             ("Elevated", COLORS["elevated"]), ("High share", COLORS["high"]),
             ("No reports", COLORS["none"]),
-        ]
+        ])
     )
 
     style = """
@@ -294,7 +295,7 @@ def render_cutaway(lookup, total, vehicle, detailed=False, evidence_rows=None):
       const d = DATA.stats[el.dataset.system];
       picked.textContent = el.dataset.system;
       count.textContent = d.count.toLocaleString() + ' complaint(s)';
-      share.textContent = d.share.toFixed(1) + "% of this vehicle's complaints";
+      share.textContent = DATA.normalized ? (d.index === null ? "Insufficient sales data" : d.index.toFixed(2) + " reports per 1,000 sold") : d.share.toFixed(1) + "% of this vehicle's complaints";
       status.textContent = d.status;
       status.style.borderColor = d.color;
       const box = document.getElementById('evidence-list');
