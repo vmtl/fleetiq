@@ -494,19 +494,22 @@ with detail_tab:
     with st.expander("Underlying system report counts", expanded=False):
         neon_bar(overview_systems, horizontal=True, x_label="Unique complaints mentioning system", y_label="Problem system")
 
-    st.markdown(f"##### {selected_system}: complaints by model year")
-    year_counts = (
-        system_rows.drop_duplicates(["model_year", "odi_number"])
-        .groupby("model_year")["odi_number"].nunique()
-        .sort_index()
-    )
-    year_frame = year_counts.rename("Unique complaints").to_frame()
-    year_frame.index = year_frame.index.astype(int).astype(str)
-    year_frame.index.name = "Model year"
-    neon_bar(year_frame, x_label="Model year", y_label="Unique complaints")
-    st.caption("Only model years with matched complaint records appear. Missing years are not verified zeros.")
+    with st.expander("Underlying model-year complaint counts", expanded=False):
+        st.markdown(f"##### {selected_system}: complaints by model year")
+        year_counts = (
+            system_rows.drop_duplicates(["model_year", "odi_number"])
+            .groupby("model_year")["odi_number"].nunique()
+            .sort_index()
+        )
+        year_frame = year_counts.rename("Unique complaints").to_frame()
+        year_frame.index = year_frame.index.astype(int).astype(str)
+        year_frame.index.name = "Model year"
+        neon_bar(year_frame, x_label="Model year", y_label="Unique complaints")
+        st.caption("Only model years with matched complaint records appear. Missing years are not verified zeros.")
 
-    st.markdown("##### Specific NHTSA components in this system")
+    st.markdown("##### Specific NHTSA components per 1,000 sold")
+    normalized_component_chart(complaints.loc[complaints["component"].map(component_system).eq(selected_system)], DATA_DIR, [detail_vehicle])
+    st.markdown("##### Supporting component evidence")
     subcomponent = (
         system_rows.drop_duplicates(["component", "odi_number"])
         .groupby("component")["odi_number"].nunique()
@@ -515,7 +518,8 @@ with detail_tab:
     subtable = subcomponent.rename("Unique complaints").reset_index().rename(
         columns={"component": "NHTSA component"}
     )
-    st.dataframe(subtable, hide_index=True, use_container_width=True)
+    with st.expander("Underlying component counts", expanded=False):
+        st.dataframe(subtable, hide_index=True, use_container_width=True)
 
     st.markdown("##### Review original complaint descriptions")
     selected_subcomponent = st.selectbox(
@@ -716,34 +720,43 @@ with intelligence_tab:
                     .groupby("issue")["odi_number"].nunique()
                     .sort_values(ascending=False)
                 )
-                st.markdown("##### Most frequently reported specific issues")
-                if issue_counts.empty:
-                    st.info("No specific issues were detected in these records.")
+                st.markdown("##### Specific issue reports per 1,000 sold")
+                period_ids = complaints.loc[complaints["vehicle"].eq(chosen_vehicle) & complaints["received_date"].dt.year.between(window_start, window_end), "odi_number"]
+                period_issues = issue_links.loc[issue_links["odi_number"].isin(period_ids) & ~issue_links["issue"].isin(["Unspecified / manual review", "Sensor / warning / diagnostic"])]
+                if chosen_vehicle in sales_units.index:
+                    issue_index = period_issues.groupby("issue")["odi_number"].nunique().mul(1000 / sales_units[chosen_vehicle]).sort_values(ascending=False)
+                    if not issue_index.empty:
+                        neon_bar(issue_index.head(15), horizontal=True, x_label="Reports per 1,000 sold", y_label="Reported issue")
                 else:
-                    neon_bar(
-                        issue_counts.head(15), horizontal=True,
-                        x_label="Unique complaints mentioning issue",
-                        y_label="Reported issue"
-                    )
-                    st.dataframe(
-                        issue_counts.rename("Complaint IDs").reset_index().rename(
-                            columns={"issue": "Reported issue"}
-                        ), hide_index=True, use_container_width=True
-                    )
+                    st.info("No eligible sales denominator for this reporting window.")
+                with st.expander("Underlying issue counts and age distribution", expanded=False):
+                    if issue_counts.empty:
+                        st.info("No specific issues were detected in these records.")
+                    else:
+                        neon_bar(
+                            issue_counts.head(15), horizontal=True,
+                            x_label="Unique complaints mentioning issue",
+                            y_label="Reported issue"
+                        )
+                        st.dataframe(
+                            issue_counts.rename("Complaint IDs").reset_index().rename(
+                                columns={"issue": "Reported issue"}
+                            ), hide_index=True, use_container_width=True
+                        )
 
-                st.markdown("##### Complaints by approximate vehicle age")
-                age_order = ["0–1 years", "2–3 years", "4–5 years", "6–8 years", "9+ years", "Unknown"]
-                age_counts = (
-                    vehicle_data.groupby("age_band")["odi_number"].nunique()
-                    .reindex(age_order, fill_value=0)
-                    .rename("Unique complaints")
-                )
-                neon_bar(age_counts, x_label="Approximate age at complaint receipt", y_label="Unique complaints")
-                st.caption(
-                    "These counts describe when NHTSA received reports, not the exact age "
-                    "when a fault began. They are not age-specific failure rates: different "
-                    "vehicle cohorts have had different amounts of time to accumulate complaints."
-                )
+                    st.markdown("##### Complaints by approximate vehicle age")
+                    age_order = ["0–1 years", "2–3 years", "4–5 years", "6–8 years", "9+ years", "Unknown"]
+                    age_counts = (
+                        vehicle_data.groupby("age_band")["odi_number"].nunique()
+                        .reindex(age_order, fill_value=0)
+                        .rename("Unique complaints")
+                    )
+                    neon_bar(age_counts, x_label="Approximate age at complaint receipt", y_label="Unique complaints")
+                    st.caption(
+                        "These counts describe when NHTSA received reports, not the exact age "
+                        "when a fault began. They are not age-specific failure rates: different "
+                        "vehicle cohorts have had different amounts of time to accumulate complaints."
+                    )
 
                 st.markdown("##### Investigate an issue")
                 issue_options = issue_counts.index.tolist()
@@ -760,19 +773,20 @@ with intelligence_tab:
                     evidence = vehicle_data.loc[
                         vehicle_data["odi_number"].isin(relevant_ids)
                     ].copy()
-                    issue_by_age = (
-                        evidence.groupby("age_band")["odi_number"].nunique()
-                        .reindex(age_order, fill_value=0)
-                        .rename("Unique complaints")
-                    )
-                    neon_bar(
-                        issue_by_age, x_label="Approximate age at report receipt",
-                        y_label="Complaints mentioning issue"
-                    )
-                    st.caption(
-                        f"{evidence['odi_number'].nunique():,} distinct complaints mention "
-                        f"{selected_issue}. These are reported symptoms, not confirmed repair diagnoses."
-                    )
+                    with st.expander("Underlying issue age evidence", expanded=False):
+                        issue_by_age = (
+                            evidence.groupby("age_band")["odi_number"].nunique()
+                            .reindex(age_order, fill_value=0)
+                            .rename("Unique complaints")
+                        )
+                        neon_bar(
+                            issue_by_age, x_label="Approximate age at report receipt",
+                            y_label="Complaints mentioning issue"
+                        )
+                        st.caption(
+                            f"{evidence['odi_number'].nunique():,} distinct complaints mention "
+                            f"{selected_issue}. These are reported symptoms, not confirmed repair diagnoses."
+                        )
                     evidence_cols = [
                         "odi_number", "model_year", "date_received",
                         "approx_vehicle_age_years", "age_band", "primary_reported_issue",
@@ -880,25 +894,28 @@ with records_tab:
         f"{records['odi_number'].nunique():,} unique complaints across "
         f"{len(records):,} component rows"
     )
-    st.markdown("##### Most frequently mentioned NHTSA components")
-    record_components = (
-        records[["odi_number", "component"]].drop_duplicates()
-        .groupby("component")["odi_number"].nunique()
-        .sort_values(ascending=False).head(12)
-        .rename("Unique complaints")
-    )
-    if record_components.empty:
-        st.info("No component reports match the current filters.")
-    else:
-        neon_bar(
-            record_components, horizontal=True,
-            x_label="Unique complaints mentioning component",
-            y_label="NHTSA component",
+    st.markdown("##### Component reports per 1,000 sold")
+    normalized_component_chart(complaints, DATA_DIR, selected_vehicles)
+    st.caption("Normalized chart uses the calendar reporting window; records below use the evidence filters.")
+    with st.expander("Underlying component frequency", expanded=False):
+        record_components = (
+            records[["odi_number", "component"]].drop_duplicates()
+            .groupby("component")["odi_number"].nunique()
+            .sort_values(ascending=False).head(12)
+            .rename("Unique complaints")
         )
-    st.caption(
-        "Component categories can overlap within a complaint; do not add the "
-        "bars together as unique complaints."
-    )
+        if record_components.empty:
+            st.info("No component reports match the current filters.")
+        else:
+            neon_bar(
+                record_components, horizontal=True,
+                x_label="Unique complaints mentioning component",
+                y_label="NHTSA component",
+            )
+        st.caption(
+            "Component categories can overlap within a complaint; do not add the "
+            "bars together as unique complaints."
+        )
     st.dataframe(records[display_cols], hide_index=True, use_container_width=True)
     st.download_button(
         "Download filtered complaint records (CSV)",
@@ -1265,86 +1282,90 @@ with hotspots_tab:
             "🟠 Elevated (15–<30%) · 🔴 High (30%+) · "
             "Gray = no matched reports. Thresholds are descriptive, not risk ratings."
         )
-        columns = st.columns(len(hotspot_vans))
-        for column, van in zip(columns, hotspot_vans):
-            with column:
-                total = int(denominators.get(van, 0))
-                st.markdown(f"##### {van}")
-                if not total:
-                    st.info("No matching complaints for these model years.")
-                    continue
-                sub = counts.loc[counts["vehicle"].eq(van)]
-                lookup = sub.set_index("system")[
+        st.markdown("##### System reports per 1,000 sold")
+        normalized_component_chart(complaints, DATA_DIR, hotspot_vans, component_mapper=component_system)
+        st.caption("Mechanical diagrams below are supporting complaint-share evidence, not sales-normalized risk.")
+        with st.expander("Underlying mechanical cutaways and complaint shares", expanded=False):
+            columns = st.columns(len(hotspot_vans))
+            for column, van in zip(columns, hotspot_vans):
+                with column:
+                    total = int(denominators.get(van, 0))
+                    st.markdown(f"##### {van}")
+                    if not total:
+                        st.info("No matching complaints for these model years.")
+                        continue
+                    sub = counts.loc[counts["vehicle"].eq(van)]
+                    lookup = sub.set_index("system")[
+                        ["complaints", "share_pct"]
+                    ].to_dict("index")
+                    st_components.html(
+                        render_cutaway(lookup, total, van, detailed=False),
+                        height=440, scrolling=False,
+                    )
+                    table = pd.DataFrame([
+                        {
+                            "System": system,
+                            "Complaints": int(lookup.get(system, {}).get("complaints", 0)),
+                            "Share (%)": round(
+                                float(lookup.get(system, {}).get("share_pct", 0)), 1
+                            ),
+                        }
+                        for system in SYSTEMS
+                    ])
+                    table["Level"] = table.apply(
+                        lambda row: hotspot_level(
+                            row["Share (%)"], row["Complaints"]
+                        )[0], axis=1
+                    )
+                    st.dataframe(
+                        table, hide_index=True, use_container_width=True, height=340
+                    )
+            focused_van = st.selectbox(
+                "Inspect detailed vehicle anatomy",
+                hotspot_vans, key="hotspot_detailed_van",
+            )
+            focused_total = int(denominators.get(focused_van, 0))
+            if focused_total:
+                focus_data = counts.loc[counts["vehicle"].eq(focused_van)]
+                focus_lookup = focus_data.set_index("system")[
                     ["complaints", "share_pct"]
                 ].to_dict("index")
+                st.markdown(f"##### Expanded mechanical cutaway — {focused_van}")
+                st.caption(
+                    "Expanded view retains mechanical detail and complaint excerpts. "
+                    "The compact comparison cards use simplified, smaller components."
+                )
+                # Selectable SVG component groups reveal source excerpts directly.
+                focus_evidence = hs.loc[hs["vehicle"].eq(focused_van)].copy()
+                focus_evidence = focus_evidence.drop_duplicates(
+                    ["system", "odi_number"]
+                )
+                excerpts = {}
+                for source_system, section in focus_evidence.groupby("system"):
+                    excerpts[source_system] = [
+                        {
+                            "model_year": row.model_year,
+                            "component": row.component,
+                            "description": row.description
+                            if pd.notna(row.description) else "",
+                        }
+                        for row in section.head(3).itertuples(index=False)
+                    ]
                 st_components.html(
-                    render_cutaway(lookup, total, van, detailed=False),
-                    height=440, scrolling=False,
+                    render_cutaway(
+                        focus_lookup, focused_total, focused_van,
+                        detailed=True, evidence_rows=excerpts
+                    ),
+                    height=695, scrolling=False,
                 )
-                table = pd.DataFrame([
-                    {
-                        "System": system,
-                        "Complaints": int(lookup.get(system, {}).get("complaints", 0)),
-                        "Share (%)": round(
-                            float(lookup.get(system, {}).get("share_pct", 0)), 1
-                        ),
-                    }
-                    for system in SYSTEMS
-                ])
-                table["Level"] = table.apply(
-                    lambda row: hotspot_level(
-                        row["Share (%)"], row["Complaints"]
-                    )[0], axis=1
+                st.caption(
+                    "Click a highlighted component in the cutaway to see its complaint "
+                    "share and short NHTSA excerpts inside the viewer. The detailed "
+                    "table and downloadable source evidence remain below. "
+                    "This is a generic schematic, not a vehicle-specific service diagram. "
+                    "Engine/radiator and front/rear wheel-end parts share broad NHTSA "
+                    "system categories when complaint records lack part-level precision."
                 )
-                st.dataframe(
-                    table, hide_index=True, use_container_width=True, height=340
-                )
-        focused_van = st.selectbox(
-            "Inspect detailed vehicle anatomy",
-            hotspot_vans, key="hotspot_detailed_van",
-        )
-        focused_total = int(denominators.get(focused_van, 0))
-        if focused_total:
-            focus_data = counts.loc[counts["vehicle"].eq(focused_van)]
-            focus_lookup = focus_data.set_index("system")[
-                ["complaints", "share_pct"]
-            ].to_dict("index")
-            st.markdown(f"##### Expanded mechanical cutaway — {focused_van}")
-            st.caption(
-                "Expanded view retains mechanical detail and complaint excerpts. "
-                "The compact comparison cards use simplified, smaller components."
-            )
-            # Selectable SVG component groups reveal source excerpts directly.
-            focus_evidence = hs.loc[hs["vehicle"].eq(focused_van)].copy()
-            focus_evidence = focus_evidence.drop_duplicates(
-                ["system", "odi_number"]
-            )
-            excerpts = {}
-            for source_system, section in focus_evidence.groupby("system"):
-                excerpts[source_system] = [
-                    {
-                        "model_year": row.model_year,
-                        "component": row.component,
-                        "description": row.description
-                        if pd.notna(row.description) else "",
-                    }
-                    for row in section.head(3).itertuples(index=False)
-                ]
-            st_components.html(
-                render_cutaway(
-                    focus_lookup, focused_total, focused_van,
-                    detailed=True, evidence_rows=excerpts
-                ),
-                height=695, scrolling=False,
-            )
-            st.caption(
-                "Click a highlighted component in the cutaway to see its complaint "
-                "share and short NHTSA excerpts inside the viewer. The detailed "
-                "table and downloadable source evidence remain below. "
-                "This is a generic schematic, not a vehicle-specific service diagram. "
-                "Engine/radiator and front/rear wheel-end parts share broad NHTSA "
-                "system categories when complaint records lack part-level precision."
-            )
         if not counts.empty:
             st.markdown("##### Compare system reporting indices across vehicles")
             normalized_component_chart(complaints, DATA_DIR, hotspot_vans, component_mapper=component_system)
