@@ -1152,13 +1152,12 @@ with sales_tab:
                         "vehicle": "Vehicle", "calendar_year": "Year",
                         "us_sales": "U.S. sales", "source_name": "Source"
                     }).sort_values(["Vehicle", "Year"])
+                    view["U.S. sales"] = view["U.S. sales"].map(lambda value: f"{value:,.0f}" if pd.notna(value) else None)
                     st.dataframe(
                         view, hide_index=True, use_container_width=True,
                         column_config={
                             "Source link": st.column_config.LinkColumn("Reference"),
-                            "U.S. sales": st.column_config.NumberColumn(
-                                "U.S. sales", format="localized"
-                            ),
+                            "U.S. sales": st.column_config.TextColumn("U.S. sales"),
                         },
                     )
                     st.caption(
@@ -1184,7 +1183,7 @@ with sales_tab:
                             f"{int((available & ~sales_subset['is_complete_calendar_year']).sum()):,}"
                         )
                         st.dataframe(
-                            sales_subset[[
+                            sales_subset.assign(us_sales=sales_subset["us_sales"].map(lambda value: f"{value:,.0f}" if pd.notna(value) else None))[[
                                 "vehicle", "calendar_year", "us_sales", "Status",
                                 "source_name", "Source link", "quality_flags",
                                 "notes", "ready_for_full_year_comparison",
